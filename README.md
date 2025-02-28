@@ -2,7 +2,23 @@
 
 # HNS-JumpStats
 
-Hide'n'Seek статистика прыжков для Counter-Strike 1.6
+Attention! Development of this plugin is temporarily frozen. There may be unexpected problems in the plugin.
+
+As an alternative we recommend using KZ-Rush jumpstats.
+
+https://kz-rush.ru/ru/forum/topic/142/
+
+The idea of our plugin is to make something similar to KZ-Rush statistics but more simple for hns servers. At the moment we do not have enough people and time to support this plugin.
+
+
+Внимание! Разработка данного плагина временно заморожена. В плагине возможны неожиданные проблемы.
+
+В качестве альтернативы мы рекомендуем использовать KZ-Rush jumpstats.
+
+https://kz-rush.ru/ru/forum/topic/142/
+
+Идея нашего плагина сделать нечто похожее на KZ-Rush статистику но более простую для hns серверов. На данный момент у нас не хватает людей и времени на поддержку данного плагина.
+
 
 ## Требование
 - [ReHLDS](https://dev-cs.ru/resources/64/)
