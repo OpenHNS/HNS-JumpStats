@@ -66,7 +66,6 @@ public show_prespeed(id) {
 
 	if (g_isJof[id]) {
 		g_isJof[id] = false;
-		if (g_bDebugMode) client_print_color(0,0, "if (g_isJof[id])")
 		
 		g_flHudJofTime[id] = g_flGameTime + 1.0;
 	}
@@ -76,7 +75,6 @@ public show_prespeed(id) {
 	}
 
 	if (g_flHudJofTime[id] < g_flGameTime) {
-		if (g_bDebugMode) client_print_color(0,0, "(g_flHudJofTime[id] < g_flGameTime)")
 		g_flJof[id] = 0.0;
 	}
 
@@ -129,7 +127,7 @@ stock show_jof(id, Float:flJof) {
 	if (!g_eOnOff[id][of_bJof]) {
 		return;
 	}
-	
+
 	if (g_bDebugMode) client_print_color(0,0, "show_jof")
 	g_isJof[id] = true;
 
