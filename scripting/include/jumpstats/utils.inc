@@ -148,7 +148,6 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 	flOrigin = flJumpOff;
 	flOrigin[2] = flOrigin[2] - 36.1;
 
-
 	new block_checking[3];
 
 	for (new i = 0, j = -18; i < 3; i++, j = j + 18) {
@@ -200,6 +199,7 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 
 		if (get_distance_f(tmpEdgeOrigin, tmpOrigin2) != 0.0) {
 			g_eJumpstats[id][js_flJof] = get_distance_f(tmpEdgeOrigin, tmpOrigin2) - 0.031250;
+			show_jof(id, g_eJumpstats[id][js_flJof]);
 		}
 
 		new Float:tmpblockOrigin[3];
@@ -248,11 +248,6 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 		if (!block_checking[2])
 			g_eJumpstats[id][js_iJumpBlock] = tmpjblock[2];
 	} else g_eJumpstats[id][js_iJumpBlock] = 0;
-
-	if (g_eJumpstats[id][js_flJof] != 0.0 && (g_eOnOff[id][of_bJof])) {
-		show_jof(id, g_eJumpstats[id][js_flJof]);
-	}
-
 }
 
 stock bool:isUserSurfing(id) {
