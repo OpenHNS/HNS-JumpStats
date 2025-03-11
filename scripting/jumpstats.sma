@@ -13,6 +13,8 @@ public plugin_init() {
 	g_hudStrafe = CreateHudSyncObj();
 	g_hudStats = CreateHudSyncObj();
 	g_hudPreSpeed = CreateHudSyncObj();
+
+	//g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 }
 
 public plugin_precache() {

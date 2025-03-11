@@ -4,13 +4,13 @@
 #include <engine>
 
 #include <jumpstats/global>
-#include <jumpstats/cvars>
-#include <jumpstats/cmds>
+#include <jumpstats/front/cvars>
+#include <jumpstats/front/cmds>
 #include <jumpstats/forwards>
-#include <jumpstats/menus>
+#include <jumpstats/front/menus>
 #include <jumpstats/utils>
-#include <jumpstats/prespeed>
-#include <jumpstats/readyjumps>
+#include <jumpstats/front/prespeed>
+#include <jumpstats/front/readyjumps>
 
 #include <jumpstats/in_bhop_jumps>
 #include <jumpstats/in_ducks>

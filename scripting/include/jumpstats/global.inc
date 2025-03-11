@@ -2,6 +2,8 @@
 #define NDUCKS 100
 #define NJUMPS 100
 
+//new bool:g_bDebugMode;
+
 enum _:ChatDist {
 	good = 0, pro, holy, leet, god
 };
