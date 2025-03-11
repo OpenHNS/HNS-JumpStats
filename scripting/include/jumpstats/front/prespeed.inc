@@ -128,7 +128,6 @@ stock show_jof(id, Float:flJof) {
 		return;
 	}
 
-	if (g_bDebugMode) client_print_color(0,0, "show_jof")
 	g_isJof[id] = true;
 
 	g_flJof[id] = flJof;
