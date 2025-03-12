@@ -97,11 +97,6 @@ jobs:
 
           find * -type f -name "*.sma" -exec bash -c 'compile "$0"' {} \;
 
-      - name: Move files
-        run: |
-          mkdir publish
-          mv cstrike/ publish/
-
       - name: Directory
         run: |
           rm -rf ./dep
