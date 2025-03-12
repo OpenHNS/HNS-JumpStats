@@ -10,6 +10,9 @@ public plugin_init() {
 	RegisterHookChain(RG_PM_Move, "rgPM_Move", true);
 	RegisterHookChain(RG_PM_AirMove, "rgPM_AirMove");
 
+	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = true);
+	RegisterHookChain(RG_CBasePlayer_Observer_FindNextPlayer,"RG_CBasePlayerObserverFindNextPlayer_Post", .post = true);
+
 	g_hudStrafe = CreateHudSyncObj();
 	g_hudStats = CreateHudSyncObj();
 	g_hudPreSpeed = CreateHudSyncObj();
@@ -31,19 +34,7 @@ public rgPM_Move(id) {
 	if (is_user_bot(id) || is_user_hltv(id)) {
 		return HC_CONTINUE;
 	}
-
-	if (!is_user_alive(id)) {
-		if(get_member(id, m_iObserverLastMode) == OBS_ROAMING)
-			return HC_CONTINUE;
-
-		new iTarget = get_member(id, m_hObserverTarget);
-
-		g_isUserSpec[id] = iTarget;
-		return HC_CONTINUE;
-	} else {
-		g_isUserSpec[id] = 0;
-	}
-
+	
 	g_iPrevButtons[id] = get_entvar(id, var_oldbuttons);
 
 	get_entvar(id, var_origin, g_flOrigin[id]);
@@ -240,6 +231,27 @@ public rgPM_AirMove(id) {
 
 	return HC_CONTINUE;
 }
+
+public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {
+	new iLastMode = get_member(id, m_iObserverLastMode);
+	if (iLastMode != OBS_CHASE_FREE && iLastMode != OBS_IN_EYE) {
+		g_isUserSpec[id] = 0;
+		return HC_CONTINUE;
+	}
+
+	new iTarget = get_member(id, m_hObserverTarget);
+
+	g_isUserSpec[id] = iTarget;
+	
+	return HC_CONTINUE;
+}
+
+public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
+	new iTarget = get_member(id, m_hObserverTarget);
+
+	g_isUserSpec[id] = iTarget;
+}
+
 
 public client_connect(id) {
 	arrayset(g_eOnOff[id], true, JS_ONOFF); // Ну потом
