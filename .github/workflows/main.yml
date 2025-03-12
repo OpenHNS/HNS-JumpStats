@@ -71,12 +71,6 @@ jobs:
           PLUGIN_VERSION: "${{ steps.declare_sha.outputs.SEMVER_PATCH }}"
         run: sed -i "s|manual|$PLUGIN_VERSION|g" redm_version.inc
 
-      - name: Update versions for plugins (only for artifacts builds)
-        working-directory: cstrike/addons/amxmodx/scripting/include/
-        env:
-          PLUGIN_VERSION: "${{ steps.declare_sha.outputs.COMMIT_SHA }}"
-        run: sed -i "s|manual|$PLUGIN_VERSION|g" redm_version.inc
-
       - name: Setup AMXXPawn Compiler
         uses: wopox1337/setup-amxxpawn@v1
         with:
