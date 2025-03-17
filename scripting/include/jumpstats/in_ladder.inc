@@ -2,7 +2,7 @@ public in_ladder(id, bool:isJump) {
 	g_flFirstJump[id] = g_flPrevOrigin[id];
 
 	g_eJumpType[id] = IS_JUMP;
-	g_iJumps[id]++;
+	g_iJumps[id] = 0;
 	g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
 	g_flStartSpeed[id] = g_flHorSpeed[id];
 
