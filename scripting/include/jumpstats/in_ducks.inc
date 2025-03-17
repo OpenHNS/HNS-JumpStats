@@ -40,6 +40,8 @@ public in_ducks(id, iFog) {
 
 		g_eDuckType[id] = g_eDuckType[id] == IS_SGS ? IS_SGS : IS_DD;
 
+		move_stats_counter(id, g_eDuckType[id] == IS_SGS ? MOVE_SGS : MOVE_DDRUN, iFog);
+
 		show_pre(id, pre_dd, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
 	}
 }

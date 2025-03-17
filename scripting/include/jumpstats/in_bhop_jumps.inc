@@ -111,6 +111,8 @@ public in_bhop_js(id, iFog) {
 				g_eJumpType[id] = IS_BHJ;
 			}
 		}
+		move_stats_counter(id, MOVE_BHOP, iFog);
+
 		// БХОП
 	}
 }

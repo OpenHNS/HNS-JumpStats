@@ -10,6 +10,7 @@
 #include <jumpstats/front/menus>
 #include <jumpstats/utils>
 #include <jumpstats/front/prespeed>
+#include <jumpstats/movestats>
 #include <jumpstats/front/readyjumps>
 
 #include <jumpstats/in_bhop_jumps>

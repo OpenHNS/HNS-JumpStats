@@ -34,6 +34,8 @@ stock reset_stats(id) {
 
 	g_iDetectHJ[id] = 0;
 	g_flStartSpeed[id] = 0.0;
+	
+	clear_move_stats(id);
 }
 
 stock reset_strafes(id) {
@@ -270,4 +272,11 @@ stock bool:isUserSurfing(id) {
 	get_tr2(0, TR_vecPlaneNormal, dest);
 
 	return dest[2] <= 0.7;
-} 
+}
+
+stock Float:get_maxspeed(id) {
+	new Float:flMaxSpeed;
+	flMaxSpeed = get_entvar(id, var_maxspeed);
+	
+	return flMaxSpeed * 1.2;
+}

@@ -410,6 +410,35 @@ public show_chat(id) {
 	}
 }
 
+stock check_and_show_move(id) {
+	if (!isSessionMove[id]) {
+		clear_move_stats(id);
+		return;
+	}
+	
+	g_eMoveStats[id][STATS_AVG_SPEED] = g_eMoveStats[id][STATS_AVG_SPEED] / float(g_eMoveStats[id][STATS_COUNT])
+
+	switch(g_eSessionMoveType[id]) {
+		case MOVE_BHOP: {
+			//if (g_eMoveStats[id][STATS_COUNT] > 5 && g_eMoveStats[id][STATS_AVG_SPEED] > 250.0 && g_eMoveStats[id][STATS_PRECENT] > 50.0) {
+				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 BHOP: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED]);
+			//}
+		}
+		case MOVE_SGS: {
+			//if (g_eMoveStats[id][STATS_COUNT] > 5 && g_eMoveStats[id][STATS_AVG_SPEED] > 250.0 && g_eMoveStats[id][STATS_PRECENT] > 50.0) {
+				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 SGS: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED]);
+			//}
+		}
+		case MOVE_DDRUN: {
+			//if (g_eMoveStats[id][STATS_COUNT] > 5 && g_eMoveStats[id][STATS_AVG_SPEED] > 250.0 && g_eMoveStats[id][STATS_PRECENT] > 30.0) {
+				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 DDRUN: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED]);
+			//}
+		}
+	}
+
+	clear_move_stats(id);
+}
+
 public sound_jumps(id) {
 	new aDistance[ChatDist];
 	get_colorchat_by_distance(id, aDistance, g_eWhichJump[id]);

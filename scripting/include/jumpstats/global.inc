@@ -132,7 +132,9 @@ new bool:g_isOldGround[MAX_PLAYERS + 1];
 new g_iPrevButtons[MAX_PLAYERS + 1];
 new g_iOldButtons[MAX_PLAYERS + 1];
 
-new g_iFog[MAX_PLAYERS + 1]
+new g_iFog[MAX_PLAYERS + 1];
+
+new Float:g_flMaxSpeed[MAX_PLAYERS + 1];
 
 new Float:g_flOrigin[MAX_PLAYERS + 1][3];
 new Float:g_flPrevOrigin[MAX_PLAYERS + 1][3];
@@ -171,3 +173,28 @@ new g_hudStats;
 new g_hudPreSpeed;
 
 new bool:g_bOneReset[MAX_PLAYERS + 1];
+
+enum FOG_TYPE {
+	FOG_PERFECT,
+	FOG_GOOD,
+	FOG_BAD
+};
+
+enum MOVE_TYPE {
+	MOVE_NOT,
+	MOVE_BHOP,
+	MOVE_SGS,
+	MOVE_DDRUN
+}
+
+new MOVE_TYPE:g_eSessionMoveType[MAX_PLAYERS + 1];
+new bool:isSessionMove[MAX_PLAYERS + 1];
+
+enum MOVE_STATS {
+	STATS_COUNT,
+	STATS_FOG[FOG_TYPE],
+	Float:STATS_PRECENT,
+	Float:STATS_AVG_SPEED
+}
+
+new g_eMoveStats[MAX_PLAYERS + 1][MOVE_STATS]

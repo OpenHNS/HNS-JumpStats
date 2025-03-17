@@ -40,6 +40,8 @@ public rgPM_Move(id) {
 	get_entvar(id, var_origin, g_flOrigin[id]);
 	get_entvar(id, var_velocity, g_flVelocity[id]);
 
+	g_flMaxSpeed[id] = get_maxspeed(id);
+
 	g_flHorSpeed[id] = vector_hor_length(g_flVelocity[id]);
 	g_flPrevHorSpeed[id] = vector_hor_length(g_flPrevVelocity[id]);
 
@@ -94,6 +96,8 @@ public rgPM_Move(id) {
 		if (g_iFog[id] <= 10) {
 			g_bOneReset[id] = true;
 		} else if (g_bOneReset[id]) {
+			check_and_show_move(id);
+
 			reset_stats(id);
 			g_bOneReset[id] = false;
 		}
