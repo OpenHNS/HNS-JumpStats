@@ -60,17 +60,7 @@ jobs:
           7z x *.zip
 
           echo "REAPI_INCLUDE_PATH=$(pwd)/addons/amxmodx/scripting/include" >> $GITHUB_ENV
-
-      - name: Update versions for plugins (release)
-        working-directory: cstrike/addons/amxmodx/scripting/include/
-        if: |
-          github.event_name == 'release' &&
-          github.event.action == 'published' &&
-          startsWith(github.ref, 'refs/tags/')
-        env:
-          PLUGIN_VERSION: "${{ steps.declare_sha.outputs.SEMVER_PATCH }}"
-        run: sed -i "s|manual|$PLUGIN_VERSION|g" redm_version.inc
-
+          
       - name: Setup AMXXPawn Compiler
         uses: wopox1337/setup-amxxpawn@v1
         with:
@@ -107,7 +97,7 @@ jobs:
       - name: Deploy artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Hns-JumpStats-${{ steps.declare_sha.outputs.COMMIT_SHA }}-dev
+          name: HNS-JumpStats-${{ steps.declare_sha.outputs.COMMIT_SHA }}-dev
           path: ./*
 
   publish:
@@ -122,11 +112,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: Hns-JumpStats-${{ needs.build.outputs.COMMIT_SHA }}-dev
+          name: HNS-JumpStats-${{ needs.build.outputs.COMMIT_SHA }}-dev
 
       - name: Packaging binaries
         id: packaging
-        run: 7z a -mm=Deflate -mfb=258 -mpass=15 -r Hns-JumpStats-${{ needs.build.outputs.FULLVERSION }}.zip cstrike/
+        run: 7z a -mm=Deflate -mfb=258 -mpass=15 -r HNS-JumpStats-${{ needs.build.outputs.FULLVERSION }}.zip cstrike/
 
       - name: Publish artifacts
         uses: softprops/action-gh-release@v2
