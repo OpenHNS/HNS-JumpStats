@@ -159,7 +159,7 @@ public rgPM_AirMove(id) {
 	}
 
 	if (isUserSurfing(id)) {
-		if (g_eWhichJump[id] == jt_Not) {
+		if (g_eWhichJump[id] != jt_Not) {
 			reset_stats(id);
 		}
 

@@ -9,10 +9,6 @@ public move_stats_counter(id, MOVE_TYPE:eMove, iFog) {
 
 	g_eMoveStats[id][STATS_COUNT]++;
 
-	if (g_bMoveOldSurfing[id]) {
-		g_eMoveStats[id][SATS_ARTIFACT] = ARTIFACT_SURF;
-	}
-
 	if (g_eMoveStats[id][STATS_COUNT] >= 5) {
 		isSessionMove[id] = true;
 	}
@@ -34,12 +30,20 @@ public move_stats_counter(id, MOVE_TYPE:eMove, iFog) {
 				case 4: g_eMoveStats[id][STATS_FOG][FOG_GOOD]++;
 				default: g_eMoveStats[id][STATS_FOG][FOG_BAD]++;
 			}
+
+			if (g_bMoveOldSurfing[id]) {
+				g_eMoveStats[id][SATS_ARTIFACT] = ARTIFACT_SURF;
+			}
 		}
 		case MOVE_DDRUN: {
 			switch(g_iFog[id]) {
 				case 2: g_eMoveStats[id][STATS_FOG][FOG_PERFECT]++;
 				case 3: g_eMoveStats[id][STATS_FOG][FOG_GOOD]++;
 				default: g_eMoveStats[id][STATS_FOG][FOG_BAD]++;
+			}
+
+			if (g_bMoveOldSurfing[id]) {
+				g_eMoveStats[id][SATS_ARTIFACT] = ARTIFACT_SURF;
 			}
 		}
 	}
