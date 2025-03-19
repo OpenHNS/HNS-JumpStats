@@ -416,22 +416,31 @@ stock check_and_show_move(id) {
 		return;
 	}
 	
-	g_eMoveStats[id][STATS_AVG_SPEED] = g_eMoveStats[id][STATS_AVG_SPEED] / float(g_eMoveStats[id][STATS_COUNT])
+	g_eMoveStats[id][STATS_AVG_SPEED] = g_eMoveStats[id][STATS_AVG_SPEED] / float(g_eMoveStats[id][STATS_COUNT]);
+
+	new szMoveInfoMess[128];
+	new iLen;
+
+	switch (g_eMoveStats[id][SATS_ARTIFACT]) {
+		case ARTIFACT_SURF: {
+			iLen += format(szMoveInfoMess[iLen], sizeof szMoveInfoMess - iLen, " (^3on slide^1)");
+		}
+	}
 
 	switch(g_eSessionMoveType[id]) {
 		case MOVE_BHOP: {
 			//if (g_eMoveStats[id][STATS_COUNT] > 5 && g_eMoveStats[id][STATS_AVG_SPEED] > 250.0 && g_eMoveStats[id][STATS_PRECENT] > 50.0) {
-				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 BHOP: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED]);
+				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 BHOP: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.%s", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED], szMoveInfoMess);
 			//}
 		}
 		case MOVE_SGS: {
 			//if (g_eMoveStats[id][STATS_COUNT] > 5 && g_eMoveStats[id][STATS_AVG_SPEED] > 250.0 && g_eMoveStats[id][STATS_PRECENT] > 50.0) {
-				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 SGS: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED]);
+				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 SGS: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.%s", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED], szMoveInfoMess);
 			//}
 		}
 		case MOVE_DDRUN: {
 			//if (g_eMoveStats[id][STATS_COUNT] > 5 && g_eMoveStats[id][STATS_AVG_SPEED] > 250.0 && g_eMoveStats[id][STATS_PRECENT] > 30.0) {
-				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 DDRUN: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED]);
+				client_print_color(0, print_team_blue, "^3%n^1 completed ^3%d^1 DDRUN: ^3%.0f%%%^1 perfect, post avg. speed: ^3%.2f^1.%s", id, g_eMoveStats[id][STATS_COUNT], g_eMoveStats[id][STATS_PRECENT], g_eMoveStats[id][STATS_AVG_SPEED], szMoveInfoMess);
 			//}
 		}
 	}

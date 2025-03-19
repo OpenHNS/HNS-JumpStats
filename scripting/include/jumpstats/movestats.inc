@@ -9,6 +9,10 @@ public move_stats_counter(id, MOVE_TYPE:eMove, iFog) {
 
 	g_eMoveStats[id][STATS_COUNT]++;
 
+	if (g_bMoveOldSurfing[id]) {
+		g_eMoveStats[id][SATS_ARTIFACT] = ARTIFACT_SURF;
+	}
+
 	if (g_eMoveStats[id][STATS_COUNT] >= 5) {
 		isSessionMove[id] = true;
 	}
@@ -58,4 +62,6 @@ public clear_move_stats(id) {
 	g_eMoveStats[id][STATS_PRECENT] = 0.0;
 
 	g_eMoveStats[id][STATS_AVG_SPEED] = 0.0;
+
+	g_eMoveStats[id][SATS_ARTIFACT] = ARTIFACT_SMESTA;
 }

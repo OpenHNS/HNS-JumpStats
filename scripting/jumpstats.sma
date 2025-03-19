@@ -5,8 +5,7 @@ public plugin_init() {
 
 	init_cvars();
 	init_cmds();
-
-	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
+	register_forward(FM_CmdStart, "fwdCmdStart");
 	RegisterHookChain(RG_PM_Move, "rgPM_Move", true);
 	RegisterHookChain(RG_PM_AirMove, "rgPM_AirMove");
 
@@ -81,8 +80,10 @@ public rgPM_Move(id) {
 
 		if (g_iFog[id] == 1) {
 			if (g_bInDuck[id]) {
-				g_eDuckType[id] = g_eDuckType[id] != IS_DUCK_NOT ? IS_SGS : g_eDuckType[id];
+				g_eDuckType[id] = IS_SGS;
 				g_eJumpType[id] = g_eJumpType[id] != IS_DUCKBHOP ? IS_SBJ : g_eJumpType[id];
+			} else {
+				g_eDuckType[id] = IS_DD;
 			}
 		}
 
@@ -156,13 +157,16 @@ public rgPM_AirMove(id) {
 	if (!is_user_alive(id) || is_user_bot(id)) {
 		return HC_CONTINUE;
 	}
-	
-	if (g_eWhichJump[id] == jt_Not) {
-		return HC_CONTINUE;
-	}
 
 	if (isUserSurfing(id)) {
-		reset_stats(id);
+		if (g_eWhichJump[id] == jt_Not) {
+			reset_stats(id);
+		}
+
+		g_bMoveOldSurfing[id] = true;
+	}
+	
+	if (g_eWhichJump[id] == jt_Not) {
 		return HC_CONTINUE;
 	}
 

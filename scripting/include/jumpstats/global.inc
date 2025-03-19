@@ -174,14 +174,8 @@ new g_hudPreSpeed;
 
 new bool:g_bOneReset[MAX_PLAYERS + 1];
 
-enum FOG_TYPE {
-	FOG_PERFECT,
-	FOG_GOOD,
-	FOG_BAD
-};
-
 enum MOVE_TYPE {
-	MOVE_NOT,
+	MOVE_NOT = 0,
 	MOVE_BHOP,
 	MOVE_SGS,
 	MOVE_DDRUN
@@ -190,11 +184,25 @@ enum MOVE_TYPE {
 new MOVE_TYPE:g_eSessionMoveType[MAX_PLAYERS + 1];
 new bool:isSessionMove[MAX_PLAYERS + 1];
 
+enum FOG_TYPE {
+	FOG_PERFECT,
+	FOG_GOOD,
+	FOG_BAD
+};
+
+enum MOVE_ARTIFACTS {
+	ARTIFACT_SMESTA,
+	ARTIFACT_SURF,
+	ARTIFACT_DROP
+}
+
 enum MOVE_STATS {
 	STATS_COUNT,
 	STATS_FOG[FOG_TYPE],
 	Float:STATS_PRECENT,
-	Float:STATS_AVG_SPEED
+	Float:STATS_AVG_SPEED,
+	MOVE_ARTIFACTS:SATS_ARTIFACT,
 }
 
-new g_eMoveStats[MAX_PLAYERS + 1][MOVE_STATS]
+new g_eMoveStats[MAX_PLAYERS + 1][MOVE_STATS];
+new bool:g_bMoveOldSurfing[MAX_PLAYERS + 1];

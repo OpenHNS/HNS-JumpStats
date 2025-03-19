@@ -34,8 +34,8 @@ stock reset_stats(id) {
 
 	g_iDetectHJ[id] = 0;
 	g_flStartSpeed[id] = 0.0;
-	
-	clear_move_stats(id);
+
+	g_bMoveOldSurfing[id] = false;
 }
 
 stock reset_strafes(id) {
