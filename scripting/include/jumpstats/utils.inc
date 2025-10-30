@@ -270,4 +270,4 @@ stock bool:isUserSurfing(id) {
 	get_tr2(0, TR_vecPlaneNormal, dest);
 
 	return dest[2] <= 0.7;
-} 
+}
