@@ -20,10 +20,10 @@ public plugin_init() {
 	//g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 }
 
-public plugin_precache() {
-    for(new i; i < sizeof(g_szSounds); i++)
-        precache_sound(g_szSounds[i]);
-}
+// public plugin_precache() {
+//     for(new i; i < sizeof(g_szSounds); i++)
+//         precache_sound(g_szSounds[i]);
+// }
 
 public rgPlayerSpawn(id) {
 	reset_stats(id);

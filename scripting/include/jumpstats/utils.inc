@@ -61,7 +61,7 @@ stock detect_hj(id, Float:flOrigin[3], Float:VerOrigin) {
 	flStarthj[1] = flOrigin[1];
 	flStarthj[2] = VerOrigin + 28.0;
 
-	new Float:flStophj[3]
+	new Float:flStophj[3];
 	flStophj[0] = flOrigin[0];
 	flStophj[1] = flOrigin[1];
 	flStophj[2] = flStarthj[2] - 133.0;
@@ -99,7 +99,7 @@ public get_colorchat_by_distance(id, aDistance[ChatDist], JumpType:iJumpType) {
 			aDistance[god] = isSotka ? 260 : 255;
 			aDistance[leet] = isSotka ? 255 : 253;
 			aDistance[holy] = isSotka ? 250 : 250;
-			aDistance[pro] = 245
+			aDistance[pro] = 245;
 			aDistance[good] = 240;
 		}
 		case jt_CountJump, jt_StandUPCountJump, jt_WeirdJump: {
@@ -241,10 +241,10 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 	if (tmpjblock[0] != 0 && tmpjblock[0] <= tmpjblock[1] && tmpjblock[0] <= tmpjblock[2]) {
 		if (!block_checking[0])
 			g_eJumpstats[id][js_iJumpBlock] = tmpjblock[0];
-	} else if (tmpjblock[1] != 0 && tmpjblock[1] <= tmpjblock[2] && tmpjblock[0] <= tmpjblock[0]) {
+	} else if (tmpjblock[1] != 0 && tmpjblock[1] <= tmpjblock[2] && tmpjblock[1] <= tmpjblock[0]) {
 		if (!block_checking[1])
 			g_eJumpstats[id][js_iJumpBlock] = tmpjblock[1];
-	} else if (tmpjblock[2] != 0 && tmpjblock[2] <= tmpjblock[1] && tmpjblock[0] <= tmpjblock[0]) {
+	} else if (tmpjblock[2] != 0 && tmpjblock[2] <= tmpjblock[1] && tmpjblock[2] <= tmpjblock[0]) {
 		if (!block_checking[2])
 			g_eJumpstats[id][js_iJumpBlock] = tmpjblock[2];
 	} else g_eJumpstats[id][js_iJumpBlock] = 0;

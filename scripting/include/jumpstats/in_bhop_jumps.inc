@@ -1,7 +1,7 @@
 public in_bhop_js(id, iFog) {
 	g_flFirstJump[id] = g_flPrevOrigin[id];
 	if (iFog == 1) {
-		g_flPrevHorSpeed[id] = g_flHorSpeed[id]
+		g_flPrevHorSpeed[id] = g_flHorSpeed[id];
 	}
 
 	g_flStartSpeed[id] = g_flPrevHorSpeed[id];
@@ -72,10 +72,10 @@ public in_bhop_js(id, iFog) {
 						g_eWhichJump[id] = jt_DuckBhopJump;
 						show_pre(id, pre_duckbhop, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
 					} else if (g_bInDuck[id]) {
-						g_eWhichJump[id] = jt_BhopInDuck
+						g_eWhichJump[id] = jt_BhopInDuck;
 						show_pre(id, pre_bid, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
 					} else if (g_eJumpType[id] == IS_SBJ) {
-						g_eWhichJump[id] = jt_StandUpBhopJump
+						g_eWhichJump[id] = jt_StandUpBhopJump;
 						show_pre(id, pre_sbj, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
 					} else if (g_eJumpType[id] == IS_JUMP) {
 						g_eWhichJump[id] = jt_BhopJump;

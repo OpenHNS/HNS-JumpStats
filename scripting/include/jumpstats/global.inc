@@ -8,13 +8,13 @@ enum _:ChatDist {
 	good = 0, pro, holy, leet, god
 };
 
-new const g_szSounds[ChatDist][] = {
-    "jumpstats/impressive.wav",
-    "jumpstats/wickedsick.wav",
-	"jumpstats/luche.wav",
-	"jumpstats/ne_very.wav",
-	"jumpstats/vlastb.wav"
-}
+// new const g_szSounds[ChatDist][] = {
+//     "jumpstats/impressive.wav",
+//     "jumpstats/wickedsick.wav",
+// 	"jumpstats/luche.wav",
+// 	"jumpstats/ne_very.wav",
+// 	"jumpstats/vlastb.wav"
+// }
 
 enum JumpType {
 	jt_LongJump = 0,
@@ -132,7 +132,7 @@ new bool:g_isOldGround[MAX_PLAYERS + 1];
 new g_iPrevButtons[MAX_PLAYERS + 1];
 new g_iOldButtons[MAX_PLAYERS + 1];
 
-new g_iFog[MAX_PLAYERS + 1]
+new g_iFog[MAX_PLAYERS + 1];
 
 new Float:g_flOrigin[MAX_PLAYERS + 1][3];
 new Float:g_flPrevOrigin[MAX_PLAYERS + 1][3];

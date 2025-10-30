@@ -87,8 +87,8 @@ public ready_jumps(id, Float:flEndJump[3]) {
 			if (g_pCvar[c_iEnableChat])
 				show_chat(id);
 
-			if (g_pCvar[c_iEnableSound])
-				sound_jumps(id);
+			// if (g_pCvar[c_iEnableSound])
+			// 	sound_jumps(id);
 		}
 	}
 
@@ -112,7 +112,7 @@ public ready_jumps(id, Float:flEndJump[3]) {
 	g_eJumpType[id] = IS_JUMP;
 
 	g_eFailJump[id] = fj_good;
-	g_eWhichJump[id] = jt_Not
+	g_eWhichJump[id] = jt_Not;
 	
 	g_isFalling[id] = false;
 	g_isTouched[id] = false;
@@ -410,30 +410,30 @@ public show_chat(id) {
 	}
 }
 
-public sound_jumps(id) {
-	new aDistance[ChatDist];
-	get_colorchat_by_distance(id, aDistance, g_eWhichJump[id]);
+// public sound_jumps(id) {
+// 	new aDistance[ChatDist];
+// 	get_colorchat_by_distance(id, aDistance, g_eWhichJump[id]);
 
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+// 	new iPlayers[MAX_PLAYERS], iNum;
+// 	get_players(iPlayers, iNum, "ch");
 
-	for (new i = 0; i < iNum; i++) {
-		new iPlayer = iPlayers[i];
-		if (!g_eOnOff[iPlayer][of_bSound])
-			continue;
+// 	for (new i = 0; i < iNum; i++) {
+// 		new iPlayer = iPlayers[i];
+// 		if (!g_eOnOff[iPlayer][of_bSound])
+// 			continue;
 
-		if (g_eJumpstats[id][js_flDistance] >= aDistance[god]) {
-			client_cmd(iPlayer, "spk %s", g_szSounds[god]);
-		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[leet]) {
-			client_cmd(iPlayer, "spk %s", g_szSounds[leet]);
-		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[holy]) {
-			client_cmd(iPlayer, "spk %s", g_szSounds[holy]);
-		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[pro]) {
-			client_cmd(id, "spk %s", g_szSounds[pro]);
-			break;
-		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[good]) {
-			client_cmd(id, "spk %s", g_szSounds[good]);
-			break;
-		}
-	}
-}
+// 		if (g_eJumpstats[id][js_flDistance] >= aDistance[god]) {
+// 			client_cmd(iPlayer, "spk %s", g_szSounds[god]);
+// 		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[leet]) {
+// 			client_cmd(iPlayer, "spk %s", g_szSounds[leet]);
+// 		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[holy]) {
+// 			client_cmd(iPlayer, "spk %s", g_szSounds[holy]);
+// 		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[pro]) {
+// 			client_cmd(id, "spk %s", g_szSounds[pro]);
+// 			break;
+// 		} else if (g_eJumpstats[id][js_flDistance] >= aDistance[good]) {
+// 			client_cmd(id, "spk %s", g_szSounds[good]);
+// 			break;
+// 		}
+// 	}
+// }
