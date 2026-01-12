@@ -173,12 +173,19 @@ stock show_jof(id, Float:flJof) {
 	g_flJof[id] = flJof;
 }
 
+new Float:g_flPerfTime[MAX_PLAYERS + 1];
+
 FormatRGBHud(id, const Float:val, colors[3]) {
 	new iColorPerf[3], iColorDef[3];
 
 	iColorPerf = {0, 250, 0};
 
-	iColorDef = g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT ? iColorPerf : {255, 255, 255};
+	iColorDef = g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT ? {20, 255, 150} : {255, 255, 255};
+
+	if (g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT || g_ePreData[id][SP_FOGTYPE] == FOG_GOOD) {
+		iColorPerf = {20, 255, 150};
+		iColorDef = {255, 255, 255};
+	}
 
 	colors[0] = floatround(float(iColorPerf[0] - iColorDef[0]) * val + iColorDef[0]);
 	colors[1] = floatround(float(iColorPerf[1] - iColorDef[1]) * val + iColorDef[1]);
