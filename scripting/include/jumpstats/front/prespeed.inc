@@ -61,6 +61,8 @@ new Float:g_flHudJofTime[MAX_PLAYERS + 1];
 
 new Float:g_flHudTime[MAX_PLAYERS + 1];
 
+const Float:FOG_COLOR_TIME = 0.8;
+new Float:g_flPerfTime[MAX_PLAYERS + 1];
 
 public show_prespeed(id) {
 	new Float:g_flGameTime = get_gametime();
@@ -161,6 +163,12 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 	g_ePreData[id][SP_PRE] = flPreSpeed;
 	g_ePreData[id][SP_POST] = flPostSpeed;
 	g_ePreData[id][SP_FOGTYPE] = fogType;
+
+	if (fogType == FOG_PERFECT || fogType == FOG_BAD) {
+		g_flPerfTime[id] = get_gametime() + FOG_COLOR_TIME;
+	} else {
+		g_flPerfTime[id] = 0.0;
+	}
 }
 
 stock show_jof(id, Float:flJof) {
@@ -173,23 +181,37 @@ stock show_jof(id, Float:flJof) {
 	g_flJof[id] = flJof;
 }
 
-new Float:g_flPerfTime[MAX_PLAYERS + 1];
-
 FormatRGBHud(id, const Float:val, colors[3]) {
-	new iColorPerf[3], iColorDef[3];
+	new iColorSpeedMin[3], iColorSpeedMax[3], iColorBase[3];
 
-	iColorPerf = {0, 250, 0};
+	iColorSpeedMin = {255, 255, 255};
+	iColorSpeedMax = {0, 250, 0};
 
-	iColorDef = g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT ? {20, 255, 150} : {255, 255, 255};
+	iColorBase[0] = floatround(float(iColorSpeedMax[0] - iColorSpeedMin[0]) * val + iColorSpeedMin[0]);
+	iColorBase[1] = floatround(float(iColorSpeedMax[1] - iColorSpeedMin[1]) * val + iColorSpeedMin[1]);
+	iColorBase[2] = floatround(float(iColorSpeedMax[2] - iColorSpeedMin[2]) * val + iColorSpeedMin[2]);
 
-	if (g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT || g_ePreData[id][SP_FOGTYPE] == FOG_GOOD) {
-		iColorPerf = {20, 255, 150};
-		iColorDef = {255, 255, 255};
+	new Float:flNow = get_gametime();
+	if (g_flPerfTime[id] > flNow) {
+		new Float:fade = floatclamp((g_flPerfTime[id] - flNow) / FOG_COLOR_TIME, 0.0, 1.0);
+		new iColorFog[3];
+
+		if (g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT) {
+			iColorFog = {20, 255, 150};
+		} else if (g_ePreData[id][SP_FOGTYPE] == FOG_BAD) {
+			iColorFog = {255, 70, 120};
+		} else {
+			fade = 0.0;
+		}
+
+		colors[0] = floatround(float(iColorFog[0] - iColorBase[0]) * fade + iColorBase[0]);
+		colors[1] = floatround(float(iColorFog[1] - iColorBase[1]) * fade + iColorBase[1]);
+		colors[2] = floatround(float(iColorFog[2] - iColorBase[2]) * fade + iColorBase[2]);
+	} else {
+		colors[0] = iColorBase[0];
+		colors[1] = iColorBase[1];
+		colors[2] = iColorBase[2];
 	}
-
-	colors[0] = floatround(float(iColorPerf[0] - iColorDef[0]) * val + iColorDef[0]);
-	colors[1] = floatround(float(iColorPerf[1] - iColorDef[1]) * val + iColorDef[1]);
-	colors[2] = floatround(float(iColorPerf[2] - iColorDef[2]) * val + iColorDef[2]);
 }
 
 stock Float: convertToRange(Float:value, Float:FromMin, Float:FromMax, Float:ToMin = 0.0, Float:ToMax = 1.0) {
