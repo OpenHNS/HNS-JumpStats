@@ -40,6 +40,24 @@ public in_ducks(id, iFog) {
 
 		g_eDuckType[id] = g_eDuckType[id] == IS_SGS ? IS_SGS : IS_DD;
 
-		show_pre(id, PRE_DD, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
+		new FOG_TYPE:iFogType;
+
+		if (g_eDuckType[id] == IS_SGS) {
+			switch(iFog) {
+				case 3: iFogType = FOG_PERFECT;
+				case 4: iFogType = FOG_GOOD;
+				case 5: iFogType = FOG_BAD;
+				default: iFogType = FOG_VERYBAD;
+			}
+		} else {
+			switch(iFog) {
+				case 2: iFogType = FOG_PERFECT;
+				case 3: iFogType = FOG_GOOD;
+				case 4: iFogType = FOG_BAD;
+				default: iFogType = FOG_VERYBAD;
+			}
+		}
+
+		show_pre(id, PRE_DD, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id], iFogType);
 	}
 }

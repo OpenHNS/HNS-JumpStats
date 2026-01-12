@@ -19,16 +19,31 @@ new g_szPreType[PRE_TYPE][] = {
 	"ladder",
 	"slide",
 	"fall",
-	"bhop ",
-	"sbj ",
-	"bid ",
-	"duckbhop ",
-	"dd "
+	"bhop",
+	"sbj",
+	"bid",
+	"duckbhop",
+	"dd"
+};
+
+enum FOG_TYPE {
+	FOG_VERYBAD = 0,
+	FOG_PERFECT,
+	FOG_GOOD,
+	FOG_BAD
+};
+
+new g_szFogType[FOG_TYPE][] = {
+	"[VB]",
+	"[P]",
+	"[G]",
+	"[B]"
 };
 
 enum STRUCT_PRE {
 	SP_TYPE,
 	SP_FOG,
+	FOG_TYPE:SP_FOGTYPE,
 	Float:SP_PRE,
 	Float:SP_POST
 };
@@ -80,7 +95,14 @@ public show_prespeed(id) {
 		g_flJof[id] = 0.0;
 	}
 
-	set_hudmessage(g_pCvar[c_iPreSpeedR], g_pCvar[c_iPreSpeedG], g_pCvar[c_iPreSpeedB], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.15, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
+	new iColors[3];
+
+	new Float:val;
+	val = convertToRange(floatmin(g_flHorSpeed[id], 285.0), 40.0, 285.0); // в квар
+
+	FormatRGBHud(id, val, iColors);
+
+	set_hudmessage(iColors[0], iColors[1], iColors[2], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.15, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
 	
 	new szJof[16];
 
@@ -106,18 +128,18 @@ public show_prespeed(id) {
 							g_flJof[i] ? szJof : "",
 							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
 							g_szPreType[iType],
-							g_ePreData[id][SP_POST]);
+							g_ePreData[id][SP_PRE]);
 					}
 					case PRE_BHOP..PRE_DD: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\
 						%s^n\
 						%s^n^n\
-						%s %d^n\
+						%s %d %s^n\
 						%.2f^n\
 						%.2f", 
 						g_flJof[i] ? szJof : "",
 						g_eOnOff[i][of_bSpeed] ? szSpeed : "",
-						g_szPreType[iType], g_ePreData[id][SP_FOG],
+						g_szPreType[iType], g_ePreData[id][SP_FOG], g_szFogType[g_ePreData[id][SP_FOGTYPE]],
 						g_ePreData[id][SP_PRE],
 						g_ePreData[id][SP_POST]);
 					}
@@ -131,24 +153,14 @@ public show_prespeed(id) {
 	g_flHudTime[id] = g_flGameTime;
 }
 
-/*
-switch (g_eHudPre[id][HUD_TYPE]) {
-					case HUD_FOG: {
-						ShowSyncHudMsg(i, g_iHudObject, "%s^n^n%d %s^n%.2f^n%.2f", g_bOnOffSpeed[i] ? szSpeed : "", g_eHudPre[id][HUD_FOG], g_szFogType[g_eHudPre[id][HUD_FOGTYPE]], g_eHudPre[id][HUD_PREST], g_eHudPre[id][HUD_POST]);
-					}
-					default: {
-						ShowSyncHudMsg(i, g_iHudObject, "%s^n^n%s^n%.2f", g_bOnOffSpeed[i] ? szSpeed : "", g_szPreType[g_eHudPre[id][HUD_TYPE]], g_eHudPre[id][HUD_POST]);
-					}
-				}
-				*/
-
-stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0) {
+stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, FOG_TYPE:fogType = FOG_VERYBAD) {
 	g_isPre[id] = true;
 
 	g_ePreData[id][SP_TYPE] = iType;
 	g_ePreData[id][SP_FOG] = iFog;
 	g_ePreData[id][SP_PRE] = flPreSpeed;
 	g_ePreData[id][SP_POST] = flPostSpeed;
+	g_ePreData[id][SP_FOGTYPE] = fogType;
 }
 
 stock show_jof(id, Float:flJof) {
@@ -159,4 +171,20 @@ stock show_jof(id, Float:flJof) {
 	g_isJof[id] = true;
 
 	g_flJof[id] = flJof;
+}
+
+FormatRGBHud(id, const Float:val, colors[3]) {
+	new iColorPerf[3], iColorDef[3];
+
+	iColorPerf = {0, 250, 0};
+
+	iColorDef = g_ePreData[id][SP_FOGTYPE] == FOG_PERFECT ? iColorPerf : {255, 255, 255};
+
+	colors[0] = floatround(float(iColorPerf[0] - iColorDef[0]) * val + iColorDef[0]);
+	colors[1] = floatround(float(iColorPerf[1] - iColorDef[1]) * val + iColorDef[1]);
+	colors[2] = floatround(float(iColorPerf[2] - iColorDef[2]) * val + iColorDef[2]);
+}
+
+stock Float: convertToRange(Float:value, Float:FromMin, Float:FromMax, Float:ToMin = 0.0, Float:ToMax = 1.0) {
+	return floatclamp((value-FromMin) / (FromMax-FromMin) * (ToMax-ToMin + ToMin), ToMin, ToMax);
 }

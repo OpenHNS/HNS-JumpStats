@@ -21,7 +21,6 @@ enum JS_CVAR {
 	c_iPreSpeedB,
 	Float:c_iPreSpeedX,
 	Float:c_iPreSpeedY,
-	c_iPreSpeedStyle,
 	c_iStats,
 	c_iStrafe,
 	c_iPreSpeed,
@@ -64,8 +63,6 @@ init_cvars() {
 
 	bind_pcvar_float(register_cvar("js_prespeed_x", "-1.0"),	g_pCvar[c_iPreSpeedX]);
 	bind_pcvar_float(register_cvar("js_prespeed_y", "0.55"),	g_pCvar[c_iPreSpeedY]);
-
-	bind_pcvar_num(register_cvar("js_prespeed_style", "1"),	g_pCvar[c_iPreSpeedStyle]);
 
 	bind_pcvar_num(register_cvar("js_hud_stats", "2"),		g_pCvar[c_iStats]);
 	bind_pcvar_num(register_cvar("js_hud_strafe", "3"),		g_pCvar[c_iStrafe]);
