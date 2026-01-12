@@ -11,7 +11,7 @@ public in_ducks(id, iFog) {
 
 		g_eDuckType[id] = g_eDuckType[id] != IS_SGS && g_eDuckType[id] != IS_DD ? IS_DUCK : g_eDuckType[id];
 
-		show_pre(id, pre_duck, g_flPrevHorSpeed[id]);
+		show_pre(id, PRE_DUCK, g_flPrevHorSpeed[id]);
 	} else {
 		g_iDucks[id]++;
 
@@ -40,6 +40,6 @@ public in_ducks(id, iFog) {
 
 		g_eDuckType[id] = g_eDuckType[id] == IS_SGS ? IS_SGS : IS_DD;
 
-		show_pre(id, pre_dd, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
+		show_pre(id, PRE_DD, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id]);
 	}
 }

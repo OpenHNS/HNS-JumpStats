@@ -11,7 +11,7 @@ public in_ladder(id, bool:isJump) {
 	g_ePreStats[id][ptBackWards] = false;
 
 	if (isJump) {
-		show_pre(id, pre_ladder_jump, g_flHorSpeed[id]);
+		show_pre(id, PRE_LADDER, g_flHorSpeed[id]);
 	} else {
 		g_eWhichJump[id] = jt_LadderJump;
 
@@ -21,6 +21,6 @@ public in_ladder(id, bool:isJump) {
 
 		g_flLadderDist[id] = g_flLadderDist[id] > 10 ? 4.0 : g_flLadderDist[id];
 		
-		show_pre(id, pre_ladder, g_flHorSpeed[id]);
+		show_pre(id, PRE_LADDER, g_flHorSpeed[id]);
 	}
 }

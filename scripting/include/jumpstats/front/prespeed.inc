@@ -1,34 +1,36 @@
-enum _:TYPE_PRE {
-	pre_dd = 0,
-	pre_bhop = 1,
-	pre_sbj = 2,
-	pre_bid = 3,
-	pre_duckbhop = 4,
-	pre_ladder = 5,
-	pre_ladder_jump = 6,
-	pre_jump = 7,
-	pre_duck = 8,
-	pre_fall = 9
+enum _:PRE_TYPE {
+	PRE_FOG = 0,
+	PRE_JUMP,
+	PRE_DUCK,
+	PRE_LADDER,
+	PRE_SLIDE,
+	PRE_FALL,
+	PRE_BHOP,
+	PRE_SBJ,
+	PRE_BID,
+	PRE_DUCKBHOP,
+	PRE_DD
 };
 
-new g_szPreType[][] = {
-	"dd",
-	"bhop",
-	"sbj",
-	"bid",
-	"duckbhop",
-	"ladder",
-	"ladder jump",
+new g_szPreType[PRE_TYPE][] = {
+	"",
 	"jump",
 	"duck",
+	"ladder",
+	"slide",
 	"fall",
+	"bhop ",
+	"sbj ",
+	"bid ",
+	"duckbhop ",
+	"dd "
 };
 
 enum STRUCT_PRE {
-	sp_iType,
-	sp_iFog,
-	Float:sp_flPre,
-	Float:sp_flPost
+	SP_TYPE,
+	SP_FOG,
+	Float:SP_PRE,
+	Float:SP_POST
 };
 
 new g_ePreData[MAX_PLAYERS + 1][STRUCT_PRE];
@@ -80,12 +82,12 @@ public show_prespeed(id) {
 
 	set_hudmessage(g_pCvar[c_iPreSpeedR], g_pCvar[c_iPreSpeedG], g_pCvar[c_iPreSpeedB], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.15, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
 	
-	new szJof[8];
+	new szJof[16];
 
 	if (g_flJof[id]) {
 		formatex(szJof, charsmax(szJof), "jof: %.0f", g_flJof[id]);
 	}
-	new szSpeed[8];
+	new szSpeed[16];
 
 	if (g_eOnOff[id][of_bSpeed])
 		formatex(szSpeed, charsmax(szSpeed), "%.0f u/s", g_flHorSpeed[id]);
@@ -93,16 +95,31 @@ public show_prespeed(id) {
 	for (new i = 1; i < MaxClients; i++) {
 		if (i == id || g_isUserSpec[i] == id) {
 			if (g_eOnOff[id][of_bPre] && g_isTmpPre[id]) {
-				new iType = g_ePreData[id][sp_iType];
+				new iType = g_ePreData[id][SP_TYPE];
 				switch (iType) {
-					case 0..4: {
-						ShowSyncHudMsg(i, g_hudPreSpeed, "%s^n%s^n%s %d fog:^n%.2f^n%.2f", g_flJof[i] ? szJof : "", g_eOnOff[i][of_bSpeed] ? szSpeed : "", g_szPreType[iType], g_ePreData[id][sp_iFog], g_ePreData[id][sp_flPre], g_ePreData[id][sp_flPost]);
+					case PRE_JUMP..PRE_FALL: {
+						ShowSyncHudMsg(i, g_hudPreSpeed, "\
+					 		%s^n\
+							%s^n^n\
+							%s^n\
+							%.2f",
+							g_flJof[i] ? szJof : "",
+							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
+							g_szPreType[iType],
+							g_ePreData[id][SP_POST]);
 					}
-					case 5, 6: {
-						ShowSyncHudMsg(i, g_hudPreSpeed, "%s^n%s^n%s:^n%.2f", g_flJof[i] ? szJof : "", g_eOnOff[i][of_bSpeed] ? szSpeed : "", g_szPreType[iType], g_ePreData[id][sp_flPre]);
-					}
-					default: {
-						ShowSyncHudMsg(i, g_hudPreSpeed, "%s^n%s^n%s pre:^n%.2f", g_flJof[i] ? szJof : "", g_eOnOff[i][of_bSpeed] ? szSpeed : "", g_szPreType[iType], g_ePreData[id][sp_flPre]);
+					case PRE_BHOP..PRE_DD: {
+						ShowSyncHudMsg(i, g_hudPreSpeed, "\
+						%s^n\
+						%s^n^n\
+						%s %d^n\
+						%.2f^n\
+						%.2f", 
+						g_flJof[i] ? szJof : "",
+						g_eOnOff[i][of_bSpeed] ? szSpeed : "",
+						g_szPreType[iType], g_ePreData[id][SP_FOG],
+						g_ePreData[id][SP_PRE],
+						g_ePreData[id][SP_POST]);
 					}
 				}
 			} else { 
@@ -114,13 +131,24 @@ public show_prespeed(id) {
 	g_flHudTime[id] = g_flGameTime;
 }
 
+/*
+switch (g_eHudPre[id][HUD_TYPE]) {
+					case HUD_FOG: {
+						ShowSyncHudMsg(i, g_iHudObject, "%s^n^n%d %s^n%.2f^n%.2f", g_bOnOffSpeed[i] ? szSpeed : "", g_eHudPre[id][HUD_FOG], g_szFogType[g_eHudPre[id][HUD_FOGTYPE]], g_eHudPre[id][HUD_PREST], g_eHudPre[id][HUD_POST]);
+					}
+					default: {
+						ShowSyncHudMsg(i, g_iHudObject, "%s^n^n%s^n%.2f", g_bOnOffSpeed[i] ? szSpeed : "", g_szPreType[g_eHudPre[id][HUD_TYPE]], g_eHudPre[id][HUD_POST]);
+					}
+				}
+				*/
+
 stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0) {
 	g_isPre[id] = true;
 
-	g_ePreData[id][sp_iType] = iType;
-	g_ePreData[id][sp_iFog] = iFog;
-	g_ePreData[id][sp_flPre] = flPreSpeed;
-	g_ePreData[id][sp_flPost] = flPostSpeed;
+	g_ePreData[id][SP_TYPE] = iType;
+	g_ePreData[id][SP_FOG] = iFog;
+	g_ePreData[id][SP_PRE] = flPreSpeed;
+	g_ePreData[id][SP_POST] = flPostSpeed;
 }
 
 stock show_jof(id, Float:flJof) {

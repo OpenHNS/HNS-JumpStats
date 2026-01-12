@@ -28,11 +28,16 @@ public plugin_init() {
 public rgPlayerSpawn(id) {
 	reset_stats(id);
 	g_eFailJump[id] = fj_notshow;
+	g_isUserSpec[id] = 0;
 }
 
 public rgPM_Move(id) {
 	if (is_user_bot(id) || is_user_hltv(id)) {
 		return HC_CONTINUE;
+	}
+
+	if (g_isUserSpec[id] && is_user_alive(id)) {
+		g_isUserSpec[id] = 0;
 	}
 	
 	g_iPrevButtons[id] = get_entvar(id, var_oldbuttons);
@@ -127,7 +132,7 @@ public rgPM_Move(id) {
 					g_eJumpType[id] = IS_JUMP;
 					g_iJumps[id] = 0;
 					g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
-					show_pre(id, pre_fall, g_flHorSpeed[id]);
+					show_pre(id, PRE_FALL, g_flHorSpeed[id]);
 					// ФАЛЛ
 				}
 			}
