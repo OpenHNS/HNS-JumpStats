@@ -47,6 +47,7 @@ public rgPM_Move(id) {
 
 	g_flHorSpeed[id] = vector_hor_length(g_flVelocity[id]);
 	g_flPrevHorSpeed[id] = vector_hor_length(g_flPrevVelocity[id]);
+	g_flOldHorSpeed[id] = vector_hor_length(g_flOldVelocity[id]);
 
 	g_bInDuck[id] = bool:(get_entvar(id, var_flags) & FL_DUCKING);
 
@@ -135,6 +136,9 @@ public rgPM_Move(id) {
 					show_pre(id, PRE_FALL, g_flHorSpeed[id]);
 					// ФАЛЛ
 				}
+				if (g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0 && g_iFog[id] == 1) {
+					show_pre(id, PRE_BOUNCE, g_flHorSpeed[id]);
+				}
 			}
 		}
 
@@ -143,6 +147,7 @@ public rgPM_Move(id) {
 	
 	g_iOldButtons[id] = g_iPrevButtons[id];
 
+	g_flOldVelocity[id] = g_flPrevVelocity[id];
 	g_flPrevVelocity[id] = g_flVelocity[id];
 	g_flPrevOrigin[id] = g_flOrigin[id];
 

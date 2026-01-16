@@ -43,8 +43,16 @@ public in_bhop_js(id, iFog) {
 
 		new FOG_TYPE:iFogType;
 
-		if (g_flPrevHorSpeed[id] < get_entvar(id, var_maxspeed) && (iFog == 1 || iFog >= 2 && g_flPrevHorSpeed[id] > get_entvar(id, var_maxspeed)))
+		new Float:flMaxHorSpeed;
+		flMaxHorSpeed = get_entvar(id, var_maxspeed);
+		flMaxHorSpeed = floatmul(1.2, flMaxHorSpeed);
+		flMaxHorSpeed = floatsqroot(floatmul(flMaxHorSpeed, flMaxHorSpeed) - 16.0);
+
+		if (iFog == 1) {
 			iFogType = FOG_PERFECT;
+		} else if (g_flOldHorSpeed[id] > flMaxHorSpeed) {
+			iFogType = FOG_PERFECT;
+		}
 
 		if (!iFogType) {
 			switch(iFog) {

@@ -140,9 +140,11 @@ new Float:g_flFirstJump[MAX_PLAYERS + 1][3];
 
 new Float:g_flVelocity[MAX_PLAYERS + 1][3];
 new Float:g_flPrevVelocity[MAX_PLAYERS + 1][3];
+new Float:g_flOldVelocity[MAX_PLAYERS + 1][3];
 
 new Float:g_flHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flPrevHorSpeed[MAX_PLAYERS + 1];
+new Float:g_flOldHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flPreHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flStartSpeed[MAX_PLAYERS + 1];
 
