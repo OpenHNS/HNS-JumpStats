@@ -15,5 +15,5 @@ forward fwResetBug(id); // Get reset
 
 public fwResetBug(id) {
 	reset_stats(id);
-	g_eFailJump[id] = fj_notshow;
+	//g_eFailJump[id] = fj_notshow;
 }

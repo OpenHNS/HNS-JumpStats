@@ -43,13 +43,13 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_enable_chat", "1"),		g_pCvar[c_iEnableChat]);
 	bind_pcvar_num(register_cvar("js_enable_sound", "1"),		g_pCvar[c_iEnableSound]);
 	
-	bind_pcvar_num(register_cvar("js_stats_red", "0"),		g_pCvar[c_iStatsR]);
-	bind_pcvar_num(register_cvar("js_stats_green", "200"),	g_pCvar[c_iStatsG]);
-	bind_pcvar_num(register_cvar("js_stats_blue", "60"),		g_pCvar[c_iStatsB]);
+	bind_pcvar_num(register_cvar("js_stats_red", "20"),		g_pCvar[c_iStatsR]);
+	bind_pcvar_num(register_cvar("js_stats_green", "255"),	g_pCvar[c_iStatsG]);
+	bind_pcvar_num(register_cvar("js_stats_blue", "150"),		g_pCvar[c_iStatsB]);
 
-	bind_pcvar_num(register_cvar("js_failstats_red", "200"),	g_pCvar[c_iFailR]);
-	bind_pcvar_num(register_cvar("js_failstats_green", "10"),	g_pCvar[c_iFailG]);
-	bind_pcvar_num(register_cvar("js_failstats_blue", "50"),	g_pCvar[c_iFailB]);
+	bind_pcvar_num(register_cvar("js_failstats_red", "255"),	g_pCvar[c_iFailR]);
+	bind_pcvar_num(register_cvar("js_failstats_green", "70"),	g_pCvar[c_iFailG]);
+	bind_pcvar_num(register_cvar("js_failstats_blue", "120"),	g_pCvar[c_iFailB]);
 
 	bind_pcvar_float(register_cvar("js_stats_x", "-1.0"),		g_pCvar[c_flStatsX]);
 	bind_pcvar_float(register_cvar("js_stats_y", "0.7"),		g_pCvar[c_flStatsY]);

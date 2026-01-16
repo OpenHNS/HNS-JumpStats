@@ -38,6 +38,13 @@ public ready_jumps(id, Float:flEndJump[3]) {
 
 	flOrigin[2] = g_bInDuck[id] ? (flOrigin[2] += 18.0) : flOrigin[2];
 
+	//client_print_color(0, 0, "ready first (%.2f) last (%.2f)", g_flFirstJump[id][2], flOrigin[2])
+
+	if (flOrigin[2] <  g_flFirstJump[id][2]) {
+		flOrigin[2] = g_flFirstJump[id][2];
+		g_eFailJump[id] = fj_fail;
+	}
+
 	if (g_eWhichJump[id] == jt_LadderJump) {
 		g_eJumpstats[id][js_flDistance] = get_distance_f(g_flFirstJump[id], flOrigin) + g_flLadderDist[id];
 	} else {

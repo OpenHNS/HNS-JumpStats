@@ -118,6 +118,9 @@ public show_prespeed(id) {
 		
 	for (new i = 1; i < MaxClients; i++) {
 		if (i == id || g_isUserSpec[i] == id) {
+			if (g_isUserSpec[i] && i == id) {
+				continue;
+			}
 			if (g_eOnOff[id][of_bPre] && g_isTmpPre[id]) {
 				new iType = g_ePreData[id][SP_TYPE];
 				switch (iType) {
