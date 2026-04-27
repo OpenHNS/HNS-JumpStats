@@ -10,7 +10,8 @@ enum _:PRE_TYPE {
 	PRE_SBJ,
 	PRE_BID,
 	PRE_DUCKBHOP,
-	PRE_DD
+	PRE_DD,
+	PRE_JUMPBUG
 };
 
 new g_szPreType[PRE_TYPE][] = {
@@ -25,7 +26,8 @@ new g_szPreType[PRE_TYPE][] = {
 	"sbj",
 	"bid",
 	"duckbhop",
-	"dd"
+	"dd",
+	"[jumpbug]"
 };
 
 enum FOG_TYPE {
@@ -69,7 +71,7 @@ new Float:g_flPerfTime[MAX_PLAYERS + 1];
 public show_prespeed(id) {
 	new Float:g_flGameTime = get_gametime();
 	
-	if(g_flHudTime[id] + 0.05 > g_flGameTime)
+	if(g_flHudTime[id] + 0.04 > g_flGameTime)
 		return;
 
 	if (!g_isTmpPre[id]) {
@@ -106,7 +108,7 @@ public show_prespeed(id) {
 
 	FormatRGBHud(id, val, iColors);
 
-	set_hudmessage(iColors[0], iColors[1], iColors[2], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.15, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
+	set_hudmessage(iColors[0], iColors[1], iColors[2], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
 	
 	new szJof[16];
 
@@ -149,6 +151,17 @@ public show_prespeed(id) {
 						g_szPreType[iType], g_ePreData[id][SP_FOG], g_szFogType[g_ePreData[id][SP_FOGTYPE]],
 						g_ePreData[id][SP_PRE],
 						g_ePreData[id][SP_POST]);
+					}
+					case PRE_JUMPBUG: {
+						ShowSyncHudMsg(i, g_hudPreSpeed, "\
+					 		%s^n\
+							%s^n^n\
+							%s^n\
+							%.2f",
+							g_flJof[i] ? szJof : "",
+							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
+							g_szPreType[iType],
+							g_ePreData[id][SP_PRE]);
 					}
 				}
 			} else { 

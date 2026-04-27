@@ -32,7 +32,7 @@ public rgPlayerSpawn(id) {
 }
 
 public rgPM_Move(id) {
-	if (is_user_bot(id) || is_user_hltv(id)) {
+	if (is_user_hltv(id)) {
 		return HC_CONTINUE;
 	}
 
@@ -56,6 +56,22 @@ public rgPM_Move(id) {
 	new bool:isGround = bool:(get_entvar(id, var_flags) & FL_ONGROUND);
 
 	isGround = isGround || isLadder;
+
+	// Jumpbug (FOG 0): if it happened during an active jump attempt,
+	// discard current stats state to avoid counting block/jof for that jump.
+	if (g_pCvar[c_iBug] && g_eWhichJump[id] != jt_Not && !isGround && !isLadder
+	&& (g_iPrevButtons[id] & IN_JUMP)
+	&& g_flPrevVelocity[id][2] < 0.0
+	&& g_flVelocity[id][2] > 0.0) {
+		new Float:flFuser2;
+		get_entvar(id, var_fuser2, flFuser2);
+
+		if (floatabs(flFuser2 - 1315.7894) < 0.0001) {
+			show_pre(id, PRE_JUMPBUG, g_flHorSpeed[id]);
+			reset_stats(id);
+			g_eFailJump[id] = fj_notshow;
+		}
+	}
 
 	g_isOldGround[id] = g_isOldGround[id] || g_bPrevLadder[id];
 
@@ -159,7 +175,7 @@ public rgPM_Move(id) {
 }
 
 public rgPM_AirMove(id) {
-	if (!is_user_alive(id) || is_user_bot(id)) {
+	if (!is_user_alive(id)) {
 		return HC_CONTINUE;
 	}
 	
