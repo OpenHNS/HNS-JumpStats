@@ -55,6 +55,14 @@ stock Float:vector_hor_length(Float:flVel[3]) {
 	return 0.0;
 }
 
+stock Float:vector_hor_distance(Float:origin1[3], Float:origin2[3]) {
+	new Float:delta[3];
+	delta[0] = origin1[0] - origin2[0];
+	delta[1] = origin1[1] - origin2[1];
+	delta[2] = 0.0;
+	return vector_hor_length(delta);
+}
+
 stock detect_hj(id, Float:flOrigin[3], Float:VerOrigin) {
 	new Float:flStarthj[3];
 	flStarthj[0] = flOrigin[0];

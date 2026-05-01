@@ -48,7 +48,7 @@ public ready_jumps(id, Float:flEndJump[3]) {
 	if (g_eWhichJump[id] == jt_LadderJump) {
 		g_eJumpstats[id][js_flDistance] = get_distance_f(g_flFirstJump[id], flOrigin) + g_flLadderDist[id];
 	} else {
-		g_eJumpstats[id][js_flDistance] = get_distance_f(g_flFirstJump[id], flOrigin) + 32.0;
+		g_eJumpstats[id][js_flDistance] = vector_hor_distance(g_flFirstJump[id], flOrigin) + 32.0;
 	}
 
 	if (g_eWhichJump[id] != jt_LadderJump && g_eJumpstats[id][js_flDistance] > 64.0) {
