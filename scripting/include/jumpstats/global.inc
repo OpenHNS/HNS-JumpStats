@@ -163,6 +163,8 @@ new Float:g_flStrOldAngle[MAX_PLAYERS + 1];
 
 new bool:g_isFalling[MAX_PLAYERS + 1];
 new bool:g_isTouched[MAX_PLAYERS + 1];
+new g_iJumpBug[MAX_PLAYERS + 1];
+new bool:g_bJumpbugDone[MAX_PLAYERS + 1];
 
 new g_iDetectHJ[MAX_PLAYERS + 1];
 

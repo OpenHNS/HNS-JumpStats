@@ -265,9 +265,9 @@ public show_stats_hud(id) {
 
 public show_stats_min(id) {
 	if (!g_eFailJump[id]) {
-		set_hudmessage(g_pCvar[c_iStatsR], g_pCvar[c_iStatsG], g_pCvar[c_iStatsB], g_pCvar[c_flStatsX], g_pCvar[c_flStatsY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+		set_hudmessage(g_pCvar[c_iStatsR], g_pCvar[c_iStatsG], g_pCvar[c_iStatsB], g_pCvar[c_flStrafeX], g_pCvar[c_flStrafeY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 	} else {
-		set_hudmessage(g_pCvar[c_iFailR], g_pCvar[c_iFailG], g_pCvar[c_iFailB], g_pCvar[c_flStatsX], g_pCvar[c_flStatsY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+		set_hudmessage(g_pCvar[c_iFailR], g_pCvar[c_iFailG], g_pCvar[c_iFailB], g_pCvar[c_flStrafeX], g_pCvar[c_flStrafeY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 	}
 
 	new szStatsMess[1024];
@@ -291,37 +291,37 @@ public show_stats_min(id) {
 			iStatsLen += format(szStatsMess[iStatsLen], sizeof szStatsMess - iStatsLen, "\
 			^t%s%s: %.3f^n\
 			^tpre: %.1f^n\
-			^tstrafes: %d (%.1f, %d%%%)^n^n", 
+			^tstrafes: %d^n^n", 
 			szPreMess, g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpstats[id][js_flDistance],
 			g_eJumpData[id][g_iJumps[id]][JUMP_PRE], 
-			g_iStrafes[id], g_flStrGain[id], g_iStrAllEff[id]);
+			g_iStrafes[id]);
 		}
 		case jt_BhopJump, jt_StandUpBhopJump, jt_DuckBhopJump, jt_BhopInDuck, jt_WeirdJump: {
 			iStatsLen += format(szStatsMess[iStatsLen], sizeof szStatsMess - iStatsLen, "\
 			^t%s%s%s: %.3f^n\
 			^tjump (%d): %.1f^n\
-			^tstrafes: %d (%.1f, %d%%%)^n^n", 
+			^tstrafes: %d^n^n", 
 			szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpstats[id][js_flDistance], 
 			g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], 
-			g_iStrafes[id], g_flStrGain[id], g_iStrAllEff[id]);
+			g_iStrafes[id]);
 		}
 		case jt_CountJump, jt_StandUPCountJump: {
 			iStatsLen += format(szStatsMess[iStatsLen], sizeof szStatsMess - iStatsLen, "\
 			^t%s%s%s: %.3f^n\
 			^tjump (%d): %.1f^n\
-			^tstrafes: %d (%.1f, %d%%%)^n^n", 
+			^tstrafes: %d^n^n", 
 			szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpstats[id][js_flDistance], 
 			g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE],
-			g_iStrafes[id], g_flStrGain[id], g_iStrAllEff[id]);
+			g_iStrafes[id]);
 		}
 		case jt_Multi_CountJump, jt_Multi_StandUPCountJump: {
 			iStatsLen += format(szStatsMess[iStatsLen], sizeof szStatsMess - iStatsLen, "\
 			^t%s%s%s %d% d: %.3f^n\
 			^tjump (%d): %.1f^n\
-			^tstrafes: %d (%.1f, %d%%%)^n^n",
+			^tstrafes: %d^n^n",
 			szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_iDucks[id], g_eJumpstats[id][js_flDistance],
 			g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], 
-			g_iStrafes[id], g_flStrGain[id], g_iStrAllEff[id]);
+			g_iStrafes[id]);
 		}
 	}
 
