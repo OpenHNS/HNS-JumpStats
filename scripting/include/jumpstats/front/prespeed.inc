@@ -4,8 +4,7 @@ enum _:PRE_TYPE {
 	PRE_DUCK,
 	PRE_LADDER,
 	PRE_SLIDE,
-	PRE_BOUNCE,
-	PRE_SLIP,
+	PRE_BOOST,
 	PRE_FALL,
 	PRE_EDGEBUG,
 	PRE_BHOP,
@@ -22,8 +21,7 @@ new g_szPreType[PRE_TYPE][] = {
 	"duck",
 	"ladder",
 	"slide",
-	"bounce",
-	"slip",
+	"boost",
 	"fall",
 	"edgebug",
 	"bhop",
@@ -143,7 +141,7 @@ public show_prespeed(id) {
 							g_szPreType[iType],
 							g_ePreData[id][SP_PRE]);
 					}
-					case PRE_BOUNCE, PRE_SLIP: {
+					case PRE_BOOST: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\
 							%s^n\
 							%s^n^n\

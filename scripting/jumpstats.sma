@@ -161,25 +161,15 @@ public rgPM_Move(id) {
 				}
 			}
 			if (!isDuck && !isJump) {
-				new Float:flPlayerGravity;
-				get_entvar(id, var_gravity, flPlayerGravity);
-				if (flPlayerGravity <= 0.0) {
-					flPlayerGravity = 1.0;
-				}
-
-				new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * Float:get_pmove(pm_frametime);
-				if (g_flVelocity[id][2] <= -flDelta && g_iFog[id] > 10) {
+				if (g_flVelocity[id][2] <= -4.0 && g_iFog[id] > 10) {
 					g_isFalling[id] = true;
 					g_eJumpType[id] = IS_JUMP;
 					g_iJumps[id] = 0;
 					g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
 					show_pre(id, PRE_FALL, g_flHorSpeed[id]);
 				}
-				if (g_flVelocity[id][2] <= -flDelta && g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0 && g_iFog[id] == 1) {
-					show_pre(id, PRE_BOUNCE, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
-				}
-				if (g_flVelocity[id][2] <= -flDelta && g_iFog[id] == 1 && g_eWhichJump[id] != jt_Not && g_flPrevHorSpeed[id] < g_flPreHorSpeed[id]) {
-					show_pre(id, PRE_SLIP, g_flPreHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
+				if (g_flVelocity[id][2] <= -4.0 && g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0 && g_iFog[id] == 1) {
+					show_pre(id, PRE_BOOST, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
 				}
 			}
 		}
