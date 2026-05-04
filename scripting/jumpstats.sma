@@ -57,6 +57,8 @@ public rgPM_Move(id) {
 
 	isGround = isGround || isLadder;
 
+	g_isOldGround[id] = g_isOldGround[id] || g_bPrevLadder[id];
+
 	new iButtons = get_entvar(id, var_button);
 
 	detect_edgebug_prespeed(id, isGround);
@@ -66,31 +68,6 @@ public rgPM_Move(id) {
 		show_pre(id, PRE_SLIDE, g_flPrevHorSpeed[id]);
 	}
 
-	if (isGround) {
-		g_iJumpBug[id] = 0;
-		g_bJumpbugDone[id] = false;
-	} else if (g_pCvar[c_iBug] && !g_bJumpbugDone[id]) {
-		new bool:isDuckRelease = !(iButtons & IN_DUCK) && (g_iPrevButtons[id] & IN_DUCK);
-		new bool:isJumpPress = (iButtons & IN_JUMP) && !(g_iPrevButtons[id] & IN_JUMP);
-
-		if (!g_iJumpBug[id]) {
-			if (isDuckRelease && isJumpPress && g_flVelocity[id][2] < 0.0) {
-				g_iJumpBug[id] = 2;
-			}
-		} else {
-			g_iJumpBug[id]--;
-			if (!g_iJumpBug[id] && g_flVelocity[id][2] > 0.0) {
-				g_bJumpbugDone[id] = true;
-				show_pre(id, PRE_JUMPBUG, g_flHorSpeed[id]);
-				if (g_eWhichJump[id] != jt_Not) {
-					reset_stats(id);
-					g_eFailJump[id] = fj_notshow;
-				}
-			}
-		}
-	}
-
-	g_isOldGround[id] = g_isOldGround[id] || g_bPrevLadder[id];
 
 	if (g_pCvar[c_iEnablePreSpeed] && (g_eOnOff[id][of_bSpeed] || g_eOnOff[id][of_bJof] || g_eOnOff[id][of_bPre]))
 		show_prespeed(id);
@@ -123,6 +100,9 @@ public rgPM_Move(id) {
 			}
 		}
 
+		g_iJumpBug[id] = 0;
+		g_bJumpbugDone[id] = false;
+
 		if (!g_eJumpType[id]) {
 			if (g_ePreStats[id][ptBackWards])
 				g_ePreStats[id][ptBackWards] = !bool:(g_iPrevButtons[id] & IN_FORWARD);
@@ -141,6 +121,27 @@ public rgPM_Move(id) {
 			if ((g_bInDuck[id] ? (g_flOrigin[id][2] + 18.0) : g_flOrigin[id][2]) - g_flFirstJump[id][2] < 0) {
 				g_eFailJump[id] = g_eWhichJump[id] == jt_LadderJump ? fj_notshow : fj_fail;
 				ready_jumps(id, g_flPrevOrigin[id]);
+			}
+		}
+
+		if (!g_bJumpbugDone[id]) {
+			new bool:isDuckRelease = !(iButtons & IN_DUCK) && (g_iPrevButtons[id] & IN_DUCK);
+			new bool:isJumpPress = (iButtons & IN_JUMP) && !(g_iPrevButtons[id] & IN_JUMP);
+
+			if (!g_iJumpBug[id]) {
+				if (isDuckRelease && isJumpPress && g_flVelocity[id][2] < 0.0) {
+					g_iJumpBug[id] = 2;
+				}
+			} else {
+				g_iJumpBug[id]--;
+				if (!g_iJumpBug[id] && g_flVelocity[id][2] > 0.0) {
+					g_bJumpbugDone[id] = true;
+					show_pre(id, PRE_JUMPBUG, g_flHorSpeed[id]);
+					if (g_eWhichJump[id] != jt_Not) {
+						reset_stats(id);
+						g_eFailJump[id] = fj_notshow;
+					}
+				}
 			}
 		}
 
@@ -232,12 +233,6 @@ stock bool:isGoingToTouchGround(id) {
 }
 
 stock detect_edgebug_prespeed(id, bool:isGround) {
-	if (!g_pCvar[c_iBug]) {
-		g_bCheckEdgeBug[id] = false;
-		g_iEdgeBugCount[id] = 0;
-		return;
-	}
-
 	if (isGround) {
 		g_bCheckEdgeBug[id] = true;
 		g_bEdgebugDone[id] = false;

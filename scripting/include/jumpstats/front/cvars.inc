@@ -25,7 +25,6 @@ enum JS_CVAR {
 	c_iStrafe,
 	c_iPreSpeed,
 	c_iConsoleBug,
-	c_iBug,
 	c_iNoslow,
 	c_iMinmode,
 	Float:c_iGravity
@@ -70,7 +69,6 @@ init_cvars() {
 
 	bind_pcvar_num(register_cvar("js_console_fix", "0"),	g_pCvar[c_iConsoleBug]);
 
-	bind_pcvar_num(register_cvar("js_bug_check", "1"),		g_pCvar[c_iBug]);
 	bind_pcvar_num(register_cvar("js_noslowdown", "0"),		g_pCvar[c_iNoslow]);
 
 	bind_pcvar_num(register_cvar("js_minmode", "0"),		g_pCvar[c_iMinmode]);
