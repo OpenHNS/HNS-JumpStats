@@ -35,6 +35,7 @@ stock reset_stats(id) {
 	g_bPrevSlide[id] = false;
 	g_iJumpBug[id] = 0;
 	g_bJumpbugDone[id] = false;
+	g_flJumpbugGroundZ[id] = 0.0;
 	g_bCheckEdgeBug[id] = false;
 	g_bEdgebugDone[id] = false;
 	g_iEdgeBugCount[id] = 0;

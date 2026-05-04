@@ -169,13 +169,8 @@ public show_prespeed(id) {
 					}
 					case PRE_JUMPBUG: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\
-					 		%s^n\
-							%s^n^n\
-							%s^n\
-							%.2f",
-							g_flJof[i] ? szJof : "",
-							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
-							g_szPreType[iType],
+							JumpBug^n\
+							%.2f Units",
 							g_ePreData[id][SP_PRE]);
 					}
 				}

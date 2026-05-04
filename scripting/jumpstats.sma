@@ -100,6 +100,7 @@ public rgPM_Move(id) {
 			}
 		}
 
+		g_flJumpbugGroundZ[id] = g_bInDuck[id] ? (g_flOrigin[id][2] + 18.0) : g_flOrigin[id][2];
 		g_iJumpBug[id] = 0;
 		g_bJumpbugDone[id] = false;
 
@@ -135,8 +136,14 @@ public rgPM_Move(id) {
 			} else {
 				g_iJumpBug[id]--;
 				if (!g_iJumpBug[id] && g_flVelocity[id][2] > 0.0) {
+					new Float:flCurrentZ = g_bInDuck[id] ? (g_flOrigin[id][2] + 18.0) : g_flOrigin[id][2];
+					new Float:flJumpbugDistance = g_flJumpbugGroundZ[id] - flCurrentZ;
+					if (flJumpbugDistance <= 0.0) {
+						flJumpbugDistance = g_flLastGroundZ[id] - g_flOrigin[id][2];
+					}
+
 					g_bJumpbugDone[id] = true;
-					show_pre(id, PRE_JUMPBUG, g_flHorSpeed[id]);
+					show_pre(id, PRE_JUMPBUG, flJumpbugDistance);
 					if (g_eWhichJump[id] != jt_Not) {
 						reset_stats(id);
 						g_eFailJump[id] = fj_notshow;

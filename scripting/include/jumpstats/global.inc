@@ -167,6 +167,7 @@ new bool:g_bSlide[MAX_PLAYERS + 1];
 new bool:g_bPrevSlide[MAX_PLAYERS + 1];
 new g_iJumpBug[MAX_PLAYERS + 1];
 new bool:g_bJumpbugDone[MAX_PLAYERS + 1];
+new Float:g_flJumpbugGroundZ[MAX_PLAYERS + 1];
 new bool:g_bCheckEdgeBug[MAX_PLAYERS + 1];
 new bool:g_bEdgebugDone[MAX_PLAYERS + 1];
 new g_iEdgeBugCount[MAX_PLAYERS + 1];
