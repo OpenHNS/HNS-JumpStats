@@ -31,6 +31,14 @@ stock reset_stats(id) {
 	g_isLadderBhop[id] = false;
 	g_isFalling[id] = false;
 	g_isTouched[id] = false;
+	g_bSlide[id] = false;
+	g_bPrevSlide[id] = false;
+	g_iJumpBug[id] = 0;
+	g_bJumpbugDone[id] = false;
+	g_bCheckEdgeBug[id] = false;
+	g_bEdgebugDone[id] = false;
+	g_iEdgeBugCount[id] = 0;
+	g_flLastGroundZ[id] = 0.0;
 
 	g_iDetectHJ[id] = 0;
 	g_flStartSpeed[id] = 0.0;

@@ -5,7 +5,9 @@ enum _:PRE_TYPE {
 	PRE_LADDER,
 	PRE_SLIDE,
 	PRE_BOUNCE,
+	PRE_SLIP,
 	PRE_FALL,
+	PRE_EDGEBUG,
 	PRE_BHOP,
 	PRE_SBJ,
 	PRE_BID,
@@ -21,7 +23,9 @@ new g_szPreType[PRE_TYPE][] = {
 	"ladder",
 	"slide",
 	"bounce",
+	"slip",
 	"fall",
+	"edgebug",
 	"bhop",
 	"sbj",
 	"bid",
@@ -128,7 +132,7 @@ public show_prespeed(id) {
 			if (g_eOnOff[id][of_bPre] && g_isTmpPre[id]) {
 				new iType = g_ePreData[id][SP_TYPE];
 				switch (iType) {
-					case PRE_JUMP..PRE_FALL: {
+					case PRE_JUMP..PRE_SLIDE, PRE_FALL..PRE_EDGEBUG: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\
 					 		%s^n\
 							%s^n^n\
@@ -138,6 +142,19 @@ public show_prespeed(id) {
 							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
 							g_szPreType[iType],
 							g_ePreData[id][SP_PRE]);
+					}
+					case PRE_BOUNCE, PRE_SLIP: {
+						ShowSyncHudMsg(i, g_hudPreSpeed, "\
+							%s^n\
+							%s^n^n\
+							%s %d FOG:^n\
+							%.2f^n\
+							%.2f",
+							g_flJof[i] ? szJof : "",
+							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
+							g_szPreType[iType], g_ePreData[id][SP_FOG],
+							g_ePreData[id][SP_PRE],
+							g_ePreData[id][SP_POST]);
 					}
 					case PRE_BHOP..PRE_DD: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\

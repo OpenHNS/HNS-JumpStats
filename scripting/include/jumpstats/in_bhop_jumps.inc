@@ -56,8 +56,6 @@ public in_bhop_js(id, iFog) {
 		} else if (iFog == 1) {
 			iFogType = FOG_PERFECT;
 		} else if (g_flOldHorSpeed[id] > flMaxHorSpeed) {
-			// Minloss case from decompile logic: old speed was above max, but post speed fits max.
-			// Keep it marked as perfect in prespeed ([P]) as requested.
 			iFogType = FOG_PERFECT;
 		}
 
