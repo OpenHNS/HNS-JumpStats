@@ -61,7 +61,6 @@ public rgPM_Move(id) {
 
 	new iButtons = get_entvar(id, var_button);
 
-	detect_edgebug_prespeed(id, isGround);
 	g_bSlide[id] = !isLadder && isPlayerSliding(id);
 
 	if (!g_bSlide[id] && g_bPrevSlide[id]) {
@@ -103,6 +102,11 @@ public rgPM_Move(id) {
 		g_flJumpbugGroundZ[id] = g_bInDuck[id] ? (g_flOrigin[id][2] + 18.0) : g_flOrigin[id][2];
 		g_iJumpBug[id] = 0;
 		g_bJumpbugDone[id] = false;
+
+		g_bCheckEdgeBug[id] = true;
+		g_bEdgebugDone[id] = false;
+		g_iEdgeBugCount[id] = 0;
+		g_flLastGroundZ[id] = g_flOrigin[id][2];
 
 		if (!g_eJumpType[id]) {
 			if (g_ePreStats[id][ptBackWards])
@@ -182,6 +186,30 @@ public rgPM_Move(id) {
 			}
 		}
 
+		if (g_bCheckEdgeBug[id] && !g_bEdgebugDone[id] && g_flVelocity[id][2] < 0.0) {
+			new Float:flPlayerGravity;
+			get_entvar(id, var_gravity, flPlayerGravity);
+			
+			if (flPlayerGravity <= 0.0) {
+				flPlayerGravity = 1.0;
+			}
+
+			new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * Float:get_pmove(pm_frametime);
+			new Float:flTarget = -flDelta * 0.5;
+			new Float:flCurrentVz = g_flVelocity[id][2];
+			new Float:flPrevVz = g_flPrevVelocity[id][2];
+			if (floatabs(flCurrentVz - flTarget) <= 1.0 && flPrevVz < flTarget && isGoingToTouchGround(id)) {
+				new Float:flDistance = g_flLastGroundZ[id] - g_flOrigin[id][2];
+				if (flDistance > 0.0) {
+					g_bEdgebugDone[id] = true;
+					g_bCheckEdgeBug[id] = false;
+					g_iEdgeBugCount[id]++;
+
+					show_pre(id, PRE_EDGEBUG, flDistance);
+				}
+			}
+		}
+
 		g_iFog[id] = 0;
 	}
 	
@@ -237,50 +265,6 @@ stock bool:isGoingToTouchGround(id) {
 	get_tr2(0, TR_vecPlaneNormal, flPlaneNormal);
 
 	return flPlaneNormal[2] > 0.7;
-}
-
-stock detect_edgebug_prespeed(id, bool:isGround) {
-	if (isGround) {
-		g_bCheckEdgeBug[id] = true;
-		g_bEdgebugDone[id] = false;
-		g_iEdgeBugCount[id] = 0;
-		g_flLastGroundZ[id] = g_flOrigin[id][2];
-		return;
-	}
-
-	if (!g_bCheckEdgeBug[id] || g_bEdgebugDone[id] || g_flVelocity[id][2] >= 0.0) {
-		return;
-	}
-
-	new Float:flPlayerGravity;
-	get_entvar(id, var_gravity, flPlayerGravity);
-	if (flPlayerGravity <= 0.0) {
-		flPlayerGravity = 1.0;
-	}
-
-	new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * Float:get_pmove(pm_frametime);
-	new Float:flTarget = -flDelta * 0.5;
-	new Float:flCurrentVz = g_flVelocity[id][2];
-	new Float:flPrevVz = g_flPrevVelocity[id][2];
-
-	if (floatabs(flCurrentVz - flTarget) > 1.0 || flPrevVz >= flTarget) {
-		return;
-	}
-
-	if (!isGoingToTouchGround(id)) {
-		return;
-	}
-
-	new Float:flDistance = g_flLastGroundZ[id] - g_flOrigin[id][2];
-	if (flDistance <= 0.0) {
-		return;
-	}
-
-	g_bEdgebugDone[id] = true;
-	g_bCheckEdgeBug[id] = false;
-	g_iEdgeBugCount[id]++;
-
-	show_pre(id, PRE_EDGEBUG, flDistance);
 }
 
 public rgPM_AirMove(id) {

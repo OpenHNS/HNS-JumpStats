@@ -23,13 +23,13 @@ new g_szPreType[PRE_TYPE][] = {
 	"slide",
 	"boost",
 	"fall",
-	"edgebug",
+	"EdgeBug",
 	"bhop",
 	"sbj",
 	"bid",
 	"duckbhop",
 	"dd",
-	"[jumpbug]"
+	"JumpBug"
 };
 
 enum FOG_TYPE {
@@ -130,7 +130,7 @@ public show_prespeed(id) {
 			if (g_eOnOff[id][of_bPre] && g_isTmpPre[id]) {
 				new iType = g_ePreData[id][SP_TYPE];
 				switch (iType) {
-					case PRE_JUMP..PRE_SLIDE, PRE_FALL..PRE_EDGEBUG: {
+					case PRE_JUMP..PRE_SLIDE, PRE_FALL: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\
 					 		%s^n\
 							%s^n^n\
@@ -138,6 +138,13 @@ public show_prespeed(id) {
 							%.2f",
 							g_flJof[i] ? szJof : "",
 							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
+							g_szPreType[iType],
+							g_ePreData[id][SP_PRE]);
+					}
+					case PRE_EDGEBUG, PRE_JUMPBUG: {
+						ShowSyncHudMsg(i, g_hudPreSpeed, "\
+							%s^n\
+							%.2f Units",
 							g_szPreType[iType],
 							g_ePreData[id][SP_PRE]);
 					}
@@ -166,12 +173,6 @@ public show_prespeed(id) {
 						g_szPreType[iType], g_ePreData[id][SP_FOG], g_szFogType[g_ePreData[id][SP_FOGTYPE]],
 						g_ePreData[id][SP_PRE],
 						g_ePreData[id][SP_POST]);
-					}
-					case PRE_JUMPBUG: {
-						ShowSyncHudMsg(i, g_hudPreSpeed, "\
-							JumpBug^n\
-							%.2f Units",
-							g_ePreData[id][SP_PRE]);
 					}
 				}
 			} else { 
