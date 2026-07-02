@@ -5,6 +5,7 @@
 
 #include <jumpstats/global>
 #include <jumpstats/front/cvars>
+#include <jumpstats/front/settings>
 #include <jumpstats/front/cmds>
 #include <jumpstats/forwards>
 #include <jumpstats/front/menus>

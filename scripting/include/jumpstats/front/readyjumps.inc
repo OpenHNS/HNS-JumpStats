@@ -82,23 +82,23 @@ public ready_jumps(id, Float:flEndJump[3]) {
 	if (g_eFailJump[id] != fj_notshow) {
 
 		if (!g_pCvar[c_iMinmode]) {
-			if (g_pCvar[c_iEnableStrafe])
+			if (g_pCvar[C_ENABLE_STRAFE])
 				show_strafe_hud(id);
 
-			if (g_pCvar[c_iEnableStats])
+			if (g_pCvar[C_ENABLE_STATS])
 				show_stats_hud(id);
 		} else {
 			show_stats_min(id);
 		}
 
-		if (g_pCvar[c_iEnableConsole])
+		if (g_pCvar[C_ENABLE_CONSOLE])
 			show_console(id);
 
 		if (g_eFailJump[id] == fj_good) {
-			if (g_pCvar[c_iEnableChat])
+			if (g_pCvar[C_ENABLE_CHATINFO])
 				show_chat(id);
 
-			// if (g_pCvar[c_iEnableSound])
+			// if (g_pCvar[C_ENABLE_SOUND])
 			// 	sound_jumps(id);
 		}
 	}
@@ -203,13 +203,17 @@ public show_strafe_hud(id) {
 	}
 
 	if (!g_eFailJump[id]) {
-		set_hudmessage(g_pCvar[c_iStatsR], g_pCvar[c_iStatsG], g_pCvar[c_iStatsB], g_pCvar[c_flStrafeX], g_pCvar[c_flStrafeY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
+		set_hudmessage(
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
 	} else {
-		set_hudmessage(g_pCvar[c_iFailR], g_pCvar[c_iFailG], g_pCvar[c_iFailB], g_pCvar[c_flStrafeX], g_pCvar[c_flStrafeY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
+		set_hudmessage(
+			g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B],
+			g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
 	}
 
 	for (new i = 1; i < MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eOnOff[id][of_bStrafe] == true) {
+		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[id][S_STRAFE]) {
 			ShowSyncHudMsg(i, g_hudStrafe, szStrMess);
 		}
 	}
@@ -230,12 +234,16 @@ public show_stats_hud(id) {
 	}
 
 	for (new i = 1; i < MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eOnOff[i][of_bStats] == true) {
+		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[id][S_STATS]) {
 
 			if (!g_eFailJump[id]) {
-				set_hudmessage(g_pCvar[c_iStatsR], g_pCvar[c_iStatsG], g_pCvar[c_iStatsB], g_pCvar[c_flStatsX], g_pCvar[c_flStatsY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+				set_hudmessage(
+					g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 			} else {
-				set_hudmessage(g_pCvar[c_iFailR], g_pCvar[c_iFailG], g_pCvar[c_iFailB], g_pCvar[c_flStatsX], g_pCvar[c_flStatsY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+				set_hudmessage(
+					g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B],
+					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 			}
 
 			switch (g_eWhichJump[id]) {
@@ -265,9 +273,13 @@ public show_stats_hud(id) {
 
 public show_stats_min(id) {
 	if (!g_eFailJump[id]) {
-		set_hudmessage(g_pCvar[c_iStatsR], g_pCvar[c_iStatsG], g_pCvar[c_iStatsB], g_pCvar[c_flStrafeX], g_pCvar[c_flStrafeY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+		set_hudmessage(
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 	} else {
-		set_hudmessage(g_pCvar[c_iFailR], g_pCvar[c_iFailG], g_pCvar[c_iFailB], g_pCvar[c_flStrafeX], g_pCvar[c_flStrafeY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+		set_hudmessage(
+			g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B],
+			g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 	}
 
 	new szStatsMess[1024];
@@ -359,7 +371,7 @@ public show_stats_min(id) {
 	}
 
 	for (new i = 1; i < MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eOnOff[id][of_bStrafe] == true) {
+		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[id][S_STRAFE]) {
 			ShowSyncHudMsg(i, g_hudStrafe, szStatsMess);
 		}
 	}
@@ -512,7 +524,7 @@ public show_chat(id) {
 
 	for (new i = 0; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
-		if (!g_eOnOff[iPlayer][of_bChatInfo])
+		if (!g_eSettings[id][S_CHATINFO])
 			continue;
 
 		switch(iColor) {
@@ -535,7 +547,7 @@ public show_chat(id) {
 
 // 	for (new i = 0; i < iNum; i++) {
 // 		new iPlayer = iPlayers[i];
-// 		if (!g_eOnOff[iPlayer][of_bSound])
+// 		if (!g_eSettings[id][S_SOUND])
 // 			continue;
 
 // 		if (g_eJumpstats[id][js_flDistance] >= aDistance[god]) {

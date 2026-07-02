@@ -32,7 +32,9 @@ public in_bhop_js(id, iFog) {
 
 		if (g_iJumps[id] >= NJUMPS) {
 			g_iJumps[id] = 2;
-			set_hudmessage(g_pCvar[c_iStatsR], g_pCvar[c_iStatsG], g_pCvar[c_iStatsB], g_pCvar[c_flStatsX], g_pCvar[c_flStatsY], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+			set_hudmessage(
+				g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+				g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 			ShowSyncHudMsg(id, g_hudStats, "Reset jumps!");
 		}
 

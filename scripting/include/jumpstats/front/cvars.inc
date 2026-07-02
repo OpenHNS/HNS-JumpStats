@@ -1,26 +1,26 @@
 enum JS_CVAR {
 	c_szPrefix[24],
-	c_iEnableStats,
-	c_iEnableStrafe,
-	c_iEnablePreSpeed,
-	c_iEnableConsole,
-	c_iEnableChat,
-	c_iEnableSound,
-	c_iStatsR,
-	c_iStatsG,
-	c_iStatsB,
-	c_iFailR,
-	c_iFailG,
-	c_iFailB,
-	Float:c_flStatsX,
-	Float:c_flStatsY,
-	Float:c_flStrafeX,
-	Float:c_flStrafeY,
-	c_iPreSpeedR,
-	c_iPreSpeedG,
-	c_iPreSpeedB,
-	Float:c_iPreSpeedX,
-	Float:c_iPreSpeedY,
+	C_ENABLE_STATS,
+	C_ENABLE_STRAFE,
+	C_ENABLE_PRESPEED,
+	C_ENABLE_CONSOLE,
+	C_ENABLE_CHATINFO,
+	C_ENABLE_SOUND,
+	C_STATS_R,
+	C_STATS_G,
+	C_STATS_B,
+	C_FAILSTATS_R,
+	C_FAILSTATS_G,
+	C_FAILSTATS_B,
+	C_PRESPEED_R,
+	C_PRESPEED_G,
+	C_PRESPEED_B,
+	Float:C_STATS_X,
+	Float:C_STATS_Y,
+	Float:C_STRAFE_X,
+	Float:C_STRAFE_Y,
+	Float:C_PRESPEED_X,
+	Float:C_PRESPEED_Y,
 	c_iStats,
 	c_iStrafe,
 	c_iPreSpeed,
@@ -35,33 +35,33 @@ new g_pCvar[JS_CVAR];
 init_cvars() {
 	bind_pcvar_string(register_cvar("js_prefix", "Jump"),	g_pCvar[c_szPrefix], charsmax(g_pCvar[c_szPrefix]));
 
-	bind_pcvar_num(register_cvar("js_enable_stats", "1"),		g_pCvar[c_iEnableStats]);
-	bind_pcvar_num(register_cvar("js_enable_strafe", "1"),		g_pCvar[c_iEnableStrafe]);
-	bind_pcvar_num(register_cvar("js_enable_prespeed", "1"),	g_pCvar[c_iEnablePreSpeed]);
-	bind_pcvar_num(register_cvar("js_enable_console", "1"),		g_pCvar[c_iEnableConsole]);
-	bind_pcvar_num(register_cvar("js_enable_chat", "1"),		g_pCvar[c_iEnableChat]);
-	bind_pcvar_num(register_cvar("js_enable_sound", "1"),		g_pCvar[c_iEnableSound]);
+	bind_pcvar_num(register_cvar("js_enable_stats", "1"),		g_pCvar[C_ENABLE_STATS]);
+	bind_pcvar_num(register_cvar("js_enable_strafe", "1"),		g_pCvar[C_ENABLE_STRAFE]);
+	bind_pcvar_num(register_cvar("js_enable_prespeed", "1"),	g_pCvar[C_ENABLE_PRESPEED]);
+	bind_pcvar_num(register_cvar("js_enable_console", "1"),		g_pCvar[C_ENABLE_CONSOLE]);
+	bind_pcvar_num(register_cvar("js_enable_chat", "1"),		g_pCvar[C_ENABLE_CHATINFO]);
+	bind_pcvar_num(register_cvar("js_enable_sound", "1"),		g_pCvar[C_ENABLE_SOUND]);
 	
-	bind_pcvar_num(register_cvar("js_stats_red", "20"),		g_pCvar[c_iStatsR]);
-	bind_pcvar_num(register_cvar("js_stats_green", "255"),	g_pCvar[c_iStatsG]);
-	bind_pcvar_num(register_cvar("js_stats_blue", "150"),		g_pCvar[c_iStatsB]);
+	bind_pcvar_num(register_cvar("js_stats_red", "20"),		g_pCvar[C_STATS_R]);
+	bind_pcvar_num(register_cvar("js_stats_green", "255"),	g_pCvar[C_STATS_G]);
+	bind_pcvar_num(register_cvar("js_stats_blue", "150"),		g_pCvar[C_STATS_B]);
 
-	bind_pcvar_num(register_cvar("js_failstats_red", "255"),	g_pCvar[c_iFailR]);
-	bind_pcvar_num(register_cvar("js_failstats_green", "70"),	g_pCvar[c_iFailG]);
-	bind_pcvar_num(register_cvar("js_failstats_blue", "120"),	g_pCvar[c_iFailB]);
+	bind_pcvar_num(register_cvar("js_failstats_red", "255"),	g_pCvar[C_FAILSTATS_R]);
+	bind_pcvar_num(register_cvar("js_failstats_green", "70"),	g_pCvar[C_FAILSTATS_G]);
+	bind_pcvar_num(register_cvar("js_failstats_blue", "120"),	g_pCvar[C_FAILSTATS_B]);
 
-	bind_pcvar_float(register_cvar("js_stats_x", "-1.0"),		g_pCvar[c_flStatsX]);
-	bind_pcvar_float(register_cvar("js_stats_y", "0.7"),		g_pCvar[c_flStatsY]);
+	bind_pcvar_num(register_cvar("js_prespeed_red", "145"),	g_pCvar[C_PRESPEED_R]);
+	bind_pcvar_num(register_cvar("js_prespeed_green", "145"),g_pCvar[C_PRESPEED_G]);
+	bind_pcvar_num(register_cvar("js_prespeed_blue", "145"),	g_pCvar[C_PRESPEED_B]);
 
-	bind_pcvar_float(register_cvar("js_strafe_x", "0.7"),	g_pCvar[c_flStrafeX]);
-	bind_pcvar_float(register_cvar("js_strafe_y", "0.35"),	g_pCvar[c_flStrafeY]);
+	bind_pcvar_float(register_cvar("js_stats_x", "-1.0"),		g_pCvar[C_STATS_X]);
+	bind_pcvar_float(register_cvar("js_stats_y", "0.7"),		g_pCvar[C_STATS_Y]);
 
-	bind_pcvar_num(register_cvar("js_prespeed_red", "145"),	g_pCvar[c_iPreSpeedR]);
-	bind_pcvar_num(register_cvar("js_prespeed_green", "145"),g_pCvar[c_iPreSpeedG]);
-	bind_pcvar_num(register_cvar("js_prespeed_blue", "145"),	g_pCvar[c_iPreSpeedB]);
+	bind_pcvar_float(register_cvar("js_strafe_x", "0.7"),	g_pCvar[C_STRAFE_X]);
+	bind_pcvar_float(register_cvar("js_strafe_y", "0.35"),	g_pCvar[C_STRAFE_Y]);
 
-	bind_pcvar_float(register_cvar("js_prespeed_x", "-1.0"),	g_pCvar[c_iPreSpeedX]);
-	bind_pcvar_float(register_cvar("js_prespeed_y", "0.55"),	g_pCvar[c_iPreSpeedY]);
+	bind_pcvar_float(register_cvar("js_prespeed_x", "-1.0"),	g_pCvar[C_PRESPEED_X]);
+	bind_pcvar_float(register_cvar("js_prespeed_y", "0.55"),	g_pCvar[C_PRESPEED_Y]);
 
 	bind_pcvar_num(register_cvar("js_hud_stats", "2"),		g_pCvar[c_iStats]);
 	bind_pcvar_num(register_cvar("js_hud_strafe", "3"),		g_pCvar[c_iStrafe]);

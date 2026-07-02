@@ -18,6 +18,8 @@ public plugin_init() {
 	g_hudPreSpeed = CreateHudSyncObj();
 
 	//g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
+
+	init_menus();
 }
 
 // public plugin_precache() {
@@ -68,8 +70,9 @@ public rgPM_Move(id) {
 	}
 
 
-	if (g_pCvar[c_iEnablePreSpeed] && (g_eOnOff[id][of_bSpeed] || g_eOnOff[id][of_bJof] || g_eOnOff[id][of_bPre]))
+	if (g_eSettings[id][S_PRESPEED] && (g_eOnOff[id][of_bSpeed] || g_eOnOff[id][of_bJof] || g_eOnOff[id][of_bPre])) {
 		show_prespeed(id);
+	}
 
 	if (isGround) {
 		g_iFog[id]++;
