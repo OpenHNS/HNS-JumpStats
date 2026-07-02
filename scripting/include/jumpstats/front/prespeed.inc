@@ -110,7 +110,9 @@ public show_prespeed(id) {
 
 	FormatRGBHud(id, val, iColors);
 
-	set_hudmessage(iColors[0], iColors[1], iColors[2], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
+	set_hudmessage(
+		iColors[0], iColors[1], iColors[2],
+		g_eSettings[id][S_PRESPEED_X], g_eSettings[id][S_PRESPEED_Y], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
 	
 	new szJof[16];
 

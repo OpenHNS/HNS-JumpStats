@@ -4,37 +4,38 @@ public cmdLjsmenu(id) {
 
 	new hMenu = menu_create("\rJump Stats Menu", "ljsmenuHandler");
 
-	if (g_pCvar[c_iEnablePreSpeed] && g_eOnOff[id][of_bSpeed] == true) {
+	if (g_pCvar[C_ENABLE_PRESPEED] && g_eOnOff[id][of_bSpeed] == true) {
 		menu_additem(hMenu, "Speed - \yOn", "1");
 	} else {
 		menu_additem(hMenu, "Speed - \dOff", "1");
 	}
 
-	if (g_pCvar[c_iEnablePreSpeed] && g_eOnOff[id][of_bPre] == true) {
+	if (g_pCvar[C_ENABLE_PRESPEED] && g_eOnOff[id][of_bPre] == true) {
 		menu_additem(hMenu, "Show pre - \yOn", "2");
 	} else {
 		menu_additem(hMenu, "Show pre - \dOff", "2");
 	}
 
-	if (g_pCvar[c_iEnableStats] && g_eOnOff[id][of_bStats] == true) {
+	if (g_eSettings[id][S_STATS]) {
 		menu_additem(hMenu, "Stats - \yOn", "3");
 	} else {
 		menu_additem(hMenu, "Stats - \dOff", "3");
 	}
 
-	if (g_pCvar[c_iEnableChat] && g_eOnOff[id][of_bChatInfo] == true) {
-		menu_additem(hMenu, "Chat info - \yOn", "4");
-	} else {
-		menu_additem(hMenu, "Chat info - \dOff", "4");
-	}
-
-	if (g_pCvar[c_iEnableStrafe] && g_eOnOff[id][of_bStrafe] == true) {
+	if (g_eSettings[id][S_STRAFE]) {
 		menu_additem(hMenu, "Strafes stats - \yOn", "5");
 	} else {
 		menu_additem(hMenu, "Strafes stats - \dOff", "5");
 	}
 
-	if (g_pCvar[c_iEnablePreSpeed] && g_eOnOff[id][of_bJof] == true) {
+	if (g_eSettings[id][S_CHATINFO]) {
+		menu_additem(hMenu, "Chat info - \yOn", "4");
+	} else {
+		menu_additem(hMenu, "Chat info - \dOff", "4");
+	}
+
+
+	if (g_pCvar[C_ENABLE_PRESPEED] && g_eOnOff[id][of_bJof] == true) {
 		menu_additem(hMenu, "JumpOff - \yOn", "6");
 	} else {
 		menu_additem(hMenu, "JumpOff - \dOff", "6");
