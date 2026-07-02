@@ -13,7 +13,7 @@ enum _:JS_ONOFF {
 new g_eOnOff[MAX_PLAYERS + 1][JS_ONOFF];
 
 public init_cmds() {
-	RegisterSayCmd("ljsmenu", "ljs",		"cmdLjsmenu",		ADMIN_ALL, "Jump stats menu");
+	RegisterSayCmd("ljsmenu", "ljs",		"ShowJumpStatsMenu",		ADMIN_ALL, "Jump stats menu");
 	RegisterSayCmd("strafe", "strafestats",	"cmdShowStrafe",	ADMIN_ALL, "Show strafe stats");
 	RegisterSayCmd("stats", "ljstats",		"cmdShowStats",		ADMIN_ALL, "Show main stats");
 	RegisterSayCmd("chatinfo", "ci",		"cmdShowChatInfo",	ADMIN_ALL, "Show jump chat onfo");
