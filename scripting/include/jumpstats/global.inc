@@ -176,6 +176,7 @@ new Float:g_flLastGroundZ[MAX_PLAYERS + 1];
 new g_iDetectHJ[MAX_PLAYERS + 1];
 
 new g_isUserSpec[MAX_PLAYERS + 1];
+new g_iSkip[MAX_PLAYERS + 1];
 
 new g_hudStrafe;
 new g_hudStats;

@@ -72,9 +72,6 @@ new Float:g_flPerfTime[MAX_PLAYERS + 1];
 
 public show_prespeed(id) {
 	new Float:g_flGameTime = get_gametime();
-	
-	if(g_flHudTime[id] + 0.04 > g_flGameTime)
-		return;
 
 	if (!g_isTmpPre[id]) {
 		g_isTmpPre[id] = g_isPre[id];
@@ -110,7 +107,7 @@ public show_prespeed(id) {
 
 	FormatRGBHud(id, val, iColors);
 
-	set_hudmessage(iColors[0], iColors[1], iColors[2], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
+	set_hudmessage(iColors[0], iColors[1], iColors[2], g_pCvar[c_iPreSpeedX], g_pCvar[c_iPreSpeedY], 0, 0.0, 0.08, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
 	
 	new szJof[16];
 
@@ -127,6 +124,16 @@ public show_prespeed(id) {
 			if (g_isUserSpec[i] && i == id) {
 				continue;
 			}
+
+			g_iSkip[i]++;
+			if (g_iSkip[i] > 3) {
+				g_iSkip[i] = 0;
+			}
+
+			if (g_iSkip[i]) {
+				continue;
+			}
+
 			if (g_eOnOff[id][of_bPre] && g_isTmpPre[id]) {
 				new iType = g_ePreData[id][SP_TYPE];
 				switch (iType) {
