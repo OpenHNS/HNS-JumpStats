@@ -17,7 +17,7 @@ public plugin_init() {
 	g_hudStats = CreateHudSyncObj();
 	g_hudPreSpeed = CreateHudSyncObj();
 
-	//g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
+	g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 
 	init_menus();
 }
@@ -121,6 +121,7 @@ public rgPM_Move(id) {
 		if (g_iFog[id] <= 10) {
 			g_bOneReset[id] = true;
 		} else if (g_bOneReset[id]) {
+			ready_moves(id);
 			reset_stats(id);
 			g_bOneReset[id] = false;
 		}

@@ -17,6 +17,7 @@ new const g_eNameJumps[JumpType][InfoNames][] =  {
 	{ "wj",		"WJ",	"Weird jump" },
 	{ "ldj",	"LDJ",	"Ladder jump" },
 	{ "bid",	"BID",	"Bhop in duck" },
+	{ "mbj",	"MBJ",	"Multi bhop jump" },
 	{ 0, 0, 0 },
 };
 
@@ -27,6 +28,13 @@ new const g_VerAir[PLAYER_VER][InfoNames][] =  {
 };
 
 public ready_jumps(id, Float:flEndJump[3]) {
+	if (g_eSettings[id][S_BHOP_FOGSTATS]) {
+		if (g_eWhichJump[id] == jt_MultiBhopJump) {
+			return;
+		}
+		if (g_bDebugMode) client_print(id, print_chat, "ready_jumps")
+	}
+	
 	if (g_eWhichJump[id] == jt_LongJump && g_iDetectHJ[id] == 1) {
 		g_eWhichJump[id] = jt_HighJump;
 	} else if (g_isFalling[id]) {
@@ -565,3 +573,72 @@ public show_chat(id) {
 // 		}
 // 	}
 // }
+
+
+public ready_moves(id) {
+	if (!g_eSettings[id][S_BHOP_FOGSTATS]) {
+		return;
+	}
+	if (g_eWhichJump[id] != jt_MultiBhopJump || g_iJumps[id] <= 1) {
+		return;
+	}
+
+	if (g_bDebugMode) client_print(id, print_chat, "ready_moves")
+
+	show_moves_bhop(id);
+
+	if (g_pCvar[C_ENABLE_CONSOLE])
+		show_console(id);
+}
+
+public show_moves_bhop(id) {
+	new szMultiBhop[192];
+	format_multibhop_stats(id, szMultiBhop, charsmax(szMultiBhop));
+
+	set_hudmessage(
+		g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+		g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
+
+	for (new i = 1; i < MaxClients; i++) {
+		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[id][S_STRAFE]) {
+			ShowSyncHudMsg(i, g_hudStrafe, szMultiBhop);
+		}
+	}
+
+	return;
+}
+
+stock format_multibhop_stats(id, szBuffer[], iLen) {
+	new iFog1, iFog2, iFog3, iFog45;
+	for (new jump = 1; jump <= g_iJumps[id]; jump++) {
+		switch (g_eJumpData[id][jump][JUMP_FOG]) {
+			case 1: iFog1++;
+			case 2: iFog2++;
+			case 3: iFog3++;
+			default: iFog45++;
+		}
+	}
+
+	new iBhops = g_iJumps[id];
+	if (iBhops <= 0) {
+		iBhops = 1;
+	}
+
+	formatex(szBuffer, iLen, "\
+	Bhops: %d^n\
+	1 FOG: %d (%d%%%%)^n\
+	2 FOG: %d (%d%%%%)^n\
+	3 FOG: %d (%d%%%%)^n\
+	4 - 5 FOG: %d (%d%%%%)",
+	g_iJumps[id],
+	iFog1, iFog1 * 100 / iBhops,
+	iFog2, iFog2 * 100 / iBhops,
+	iFog3, iFog3 * 100 / iBhops,
+	iFog45, iFog45 * 100 / iBhops);
+
+	client_print(id, print_console, "^nBhops: %d", g_iJumps[id]);
+	client_print(id, print_console, "1 FOG: %d (%d%%)", iFog1, iFog1 * 100 / g_iJumps[id]);
+	client_print(id, print_console, "2 FOG: %d (%d%%)", iFog2, iFog2 * 100 / g_iJumps[id]);
+	client_print(id, print_console, "3 FOG: %d (%d%%)", iFog3, iFog3 * 100 / g_iJumps[id]);
+	client_print(id, print_console, "4 - 5 FOG: %d (%d%%)", iFog45, iFog45 * 100 / g_iJumps[id]);
+}

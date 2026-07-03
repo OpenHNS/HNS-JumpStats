@@ -7,6 +7,8 @@ public in_bhop_js(id, iFog) {
 	g_flStartSpeed[id] = g_flPrevHorSpeed[id];
 	
 	if (iFog > 10) {
+		//ready_moves(id);
+
 		g_iJumps[id] = 0;
 		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flPrevHorSpeed[id];
 		g_eJumpData[id][g_iJumps[id]][JUMP_FOG] = iFog;
@@ -84,10 +86,12 @@ public in_bhop_js(id, iFog) {
 			g_isFalling[id] =  false;
 
 			if (g_eDuckType[id] == IS_SGS) {
+				// Жамп после сгса
 				g_eWhichJump[id] = g_iDucks[id] == 1 ? jt_StandUPCountJump : jt_Multi_StandUPCountJump;
 				
 				show_pre(id, g_eJumpType[id] == IS_SBJ ? PRE_SBJ : PRE_BHOP, g_flPreHorSpeed[id], iFog, flPostHorSpeed, iFogType);
 			} else if (g_eDuckType[id] == IS_DD || g_eDuckType[id] == IS_DUCK) {
+				// Жамп после ддрана
 				g_eWhichJump[id] = g_iDucks[id] == 1 ? jt_CountJump : jt_Multi_CountJump;
 
 				show_pre(id, g_eJumpType[id] == IS_SBJ ? PRE_SBJ : PRE_BHOP, g_flPreHorSpeed[id], iFog, flPostHorSpeed, iFogType);
@@ -125,7 +129,10 @@ public in_bhop_js(id, iFog) {
 						g_iVerInfo[id] = IS_MIDDLE;
 					}
 				} else {
-					g_eWhichJump[id] = jt_Not;
+					if (g_eSettings[id][S_BHOP_FOGSTATS]) {
+						g_eWhichJump[id] = jt_MultiBhopJump;
+						if (g_bDebugMode) client_print(id, print_chat, "jump %d", g_iJumps[id])
+					}
 
 					if (g_eJumpType[id] == IS_DUCKBHOP) {
 						show_pre(id, PRE_DUCKBHOP, g_flPreHorSpeed[id], iFog, flPostHorSpeed, iFogType);

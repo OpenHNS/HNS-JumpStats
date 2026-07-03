@@ -2,7 +2,7 @@
 #define NDUCKS 100
 #define NJUMPS 100
 
-//new bool:g_bDebugMode;
+new bool:g_bDebugMode;
 
 enum _:ChatDist {
 	good = 0, pro, holy, leet, god
@@ -29,7 +29,8 @@ enum JumpType {
 	jt_WeirdJump = 9,
 	jt_LadderJump = 10,
 	jt_BhopInDuck = 11,
-	jt_Not = 12
+	jt_MultiBhopJump = 12,
+	jt_Not = 13
 };
 
 

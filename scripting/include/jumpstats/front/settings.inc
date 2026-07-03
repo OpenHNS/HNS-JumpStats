@@ -20,6 +20,7 @@ enum _:SETTINGS {
     Float:S_STRAFE_Y,
     Float:S_PRESPEED_X,
     Float:S_PRESPEED_Y,
+    S_BHOP_FOGSTATS
 };
 
 new g_eSettings[MAX_PLAYERS + 1][SETTINGS];
@@ -66,6 +67,8 @@ public settings_player_connect(id) {
 
     g_eSettings[id][S_PRESPEED_X] = g_pCvar[C_PRESPEED_X];
     g_eSettings[id][S_PRESPEED_Y] = g_pCvar[C_PRESPEED_Y];
+
+    g_eSettings[id][S_BHOP_FOGSTATS] = g_pCvar[C_BHOP_FOGSTATS];
 }
 
 public settings_stats_set(id, bool:bStats) {
@@ -133,4 +136,10 @@ public settings_strafe_xy_set(id, Float:flX, Float:flY) {
 public settings_prespeed_xy_set(id, Float:flX, Float:flY) {
     g_eSettings[id][S_PRESPEED_X] = flX;
     g_eSettings[id][S_PRESPEED_Y] = flY;
+}
+
+public settings_bhop_fogstats_set(id, bFogStats) {
+    if (g_pCvar[C_BHOP_FOGSTATS]) {
+        g_eSettings[id][S_BHOP_FOGSTATS] = bFogStats;
+    }
 }
