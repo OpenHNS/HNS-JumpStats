@@ -127,8 +127,13 @@ public show_prespeed(id) {
 				continue;
 			}
 
+			new iFrame = g_eSettings[i][S_PRESPEED_FRAME];
+			if (iFrame < 1) {
+				iFrame = g_pCvar[C_PRESPEED_FRAME];
+			}
+
 			g_iSkip[i]++;
-			if (g_iSkip[i] > 3) {
+			if (g_iSkip[i] > iFrame) {
 				g_iSkip[i] = 0;
 			}
 

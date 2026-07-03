@@ -15,6 +15,7 @@ enum JS_CVAR {
 	C_PRESPEED_R,
 	C_PRESPEED_G,
 	C_PRESPEED_B,
+	C_PRESPEED_FRAME,
 	Float:C_STATS_X,
 	Float:C_STATS_Y,
 	Float:C_STRAFE_X,
@@ -53,6 +54,8 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_prespeed_red", "145"),	g_pCvar[C_PRESPEED_R]);
 	bind_pcvar_num(register_cvar("js_prespeed_green", "145"),g_pCvar[C_PRESPEED_G]);
 	bind_pcvar_num(register_cvar("js_prespeed_blue", "145"),	g_pCvar[C_PRESPEED_B]);
+	
+	bind_pcvar_num(register_cvar("js_prespeed_frame", "3"),	g_pCvar[C_PRESPEED_FRAME]);
 
 	bind_pcvar_float(register_cvar("js_stats_x", "-1.0"),		g_pCvar[C_STATS_X]);
 	bind_pcvar_float(register_cvar("js_stats_y", "0.7"),		g_pCvar[C_STATS_Y]);

@@ -13,6 +13,7 @@ enum _:SETTINGS {
     S_PRESPEED_R,
     S_PRESPEED_G,
     S_PRESPEED_B,
+    S_PRESPEED_FRAME,
     Float:S_STATS_X,
     Float:S_STATS_Y,
     Float:S_STRAFE_X,
@@ -55,6 +56,7 @@ public settings_player_connect(id) {
     g_eSettings[id][S_PRESPEED_R] = g_pCvar[C_PRESPEED_R];
     g_eSettings[id][S_PRESPEED_G] = g_pCvar[C_PRESPEED_G];
     g_eSettings[id][S_PRESPEED_B] = g_pCvar[C_PRESPEED_B];
+    g_eSettings[id][S_PRESPEED_FRAME] = g_pCvar[C_PRESPEED_FRAME];
 
     g_eSettings[id][S_STATS_X] = g_pCvar[C_STATS_X];
     g_eSettings[id][S_STATS_Y] = g_pCvar[C_STATS_Y];
@@ -112,6 +114,10 @@ public settings_prespeed_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_PRESPEED_R] = iRed;
     g_eSettings[id][S_PRESPEED_G] = iGreen;
     g_eSettings[id][S_PRESPEED_B] = iBlue;
+}
+
+public settings_prespeed_frame_set(id, iFrame) {
+    g_eSettings[id][S_PRESPEED_FRAME] = iFrame;
 }
 
 public settings_stats_xy_set(id, Float:flX, Float:flY) {
