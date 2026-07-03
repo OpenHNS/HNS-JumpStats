@@ -377,5 +377,7 @@ public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
 public client_connect(id) {
 	arrayset(g_eOnOff[id], true, JS_ONOFF); // Ну потом
 
+	settings_player_connect(id)
+
 	reset_stats(id);
 }
