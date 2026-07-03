@@ -3,6 +3,9 @@ new const ENABLE_MENU_ID[] = "JUMPSTATS_ENABLE_MENU";
 new const HUD_COLOR_MENU_ID[] = "JUMPSTATS_HUD_COLOR_MENU";
 new const HUD_COLOR_EDIT_MENU_ID[] = "JUMPSTATS_HUD_COLOR_EDIT_MENU";
 new const HUD_COLOR_INPUT_CMD[] = "JS_HUD_COLOR_INPUT";
+new const HUD_POSITION_MENU_ID[] = "JUMPSTATS_HUD_POSITION_MENU";
+new const HUD_POSITION_EDIT_MENU_ID[] = "JUMPSTATS_HUD_POSITION_EDIT_MENU";
+new const HUD_POSITION_INPUT_CMD[] = "JS_HUD_POSITION_INPUT";
 
 enum _:HUD_COLOR_TARGET {
 	HC_TARGET_NONE,
@@ -10,14 +13,25 @@ enum _:HUD_COLOR_TARGET {
 	HC_TARGET_FAILSTATS
 };
 
+enum _:HUD_POSITION_TARGET {
+	HP_TARGET_NONE,
+	HP_TARGET_STATS,
+	HP_TARGET_STRAFE,
+	HP_TARGET_PRESPEED
+};
+
 new g_iHudColorTarget[MAX_PLAYERS + 1];
+new g_iHudPositionTarget[MAX_PLAYERS + 1];
 
 public init_menus() {
 	register_menucmd(register_menuid(MENU_ID), 1023, "HandleJumpStatsMenu");
 	register_menucmd(register_menuid(ENABLE_MENU_ID), 1023, "HandleEnableOptionsMenu");
 	register_menucmd(register_menuid(HUD_COLOR_MENU_ID), 1023, "HandleCustomizeHudColorMenu");
 	register_menucmd(register_menuid(HUD_COLOR_EDIT_MENU_ID), 1023, "HandleCustomizeHudColorEditMenu");
+	register_menucmd(register_menuid(HUD_POSITION_MENU_ID), 1023, "HandleCustomizeHudPositionMenu");
+	register_menucmd(register_menuid(HUD_POSITION_EDIT_MENU_ID), 1023, "HandleCustomizeHudPositionEditMenu");
 	register_clcmd(HUD_COLOR_INPUT_CMD, "CmdCustomizeHudColorInput");
+	register_clcmd(HUD_POSITION_INPUT_CMD, "CmdCustomizeHudPositionInput");
 }
 
 public ShowJumpStatsMenu(id) {
@@ -35,6 +49,9 @@ public ShowJumpStatsMenu(id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wCustomize HUD Color^n");
 	iKeys |= MENU_KEY_2;
 
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wCustomize HUD Position^n");
+	iKeys |= MENU_KEY_3;
+
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
@@ -50,6 +67,9 @@ public HandleJumpStatsMenu(const id, const key) {
 		}
 		case 1: {
 			ShowCustomizeHudColorMenu(id);
+		}
+		case 2: {
+			ShowCustomizeHudPositionMenu(id);
 		}
 		case 9: {
 			return PLUGIN_HANDLED;
@@ -220,6 +240,212 @@ public HandleCustomizeHudColorMenu(const id, const key) {
 	return PLUGIN_HANDLED;
 }
 
+public ShowCustomizeHudPositionMenu(const id) {
+	new szBuffer[768];
+	new iLen = 0;
+	new iKeys = 0;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rCustomize HUD Position:^n^n");
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wStats \d(%.2f %.2f)^n",
+		g_eSettings[id][S_STATS_X],
+		g_eSettings[id][S_STATS_Y]
+	);
+	iKeys |= MENU_KEY_1;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wStrafe \d(%.2f %.2f)^n",
+		g_eSettings[id][S_STRAFE_X],
+		g_eSettings[id][S_STRAFE_Y]
+	);
+	iKeys |= MENU_KEY_2;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wPrespeed \d(%.2f %.2f)^n",
+		g_eSettings[id][S_PRESPEED_X],
+		g_eSettings[id][S_PRESPEED_Y]
+	);
+	iKeys |= MENU_KEY_3;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
+	iKeys |= MENU_KEY_8;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
+	iKeys |= MENU_KEY_9;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
+	iKeys |= MENU_KEY_0;
+
+	show_menu(id, iKeys, szBuffer, -1, HUD_POSITION_MENU_ID);
+}
+
+public HandleCustomizeHudPositionMenu(const id, const key) {
+	switch (key) {
+		case 0: {
+			g_iHudPositionTarget[id] = HP_TARGET_STATS;
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 1: {
+			g_iHudPositionTarget[id] = HP_TARGET_STRAFE;
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 2: {
+			g_iHudPositionTarget[id] = HP_TARGET_PRESPEED;
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 7: {
+			ShowJumpStatsMenu(id);
+		}
+		case 8: {
+			ShowCustomizeHudPositionMenu(id);
+		}
+		case 9: {
+			return PLUGIN_HANDLED;
+		}
+	}
+
+	return PLUGIN_HANDLED;
+}
+
+public ShowCustomizeHudPositionEditMenu(const id) {
+	new szBuffer[768];
+	new iLen = 0;
+	new iKeys = 0;
+
+	if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rStats HUD:^n\dCurrent: %.2f %.2f^n^n",
+			g_eSettings[id][S_STATS_X],
+			g_eSettings[id][S_STATS_Y]
+		);
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rStrafe HUD:^n\dCurrent: %.2f %.2f^n^n",
+			g_eSettings[id][S_STRAFE_X],
+			g_eSettings[id][S_STRAFE_Y]
+		);
+	} else {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rPrespeed HUD:^n\dCurrent: %.2f %.2f^n^n",
+			g_eSettings[id][S_PRESPEED_X],
+			g_eSettings[id][S_PRESPEED_Y]
+		);
+	}
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wDefault \d(from cvar)^n");
+	iKeys |= MENU_KEY_1;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wCustom position^n");
+	iKeys |= MENU_KEY_2;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wUp^n");
+	iKeys |= MENU_KEY_3;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wDown^n");
+	iKeys |= MENU_KEY_4;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wLeft^n");
+	iKeys |= MENU_KEY_5;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wRight^n");
+	iKeys |= MENU_KEY_6;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
+	iKeys |= MENU_KEY_8;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
+	iKeys |= MENU_KEY_9;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
+	iKeys |= MENU_KEY_0;
+
+	show_menu(id, iKeys, szBuffer, -1, HUD_POSITION_EDIT_MENU_ID);
+}
+
+public HandleCustomizeHudPositionEditMenu(const id, const key) {
+	new Float:flX;
+	new Float:flY;
+
+	if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
+		flX = g_eSettings[id][S_STATS_X];
+		flY = g_eSettings[id][S_STATS_Y];
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
+		flX = g_eSettings[id][S_STRAFE_X];
+		flY = g_eSettings[id][S_STRAFE_Y];
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRESPEED) {
+		flX = g_eSettings[id][S_PRESPEED_X];
+		flY = g_eSettings[id][S_PRESPEED_Y];
+	} else {
+		return PLUGIN_HANDLED;
+	}
+
+	switch (key) {
+		case 0: {
+			if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
+				settings_stats_xy_set(id, g_pCvar[C_STATS_X], g_pCvar[C_STATS_Y]);
+			} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
+				settings_strafe_xy_set(id, g_pCvar[C_STRAFE_X], g_pCvar[C_STRAFE_Y]);
+			} else {
+				settings_prespeed_xy_set(id, g_pCvar[C_PRESPEED_X], g_pCvar[C_PRESPEED_Y]);
+			}
+
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 1: {
+			client_print(id, print_chat, "Please enter your position in format X Y: -1.0 0.7");
+			client_cmd(id, "messagemode %s", HUD_POSITION_INPUT_CMD);
+		}
+		case 2: {
+			flY -= 0.05;
+
+			if (flY < 0.0) {
+				flY = 0.0;
+			}
+
+			ApplyHudPosition(id, flX, flY);
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 3: {
+			flY += 0.05;
+
+			if (flY > 1.0) {
+				flY = 1.0;
+			}
+
+			ApplyHudPosition(id, flX, flY);
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 4: {
+			flX -= 0.05;
+
+			if (flX < -1.0) {
+				flX = -1.0;
+			}
+
+			ApplyHudPosition(id, flX, flY);
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 5: {
+			flX += 0.05;
+
+			if (flX > 1.0) {
+				flX = 1.0;
+			}
+
+			ApplyHudPosition(id, flX, flY);
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 7: {
+			ShowCustomizeHudPositionMenu(id);
+		}
+		case 8: {
+			ShowCustomizeHudPositionEditMenu(id);
+		}
+		case 9: {
+			return PLUGIN_HANDLED;
+		}
+	}
+
+	return PLUGIN_HANDLED;
+}
+
 public ShowCustomizeHudColorEditMenu(const id) {
 	new szBuffer[768];
 	new iLen = 0;
@@ -379,4 +605,55 @@ public CmdCustomizeHudColorInput(const id) {
 
 	ShowCustomizeHudColorEditMenu(id);
 	return PLUGIN_HANDLED;
+}
+
+public CmdCustomizeHudPositionInput(const id) {
+	new szArgs[64];
+	new szX[16], szY[16];
+	new Float:flX;
+	new Float:flY;
+
+	if (g_iHudPositionTarget[id] == HP_TARGET_NONE) {
+		return PLUGIN_HANDLED;
+	}
+
+	read_args(szArgs, charsmax(szArgs));
+	remove_quotes(szArgs);
+	trim(szArgs);
+
+	if (!szArgs[0]) {
+		ShowCustomizeHudPositionEditMenu(id);
+		return PLUGIN_HANDLED;
+	}
+
+	parse(szArgs, szX, charsmax(szX), szY, charsmax(szY));
+
+	if (!szX[0] || !szY[0]) {
+		client_print(id, print_chat, "Invalid position format. Example: -1.0 0.7");
+		ShowCustomizeHudPositionEditMenu(id);
+		return PLUGIN_HANDLED;
+	}
+
+	flX = str_to_float(szX);
+	flY = str_to_float(szY);
+
+	if (flX < -1.0 || flX > 1.0 || flY < 0.0 || flY > 1.0) {
+		client_print(id, print_chat, "X must be from -1.0 to 1.0 and Y must be from 0.0 to 1.0");
+		ShowCustomizeHudPositionEditMenu(id);
+		return PLUGIN_HANDLED;
+	}
+
+	ApplyHudPosition(id, flX, flY);
+	ShowCustomizeHudPositionEditMenu(id);
+	return PLUGIN_HANDLED;
+}
+
+ApplyHudPosition(const id, Float:flX, Float:flY) {
+	if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
+		settings_stats_xy_set(id, flX, flY);
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
+		settings_strafe_xy_set(id, flX, flY);
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRESPEED) {
+		settings_prespeed_xy_set(id, flX, flY);
+	}
 }
