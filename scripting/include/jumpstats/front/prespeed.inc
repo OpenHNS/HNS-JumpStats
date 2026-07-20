@@ -50,8 +50,16 @@ enum STRUCT_PRE {
 	SP_TYPE,
 	SP_FOG,
 	FOG_TYPE:SP_FOGTYPE,
+	SP_KZRUSH_COLOR,
 	Float:SP_PRE,
 	Float:SP_POST
+};
+
+enum KZRUSH_PRE_COLOR {
+	KZRUSH_PRE_DEFAULT = 0,
+	KZRUSH_PRE_GOOD,
+	KZRUSH_PRE_BAD,
+	KZRUSH_PRE_MINLOSS
 };
 
 new g_ePreData[MAX_PLAYERS + 1][STRUCT_PRE];
@@ -102,10 +110,22 @@ public show_prespeed(id) {
 
 	new iColors[3];
 
-	new Float:val;
-	val = convertToRange(floatmin(g_flHorSpeed[id], 285.0), 40.0, 285.0); // в квар
+	switch (g_eSettings[id][S_PRESPEED_MODE]) {
+		case PRESPEED_MODE_DYNAMIC: {
+			new Float:val;
+			val = convertToRange(floatmin(g_flHorSpeed[id], 285.0), 40.0, 285.0);
 
-	FormatRGBHud(id, val, iColors);
+			FormatRGBHud(id, val, iColors);
+		}
+		case PRESPEED_MODE_KZRUSH: {
+			FormatKzRushRGBHud(id, iColors);
+		}
+		default: {
+			iColors[0] = g_eSettings[id][S_PRESPEED_R];
+			iColors[1] = g_eSettings[id][S_PRESPEED_G];
+			iColors[2] = g_eSettings[id][S_PRESPEED_B];
+		}
+	}
 
 	set_hudmessage(
 		iColors[0], iColors[1], iColors[2],
@@ -116,10 +136,21 @@ public show_prespeed(id) {
 	if (g_flJof[id]) {
 		formatex(szJof, charsmax(szJof), "jof: %.0f", g_flJof[id]);
 	}
-	new szSpeed[16];
+	new szSpeed[64];
 
-	if (g_eOnOff[id][of_bSpeed])
-		formatex(szSpeed, charsmax(szSpeed), "%.0f u/s", g_flHorSpeed[id]);
+	if (g_eOnOff[id][of_bSpeed]) {
+		switch (g_eSettings[id][S_SPEED_MODE]) {
+			case SPEED_MODE_QUAKE: {
+				formatex(szSpeed, charsmax(szSpeed), "%.0f units/seconds^n%.0f velocity", g_flHorSpeed3D[id], g_flHorSpeed[id]);
+			}
+			case SPEED_MODE_NUMBER: {
+				formatex(szSpeed, charsmax(szSpeed), "%.0f", g_flHorSpeed[id]);
+			}
+			default: {
+				formatex(szSpeed, charsmax(szSpeed), "%.0f u/s", g_flHorSpeed[id]);
+			}
+		}
+	}
 		
 	for (new i = 1; i < MaxClients; i++) {
 		if (i == id || g_isUserSpec[i] == id) {
@@ -206,11 +237,75 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 	g_ePreData[id][SP_PRE] = flPreSpeed;
 	g_ePreData[id][SP_POST] = flPostSpeed;
 	g_ePreData[id][SP_FOGTYPE] = fogType;
+	g_ePreData[id][SP_KZRUSH_COLOR] = _:GetKzRushPreColor(id, iType, iFog);
 
 	if (fogType == FOG_PERFECT || fogType == FOG_BAD) {
 		g_flPerfTime[id] = get_gametime() + FOG_COLOR_TIME;
 	} else {
 		g_flPerfTime[id] = 0.0;
+	}
+}
+
+stock KZRUSH_PRE_COLOR:GetKzRushPreColor(id, iType, iFog) {
+	if (iType >= PRE_BHOP && iType <= PRE_DUCKBHOP) {
+		new Float:flMaxHorSpeed;
+		get_entvar(id, var_maxspeed, flMaxHorSpeed);
+		flMaxHorSpeed = floatmul(1.2, flMaxHorSpeed);
+		flMaxHorSpeed = floatsqroot(floatmul(flMaxHorSpeed, flMaxHorSpeed) - 16.0);
+
+		if (g_flPrevHorSpeed[id] <= flMaxHorSpeed) {
+			if (iFog == 1) {
+				return KZRUSH_PRE_GOOD;
+			}
+
+			if (g_flOldHorSpeed[id] > flMaxHorSpeed) {
+				return KZRUSH_PRE_MINLOSS;
+			}
+		}
+
+		return KZRUSH_PRE_BAD;
+	}
+
+	if (iType == PRE_DD) {
+		if (iFog <= 2) {
+			return KZRUSH_PRE_GOOD;
+		}
+
+		if (iFog == 3 && g_bOldInDuck[1][id] && g_bOldInDuck[2][id]) {
+			return KZRUSH_PRE_MINLOSS;
+		}
+
+		return KZRUSH_PRE_BAD;
+	}
+
+	return KZRUSH_PRE_DEFAULT;
+}
+
+FormatKzRushRGBHud(id, colors[3]) {
+	colors[0] = g_eSettings[id][S_PRESPEED_R];
+	colors[1] = g_eSettings[id][S_PRESPEED_G];
+	colors[2] = g_eSettings[id][S_PRESPEED_B];
+
+	if (!g_isTmpPre[id]) {
+		return;
+	}
+
+	switch (g_ePreData[id][SP_KZRUSH_COLOR]) {
+		case KZRUSH_PRE_GOOD: {
+			colors[0] = g_eSettings[id][S_PRE_GOOD_R];
+			colors[1] = g_eSettings[id][S_PRE_GOOD_G];
+			colors[2] = g_eSettings[id][S_PRE_GOOD_B];
+		}
+		case KZRUSH_PRE_BAD: {
+			colors[0] = g_eSettings[id][S_PRE_BAD_R];
+			colors[1] = g_eSettings[id][S_PRE_BAD_G];
+			colors[2] = g_eSettings[id][S_PRE_BAD_B];
+		}
+		case KZRUSH_PRE_MINLOSS: {
+			colors[0] = g_eSettings[id][S_PRE_MINLOSS_R];
+			colors[1] = g_eSettings[id][S_PRE_MINLOSS_G];
+			colors[2] = g_eSettings[id][S_PRE_MINLOSS_B];
+		}
 	}
 }
 

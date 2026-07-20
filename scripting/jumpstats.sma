@@ -48,6 +48,7 @@ public rgPM_Move(id) {
 	get_entvar(id, var_velocity, g_flVelocity[id]);
 
 	g_flHorSpeed[id] = vector_hor_length(g_flVelocity[id]);
+	g_flHorSpeed3D[id] = vector_length(g_flVelocity[id]);
 	g_flPrevHorSpeed[id] = vector_hor_length(g_flPrevVelocity[id]);
 	g_flOldHorSpeed[id] = vector_hor_length(g_flOldVelocity[id]);
 
@@ -224,6 +225,9 @@ public rgPM_Move(id) {
 
 	g_isOldGround[id] = isGround;
 	g_bPrevLadder[id] = isLadder;
+	g_bOldInDuck[2][id] = g_bOldInDuck[1][id];
+	g_bOldInDuck[1][id] = g_bOldInDuck[0][id];
+	g_bOldInDuck[0][id] = g_bPrevInDuck[id];
 	g_bPrevInDuck[id] = g_bInDuck[id];
 	g_bPrevSlide[id] = g_bSlide[id];
 
@@ -377,6 +381,9 @@ public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
 
 public client_connect(id) {
 	arrayset(g_eOnOff[id], true, JS_ONOFF); // Ну потом
+	g_bOldInDuck[0][id] = false;
+	g_bOldInDuck[1][id] = false;
+	g_bOldInDuck[2][id] = false;
 
 	settings_player_connect(id)
 
