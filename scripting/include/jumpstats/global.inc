@@ -144,6 +144,7 @@ new Float:g_flPrevVelocity[MAX_PLAYERS + 1][3];
 new Float:g_flOldVelocity[MAX_PLAYERS + 1][3];
 
 new Float:g_flHorSpeed[MAX_PLAYERS + 1];
+new Float:g_flHorSpeed3D[MAX_PLAYERS + 1];
 new Float:g_flPrevHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flOldHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flPreHorSpeed[MAX_PLAYERS + 1];
@@ -151,6 +152,7 @@ new Float:g_flStartSpeed[MAX_PLAYERS + 1];
 
 new bool:g_bInDuck[MAX_PLAYERS + 1];
 new bool:g_bPrevInDuck[MAX_PLAYERS + 1];
+new bool:g_bOldInDuck[3][MAX_PLAYERS + 1];
 
 new bool:g_bPrevLadder[MAX_PLAYERS + 1];
 new bool:g_isLadderBhop[MAX_PLAYERS + 1];

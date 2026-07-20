@@ -689,6 +689,16 @@ public ShowPreSpeedConfigurationsMenu(const id) {
 	}
 	iKeys |= MENU_KEY_1;
 
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wPrespeed color mode: \y%s^n",
+		g_szPrespeedMode[g_eSettings[id][S_PRESPEED_MODE]]
+	);
+	iKeys |= MENU_KEY_2;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wSpeed style mode: \y%s^n",
+		g_szSpeedMode[g_eSettings[id][S_SPEED_MODE]]
+	);
+	iKeys |= MENU_KEY_3;
+
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
@@ -723,6 +733,24 @@ public HandlePreSpeedConfigurationsMenu(const id, const key) {
 			}
 
 			settings_prespeed_frame_set(id, iFrame);
+			ShowPreSpeedConfigurationsMenu(id);
+		}
+		case 1: {
+			new iMode = g_eSettings[id][S_PRESPEED_MODE] + 1;
+			if (iMode > PRESPEED_MODE_KZRUSH) {
+				iMode = PRESPEED_MODE_FIXED;
+			}
+
+			settings_prespeed_mode_set(id, iMode);
+			ShowPreSpeedConfigurationsMenu(id);
+		}
+		case 2: {
+			new iMode = g_eSettings[id][S_SPEED_MODE] + 1;
+			if (iMode > SPEED_MODE_NUMBER) {
+				iMode = SPEED_MODE_DEFAULT;
+			}
+
+			settings_speed_mode_set(id, iMode);
 			ShowPreSpeedConfigurationsMenu(id);
 		}
 		case 7: {

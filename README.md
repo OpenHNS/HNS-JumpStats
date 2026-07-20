@@ -84,34 +84,49 @@ FOG (frames on the ground) - в двух словах, это кол-во frame 
 
 ## Квары
 
-| Cvar                 | Default    | Description |
-| :------------------- | :--------: | :--------: |
-| js_prefix | Jump | Префикс статистики |
-| js_enable_stats | 1 | `1` - Вкл/ `0` Откл HUD Основной статистики |
-| js_enable_strafe | 1 | `1` - Вкл/ `0` Откл HUD Статистики стрейфов|
-| js_enable_prespeed | 1 | `1` - Вкл/ `0` Откл HUD Скорости, пре и jof |
-| js_enable_console | 1 | `1` - Вкл/ `0` Откл Информацию о прыжках в консоле |
-| js_enable_chat | 1 | `1` - Вкл/ `0` Откл Информацию о прыжках в чатах |
-| js_enable_sound | 1 | `1` - Вкл/ `0` Откл Звук при хороших прыжках |
-| js_stats_red | 0 | Цвет HUD основной статистики RGB (красный) |
-| js_stats_green | 200 | Цвет HUD основной статистики RGB (зеленый) |
-| js_stats_blue | 60 | Цвет HUD основной статистики RGB (синий) |
-| js_failstats_red | 200 | Цвет HUD основной статистики при фейле RGB (красный) |
-| js_failstats_green | 10 | Цвет HUD основной статистики при фейле RGB (зеленый) |
-| js_failstats_blue | 50 | Цвет HUD основной статистики при фейле RGB (синий) |
-| js_stats_x | -1.0 | Расположение статистики HUD X |
-| js_stats_y | 0.7 | Расположение статистики HUD Y |
-| js_strafe_x | 0.7 | Расположение стрейфов HUD X|
-| js_strafe_y | 0.35 | Расположение стрейфов HUD Y|
-| js_prespeed_red | 145 | Цвет HUD пре RGB (красный) |
-| js_prespeed_green | 145 | Цвет HUD пре RGB (зеленый) |
-| js_prespeed_blue | 145 | Цвет HUD пре RGB (синий) |
-| js_prespeed_x | -1.0 | Расположение пре X |
-| js_prespeed_y | 0.55 | Расположение пре Y |
-| js_hud_stats | 2 | HUD канал основной статистики |
-| js_hud_strafe | 3 | HUD канал стрейфов |
-| js_hud_pre | 1 | HUD канал пре |
-| js_console_fix | 0 | Фикс информации в консоле, если у вас нет пробелов, установите значение `1` |
+| Cvar | Default | Описание |
+| :--- | :---: | :--- |
+| `js_prefix` | Jump | Префикс статистики |
+| `js_enable_stats` | 1 | Включает HUD основной статистики |
+| `js_enable_strafe` | 1 | Включает HUD статистики стрейфов |
+| `js_enable_prespeed` | 1 | Включает HUD скорости, pre и JOF |
+| `js_enable_console` | 1 | Включает статистику прыжков в консоли |
+| `js_enable_chat` | 1 | Включает статистику лучших прыжков в чате |
+| `js_enable_sound` | 1 | Включает звуки лучших прыжков |
+| `js_stats_red` | 0 | Красный канал HUD основной статистики |
+| `js_stats_green` | 200 | Зелёный канал HUD основной статистики |
+| `js_stats_blue` | 60 | Синий канал HUD основной статистики |
+| `js_failstats_red` | 200 | Красный канал HUD неудачного прыжка |
+| `js_failstats_green` | 10 | Зелёный канал HUD неудачного прыжка |
+| `js_failstats_blue` | 50 | Синий канал HUD неудачного прыжка |
+| `js_prespeed_red` | 145 | Базовый красный канал prespeed HUD |
+| `js_prespeed_green` | 145 | Базовый зелёный канал prespeed HUD |
+| `js_prespeed_blue` | 145 | Базовый синий канал prespeed HUD |
+| `js_goodpre_red` | 20 | Красный канал GOOD pre в режиме KZRush |
+| `js_goodpre_green` | 255 | Зелёный канал GOOD pre в режиме KZRush |
+| `js_goodpre_blue` | 150 | Синий канал GOOD pre в режиме KZRush |
+| `js_badpre_red` | 255 | Красный канал BAD pre в режиме KZRush |
+| `js_badpre_green` | 70 | Зелёный канал BAD pre в режиме KZRush |
+| `js_badpre_blue` | 120 | Синий канал BAD pre в режиме KZRush |
+| `js_minlosspre_red` | 30 | Красный канал MINLOSS pre в режиме KZRush |
+| `js_minlosspre_green` | 135 | Зелёный канал MINLOSS pre в режиме KZRush |
+| `js_minlosspre_blue` | 255 | Синий канал MINLOSS pre в режиме KZRush |
+| `js_prespeed_mode` | 1 | Режим цвета: `0` — Fixed, `1` — Dynamic, `2` — KZRush |
+| `js_speed_mode` | 0 | Стиль скорости: `0` — Default (`u/s`), `1` — Quake (`units/seconds` + `velocity`), `2` — Number |
+| `js_prespeed_frame` | 3 | Количество пропускаемых кадров между обновлениями prespeed HUD |
+| `js_stats_x` | -1.0 | Координата X HUD основной статистики |
+| `js_stats_y` | 0.7 | Координата Y HUD основной статистики |
+| `js_strafe_x` | 0.7 | Координата X HUD стрейфов |
+| `js_strafe_y` | 0.35 | Координата Y HUD стрейфов |
+| `js_prespeed_x` | -1.0 | Координата X prespeed HUD |
+| `js_prespeed_y` | 0.55 | Координата Y prespeed HUD |
+| `js_bhop_fogstats` | 0 | Включает сводную FOG-статистику серии bhop |
+| `js_hud_stats` | 2 | HUD-канал основной статистики |
+| `js_hud_strafe` | 3 | HUD-канал статистики стрейфов |
+| `js_hud_prespeed` | 1 | HUD-канал prespeed |
+| `js_console_fix` | 0 | Добавляет перевод строки для серверов со сломанным форматом консоли |
+| `js_noslowdown` | 0 | Отключает проверку slowdown по `fuser2` |
+| `js_minmode` | 0 | Включает компактный режим HUD-статистики |
 
 ## Звуки
 

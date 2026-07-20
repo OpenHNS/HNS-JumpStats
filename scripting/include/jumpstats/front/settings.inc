@@ -1,3 +1,27 @@
+enum _:PRESPEED_MODE {
+    PRESPEED_MODE_FIXED = 0,
+    PRESPEED_MODE_DYNAMIC,
+    PRESPEED_MODE_KZRUSH
+};
+
+new const g_szPrespeedMode[PRESPEED_MODE][] = {
+    "Fixed",
+    "Dynamic",
+    "KZRush"
+};
+
+enum _:SPEED_MODE {
+    SPEED_MODE_DEFAULT = 0,
+    SPEED_MODE_QUAKE,
+    SPEED_MODE_NUMBER
+};
+
+new const g_szSpeedMode[SPEED_MODE][] = {
+    "Default",
+    "Quake",
+    "Number"
+};
+
 enum _:SETTINGS {
 	bool:S_STATS,
     bool:S_STRAFE,
@@ -13,6 +37,17 @@ enum _:SETTINGS {
     S_PRESPEED_R,
     S_PRESPEED_G,
     S_PRESPEED_B,
+    S_PRE_GOOD_R,
+    S_PRE_GOOD_G,
+    S_PRE_GOOD_B,
+    S_PRE_BAD_R,
+    S_PRE_BAD_G,
+    S_PRE_BAD_B,
+    S_PRE_MINLOSS_R,
+    S_PRE_MINLOSS_G,
+    S_PRE_MINLOSS_B,
+    S_PRESPEED_MODE,
+    S_SPEED_MODE,
     S_PRESPEED_FRAME,
     Float:S_STATS_X,
     Float:S_STATS_Y,
@@ -57,6 +92,29 @@ public settings_player_connect(id) {
     g_eSettings[id][S_PRESPEED_R] = g_pCvar[C_PRESPEED_R];
     g_eSettings[id][S_PRESPEED_G] = g_pCvar[C_PRESPEED_G];
     g_eSettings[id][S_PRESPEED_B] = g_pCvar[C_PRESPEED_B];
+
+    g_eSettings[id][S_PRE_GOOD_R] = g_pCvar[C_PRE_GOOD_R];
+    g_eSettings[id][S_PRE_GOOD_G] = g_pCvar[C_PRE_GOOD_G];
+    g_eSettings[id][S_PRE_GOOD_B] = g_pCvar[C_PRE_GOOD_B];
+
+    g_eSettings[id][S_PRE_BAD_R] = g_pCvar[C_PRE_BAD_R];
+    g_eSettings[id][S_PRE_BAD_G] = g_pCvar[C_PRE_BAD_G];
+    g_eSettings[id][S_PRE_BAD_B] = g_pCvar[C_PRE_BAD_B];
+
+    g_eSettings[id][S_PRE_MINLOSS_R] = g_pCvar[C_PRE_MINLOSS_R];
+    g_eSettings[id][S_PRE_MINLOSS_G] = g_pCvar[C_PRE_MINLOSS_G];
+    g_eSettings[id][S_PRE_MINLOSS_B] = g_pCvar[C_PRE_MINLOSS_B];
+
+    g_eSettings[id][S_PRESPEED_MODE] = g_pCvar[C_PRESPEED_MODE];
+    if (g_eSettings[id][S_PRESPEED_MODE] < PRESPEED_MODE_FIXED || g_eSettings[id][S_PRESPEED_MODE] > PRESPEED_MODE_KZRUSH) {
+        g_eSettings[id][S_PRESPEED_MODE] = PRESPEED_MODE_DYNAMIC;
+    }
+
+    g_eSettings[id][S_SPEED_MODE] = g_pCvar[C_SPEED_MODE];
+    if (g_eSettings[id][S_SPEED_MODE] < SPEED_MODE_DEFAULT || g_eSettings[id][S_SPEED_MODE] > SPEED_MODE_NUMBER) {
+        g_eSettings[id][S_SPEED_MODE] = SPEED_MODE_DEFAULT;
+    }
+
     g_eSettings[id][S_PRESPEED_FRAME] = g_pCvar[C_PRESPEED_FRAME];
 
     g_eSettings[id][S_STATS_X] = g_pCvar[C_STATS_X];
@@ -117,6 +175,40 @@ public settings_prespeed_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_PRESPEED_R] = iRed;
     g_eSettings[id][S_PRESPEED_G] = iGreen;
     g_eSettings[id][S_PRESPEED_B] = iBlue;
+}
+
+public settings_pre_good_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_PRE_GOOD_R] = iRed;
+    g_eSettings[id][S_PRE_GOOD_G] = iGreen;
+    g_eSettings[id][S_PRE_GOOD_B] = iBlue;
+}
+
+public settings_pre_bad_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_PRE_BAD_R] = iRed;
+    g_eSettings[id][S_PRE_BAD_G] = iGreen;
+    g_eSettings[id][S_PRE_BAD_B] = iBlue;
+}
+
+public settings_pre_minloss_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_PRE_MINLOSS_R] = iRed;
+    g_eSettings[id][S_PRE_MINLOSS_G] = iGreen;
+    g_eSettings[id][S_PRE_MINLOSS_B] = iBlue;
+}
+
+public settings_prespeed_mode_set(id, iMode) {
+    if (iMode < PRESPEED_MODE_FIXED || iMode > PRESPEED_MODE_KZRUSH) {
+        iMode = PRESPEED_MODE_DYNAMIC;
+    }
+
+    g_eSettings[id][S_PRESPEED_MODE] = iMode;
+}
+
+public settings_speed_mode_set(id, iMode) {
+    if (iMode < SPEED_MODE_DEFAULT || iMode > SPEED_MODE_NUMBER) {
+        iMode = SPEED_MODE_DEFAULT;
+    }
+
+    g_eSettings[id][S_SPEED_MODE] = iMode;
 }
 
 public settings_prespeed_frame_set(id, iFrame) {
