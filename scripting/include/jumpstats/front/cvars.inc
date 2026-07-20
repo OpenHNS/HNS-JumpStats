@@ -67,7 +67,7 @@ init_cvars() {
 	bind_pcvar_float(register_cvar("js_prespeed_x", "-1.0"),	g_pCvar[C_PRESPEED_X]);
 	bind_pcvar_float(register_cvar("js_prespeed_y", "0.55"),	g_pCvar[C_PRESPEED_Y]);
 
-	bind_pcvar_num(register_cvar("js_bhop_fogstats", "0"),	g_pCvar[C_BHOP_FOGSTATS]);
+	bind_pcvar_num(register_cvar("js_bhop_fogstats", "1"),	g_pCvar[C_BHOP_FOGSTATS]);
 
 	bind_pcvar_num(register_cvar("js_hud_stats", "2"),		g_pCvar[c_iStats]);
 	bind_pcvar_num(register_cvar("js_hud_strafe", "3"),		g_pCvar[c_iStrafe]);

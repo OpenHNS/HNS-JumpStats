@@ -30,6 +30,7 @@ new const g_VerAir[PLAYER_VER][InfoNames][] =  {
 public ready_jumps(id, Float:flEndJump[3]) {
 	if (g_eSettings[id][S_BHOP_FOGSTATS]) {
 		if (g_eWhichJump[id] == jt_MultiBhopJump) {
+			reset_strafes(id);
 			return;
 		}
 		if (g_bDebugMode) client_print(id, print_chat, "ready_jumps")
