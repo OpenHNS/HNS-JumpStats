@@ -140,9 +140,6 @@ public ShowEnableOptionsMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
-	iKeys |= MENU_KEY_9;
-
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
 
@@ -215,9 +212,6 @@ public ShowCustomizeHudColorMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
-	iKeys |= MENU_KEY_9;
-
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
 
@@ -276,9 +270,6 @@ public ShowCustomizeHudPositionMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
-
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
-	iKeys |= MENU_KEY_9;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
@@ -342,6 +333,8 @@ public ShowCustomizeHudPositionEditMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wCustom position^n");
 	iKeys |= MENU_KEY_2;
 
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wUp^n");
 	iKeys |= MENU_KEY_3;
 
@@ -357,9 +350,6 @@ public ShowCustomizeHudPositionEditMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
-
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
-	iKeys |= MENU_KEY_9;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
@@ -495,9 +485,6 @@ public ShowCustomizeHudColorEditMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
-
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
-	iKeys |= MENU_KEY_9;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
@@ -702,9 +689,6 @@ public ShowPreSpeedConfigurationsMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
-
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wRefresh^n");
-	iKeys |= MENU_KEY_9;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
