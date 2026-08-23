@@ -65,6 +65,7 @@ public rgPM_Move(id) {
 	new iButtons = get_entvar(id, var_button);
 
 	g_bSlide[id] = !isLadder && isPlayerSliding(id);
+	new bool:bBlockBugChecks = bool:(g_bSlide[id] || get_entvar(id, var_waterlevel) >= 2);
 
 	if (!g_bSlide[id] && g_bPrevSlide[id]) {
 		show_pre(id, PRE_SLIDE, g_flPrevHorSpeed[id]);
@@ -96,11 +97,11 @@ public rgPM_Move(id) {
 			}
 		}
 
-		g_flJumpbugGroundZ[id] = g_flOrigin[id][2];
 		g_iJumpBug[id] = 0;
+		g_bCheckJumpBug[id] = !bBlockBugChecks;
 		g_bJumpbugDone[id] = false;
 
-		g_bCheckEdgeBug[id] = true;
+		g_bCheckEdgeBug[id] = !bBlockBugChecks;
 		g_bEdgebugDone[id] = false;
 		g_iEdgeBugCount[id] = 0;
 		g_flLastGroundZ[id] = g_flOrigin[id][2];
@@ -120,6 +121,12 @@ public rgPM_Move(id) {
 			g_bOneReset[id] = false;
 		}
 	} else {
+		if (bBlockBugChecks) {
+			g_bCheckJumpBug[id] = false;
+			g_bCheckEdgeBug[id] = false;
+			g_iJumpBug[id] = 0;
+		}
+
 		if (g_eWhichJump[id] != jt_Not && !g_eFailJump[id]) {
 			new Float:flCurrentZ = g_bInDuck[id] ? g_flOrigin[id][2] + 18.0 : g_flOrigin[id][2];
 
@@ -157,27 +164,32 @@ public rgPM_Move(id) {
 			}
 		}
 
-		if (!g_bJumpbugDone[id]) {
+		if (g_bCheckJumpBug[id] && !g_bJumpbugDone[id]) {
 			new bool:isDuckRelease = !(iButtons & IN_DUCK) && (g_iPrevButtons[id] & IN_DUCK);
 			new bool:isJumpPress = (iButtons & IN_JUMP) && !(g_iPrevButtons[id] & IN_JUMP);
 
 			if (!g_iJumpBug[id]) {
 				if (isDuckRelease && isJumpPress && g_flVelocity[id][2] < 0.0) {
+					g_flJumpbugStart[id] = g_flOrigin[id];
 					g_iJumpBug[id] = 2;
 				}
 			} else {
 				g_iJumpBug[id]--;
 				if (!g_iJumpBug[id] && g_flVelocity[id][2] > 0.0) {
-					new Float:flJumpbugDistance = g_flJumpbugGroundZ[id];
-					if (flJumpbugDistance <= 0.0) {
-						flJumpbugDistance = g_flLastGroundZ[id] - g_flOrigin[id][2];
-					}
+					new Float:flJumpbugLandingZ;
+					if (find_jumpbug_landing(id, g_flJumpbugStart[id], flJumpbugLandingZ)) {
+						new Float:flJumpbugDistance = float(floatround(g_flLastGroundZ[id])) - flJumpbugLandingZ;
 
-					g_bJumpbugDone[id] = true;
-					show_pre(id, PRE_JUMPBUG, flJumpbugDistance);
-					if (g_eWhichJump[id] != jt_Not) {
-						reset_stats(id);
-						g_eFailJump[id] = fj_notshow;
+						if (flJumpbugDistance > 0.0) {
+							g_bJumpbugDone[id] = true;
+							g_bCheckJumpBug[id] = false;
+							show_pre(id, PRE_JUMPBUG, flJumpbugDistance);
+							show_special_stats(id, PRE_JUMPBUG, flJumpbugDistance);
+							if (g_eWhichJump[id] != jt_Not) {
+								reset_stats(id);
+								g_eFailJump[id] = fj_notshow;
+							}
+						}
 					}
 				}
 			}
@@ -208,7 +220,8 @@ public rgPM_Move(id) {
 					show_pre(id, PRE_FALL, g_flHorSpeed[id]);
 				}
 				if (g_flVelocity[id][2] <= -4.0 && g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0 && g_iFog[id] == 1) {
-					show_pre(id, PRE_BOOST, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
+					show_boost_stats(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
+					show_boost_chat(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
 				}
 			}
 		}
@@ -221,11 +234,12 @@ public rgPM_Move(id) {
 				flPlayerGravity = 1.0;
 			}
 
-			new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * Float:get_pmove(pm_frametime);
+			new Float:flFrameTime = Float:get_pmove(pm_frametime);
+			new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * flFrameTime;
 			new Float:flTarget = -flDelta * 0.5;
 			new Float:flCurrentVz = g_flVelocity[id][2];
 			new Float:flPrevVz = g_flPrevVelocity[id][2];
-			if (floatabs(flCurrentVz - flTarget) <= 1.0 && flPrevVz < flTarget && isGoingToTouchGround(id)) {
+			if (floatabs(flCurrentVz - flTarget) <= 1.0 && flPrevVz < flTarget && isGoingToTouchGround(id, flFrameTime, flPlayerGravity)) {
 				new Float:flDistance = g_flLastGroundZ[id] - g_flOrigin[id][2];
 				if (flDistance > 0.0) {
 					g_bEdgebugDone[id] = true;
@@ -233,6 +247,11 @@ public rgPM_Move(id) {
 					g_iEdgeBugCount[id]++;
 
 					show_pre(id, PRE_EDGEBUG, flDistance);
+					show_special_stats(id, PRE_EDGEBUG, flDistance);
+					if (g_eWhichJump[id] != jt_Not) {
+						reset_stats(id);
+						g_eFailJump[id] = fj_notshow;
+					}
 				}
 			}
 		}
@@ -277,24 +296,59 @@ stock bool:isPlayerSliding(id) {
 	return flPlaneNormal[2] > 0.0 && flPlaneNormal[2] <= 0.7;
 }
 
-stock bool:isGoingToTouchGround(id) {
-	new Float:origin[3], Float:dest[3];
-	origin = g_flOrigin[id];
-	dest = origin;
-	dest[2] -= 16.0;
+stock bool:isGoingToTouchGround(id, Float:flFrameTime, Float:flPlayerGravity) {
+	if (flFrameTime <= 0.0) {
+		return false;
+	}
 
-	engfunc(EngFunc_TraceHull, origin, dest, IGNORE_MONSTERS, g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, 0);
+	new Float:flVelocity[3], Float:flDestination[3];
+	flVelocity = g_flPrevVelocity[id];
+	flVelocity[2] -= g_pCvar[c_iGravity] * flPlayerGravity * flFrameTime;
+
+	for (new i = 0; i < 3; i++) {
+		flDestination[i] = g_flPrevOrigin[id][i] + flVelocity[i] * flFrameTime;
+	}
+
+	new iTrace = create_tr2();
+	engfunc(EngFunc_TraceHull, g_flPrevOrigin[id], flDestination, DONT_IGNORE_MONSTERS, g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, iTrace);
 
 	new Float:flFraction;
-	get_tr2(0, TR_flFraction, flFraction);
+	get_tr2(iTrace, TR_flFraction, flFraction);
 	if (flFraction >= 1.0) {
+		free_tr2(iTrace);
 		return false;
 	}
 
 	new Float:flPlaneNormal[3];
-	get_tr2(0, TR_vecPlaneNormal, flPlaneNormal);
+	get_tr2(iTrace, TR_vecPlaneNormal, flPlaneNormal);
+	free_tr2(iTrace);
 
 	return flPlaneNormal[2] > 0.7;
+}
+
+stock bool:find_jumpbug_landing(id, Float:flStartOrigin[3], &Float:flLandingZ) {
+	new Float:flProbe[3];
+	flProbe = flStartOrigin;
+	flProbe[2] = float(floatround(flProbe[2], floatround_floor));
+
+	new iTrace = create_tr2();
+	new iCounter = 18;
+
+	while (iCounter > 0) {
+		engfunc(EngFunc_TraceHull, flProbe, flProbe, DONT_IGNORE_MONSTERS, HULL_HUMAN, id, iTrace);
+
+		if (get_tr2(iTrace, TR_StartSolid) || get_tr2(iTrace, TR_AllSolid) || !get_tr2(iTrace, TR_InOpen)) {
+			flLandingZ = flProbe[2] + 1.0;
+			free_tr2(iTrace);
+			return true;
+		}
+
+		flProbe[2] -= 1.0;
+		iCounter--;
+	}
+
+	free_tr2(iTrace);
+	return false;
 }
 
 public rgPM_AirMove(id) {

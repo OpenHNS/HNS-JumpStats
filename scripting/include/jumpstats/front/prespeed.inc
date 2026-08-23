@@ -4,7 +4,6 @@ enum _:PRE_TYPE {
 	PRE_DUCK,
 	PRE_LADDER,
 	PRE_SLIDE,
-	PRE_BOOST,
 	PRE_FALL,
 	PRE_EDGEBUG,
 	PRE_BHOP,
@@ -21,7 +20,6 @@ new g_szPreType[PRE_TYPE][] = {
 	"duck",
 	"ladder",
 	"slide",
-	"boost",
 	"fall",
 	"EdgeBug",
 	"bhop",
@@ -193,19 +191,6 @@ public show_prespeed(id) {
 							g_szPreType[iType],
 							g_ePreData[id][SP_PRE]);
 					}
-					case PRE_BOOST: {
-						ShowSyncHudMsg(i, g_hudPreSpeed, "\
-							%s^n\
-							%s^n^n\
-							%s %d FOG:^n\
-							%.2f^n\
-							%.2f",
-							g_flJof[i] ? szJof : "",
-							g_eOnOff[i][of_bSpeed] ? szSpeed : "",
-							g_szPreType[iType], g_ePreData[id][SP_FOG],
-							g_ePreData[id][SP_PRE],
-							g_ePreData[id][SP_POST]);
-					}
 					case PRE_BHOP..PRE_DD: {
 						ShowSyncHudMsg(i, g_hudPreSpeed, "\
 						%s^n\
@@ -243,6 +228,59 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 		g_flPerfTime[id] = get_gametime() + FOG_COLOR_TIME;
 	} else {
 		g_flPerfTime[id] = 0.0;
+	}
+}
+
+stock show_special_stats(id, iType, Float:flValue) {
+	if (!g_pCvar[C_ENABLE_STATS]) {
+		return;
+	}
+
+	for (new i = 1; i <= MaxClients; i++) {
+		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+			continue;
+		}
+
+		set_hudmessage(
+			g_eSettings[i][S_STATS_R], g_eSettings[i][S_STATS_G], g_eSettings[i][S_STATS_B],
+			g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+
+		switch (iType) {
+			case PRE_JUMPBUG, PRE_EDGEBUG: {
+				ShowSyncHudMsg(i, g_hudStats, "%s^ndistance: %.2f units", g_szPreType[iType], flValue);
+			}
+		}
+	}
+}
+
+stock show_boost_chat(id, Float:flBefore, Float:flAfter) {
+	if (!g_pCvar[C_ENABLE_CHATINFO] || !g_eSettings[id][S_CHATINFO]) {
+		return;
+	}
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i = 0; i < iNum; i++) {
+		client_print_color(iPlayers[i], print_team_blue, "^3%n^1 performed ^3BOOST^1 (^3%.0f^1 => ^3%.0f^1)", id, flBefore, flAfter);
+	}
+}
+
+stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
+	if (!g_pCvar[C_ENABLE_STATS]) {
+		return;
+	}
+
+	for (new i = 1; i <= MaxClients; i++) {
+		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+			continue;
+		}
+
+		set_hudmessage(
+			g_eSettings[i][S_STATS_R], g_eSettings[i][S_STATS_G], g_eSettings[i][S_STATS_B],
+			g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+
+		ShowSyncHudMsg(i, g_hudStats, "BOOST^n%.0f => %.0f", flBefore, flAfter);
 	}
 }
 
