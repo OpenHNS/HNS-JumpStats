@@ -29,6 +29,9 @@ stock reset_stats(id) {
 	arrayset(g_flFirstJump[id], 0.0, 3);
 	
 	g_isLadderBhop[id] = false;
+	g_bLdjAboveStart[id] = false;
+	g_flLdjStartCos[id] = 0.0;
+	g_flLdjEndCos[id] = 0.0;
 	g_isFalling[id] = false;
 	g_isTouched[id] = false;
 	g_bSlide[id] = false;
@@ -45,6 +48,46 @@ stock reset_stats(id) {
 	g_flStartSpeed[id] = 0.0;
 }
 
+stock Float:velocity_view_cos(Float:flVelocity[3], Float:flYaw) {
+	new Float:flSpeed = vector_hor_length(flVelocity);
+	if (flSpeed <= 0.0) {
+		return 0.0;
+	}
+
+	return (floatcos(flYaw, degrees) * flVelocity[0] + floatsin(flYaw, degrees) * flVelocity[1]) / flSpeed;
+}
+
+stock bool:normalize_ladder_start_height(id, Float:flStartOrigin[3], &Float:flNormalizedZ) {
+	static const Float:flOffsets[4][2] = {
+		{ -16.0, 0.0 },
+		{ 16.0, 0.0 },
+		{ 0.0, -16.0 },
+		{ 0.0, 16.0 }
+	};
+
+	new Float:flDestination[3], Float:flTraceEnd[3];
+	new iTrace = create_tr2();
+
+	for (new i = 0; i < sizeof flOffsets; i++) {
+		flDestination[0] = flStartOrigin[0] + flOffsets[i][0];
+		flDestination[1] = flStartOrigin[1] + flOffsets[i][1];
+		flDestination[2] = flStartOrigin[2] - 28.0;
+
+		engfunc(EngFunc_TraceHull, flStartOrigin, flDestination, DONT_IGNORE_MONSTERS, HULL_HEAD, id, iTrace);
+
+		new Float:flFraction;
+		get_tr2(iTrace, TR_flFraction, flFraction);
+		if (flFraction < 1.0) {
+			get_tr2(iTrace, TR_vecEndPos, flTraceEnd);
+			flNormalizedZ = flTraceEnd[2] + 18.0;
+			free_tr2(iTrace);
+			return true;
+		}
+	}
+
+	free_tr2(iTrace);
+	return false;
+}
 stock reset_strafes(id) {
 	for (new i = 0; i < NSTRAFES; i++) {
 		arrayset(g_eStrafeStats[id][i], 0, StrafeStats);

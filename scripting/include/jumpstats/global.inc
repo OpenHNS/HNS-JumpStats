@@ -156,10 +156,9 @@ new bool:g_bOldInDuck[3][MAX_PLAYERS + 1];
 
 new bool:g_bPrevLadder[MAX_PLAYERS + 1];
 new bool:g_isLadderBhop[MAX_PLAYERS + 1];
-
-new Float:g_flLadderXYZ[MAX_PLAYERS + 1][3];
-new Float:g_flLadderSize[MAX_PLAYERS + 1][3];
-new Float:g_flLadderDist[MAX_PLAYERS + 1];
+new bool:g_bLdjAboveStart[MAX_PLAYERS + 1];
+new Float:g_flLdjStartCos[MAX_PLAYERS + 1];
+new Float:g_flLdjEndCos[MAX_PLAYERS + 1];
 
 new g_iOldStrButtons[MAX_PLAYERS + 1];
 new Float:g_flStrOldAngle[MAX_PLAYERS + 1];

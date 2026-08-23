@@ -44,7 +44,6 @@ public ready_jumps(id, Float:flEndJump[3]) {
 
 	new Float:flOrigin[3];
 	flOrigin = flEndJump;
-
 	flOrigin[2] = g_bInDuck[id] ? (flOrigin[2] += 18.0) : flOrigin[2];
 
 	//client_print_color(0, 0, "ready first (%.2f) last (%.2f)", g_flFirstJump[id][2], flOrigin[2])
@@ -55,7 +54,7 @@ public ready_jumps(id, Float:flEndJump[3]) {
 	}
 
 	if (g_eWhichJump[id] == jt_LadderJump) {
-		g_eJumpstats[id][js_flDistance] = get_distance_f(g_flFirstJump[id], flOrigin) + g_flLadderDist[id];
+		g_eJumpstats[id][js_flDistance] = vector_hor_distance(g_flFirstJump[id], flOrigin);
 	} else {
 		g_eJumpstats[id][js_flDistance] = vector_hor_distance(g_flFirstJump[id], flOrigin) + 32.0;
 	}
@@ -119,6 +118,7 @@ public ready_jumps(id, Float:flEndJump[3]) {
 
 	g_ePreStats[id][ptLadderBhop] = false;
 	g_ePreStats[id][ptSideWays] = false;
+	g_bLdjAboveStart[id] = false;
 
 	reset_strafes(id);
 
@@ -143,10 +143,11 @@ public ready_jumps(id, Float:flEndJump[3]) {
 
 public calc_strafe(id) {
 	new iSumAD, iSumWS;
+	new bool:bAllAD = bool:(g_iStrafes[id] > 0);
+	new bool:bAllWS = bool:(g_iStrafes[id] > 0);
 
 	new iStrFrameBad;
 	new iStrFrameGood;
-
 
 	for (new str = 1; str <= g_iStrafes[id]; str++) {
 		iStrFrameGood += g_eStrafeStats[id][str][st_iFrameGood];
@@ -159,16 +160,25 @@ public calc_strafe(id) {
 
 		if (g_eStrafeStats[id][str][st_iButton] == bi_A || g_eStrafeStats[id][str][st_iButton] == bi_D)
 			iSumAD++;
+		else
+			bAllAD = false;
 		if (g_eStrafeStats[id][str][st_iButton] == bi_W || g_eStrafeStats[id][str][st_iButton] == bi_S)
 			iSumWS++;
+		else
+			bAllWS = false;
+
 	}
 
 	if (iStrFrameGood)
 		g_iStrAllEff[id] = (iStrFrameGood * 100 / (iStrFrameGood + iStrFrameBad));
 
-	if (iSumWS > iSumAD) {
+	if (g_eWhichJump[id] == jt_LadderJump) {
+		g_ePreStats[id][ptSideWays] = bool:(bAllWS && floatabs(g_flLdjStartCos[id]) < 0.8 && floatabs(g_flLdjEndCos[id]) < 0.8);
+		g_ePreStats[id][ptBackWards] = bool:(bAllAD && g_flLdjStartCos[id] < -0.5 && g_flLdjEndCos[id] < -0.5);
+	} else if (iSumWS > iSumAD) {
 		g_ePreStats[id][ptSideWays] = true;
 	}
+
 }
 
 public show_strafe_hud(id) {

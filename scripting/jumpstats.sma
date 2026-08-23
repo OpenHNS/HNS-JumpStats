@@ -78,21 +78,14 @@ public rgPM_Move(id) {
 	if (isGround) {
 		g_iFog[id]++;
 
-		if (isLadder) {
-			new iEnt[1];
-			find_sphere_class(id, "func_ladder", 18.0, iEnt, 1);
-
-			if (iEnt[0] != 0) {
-				get_entvar(iEnt[0], var_maxs, g_flLadderXYZ[id]);
-				get_entvar(iEnt[0], var_size, g_flLadderSize[id]);
-			}
-
-		}
-
 		if (!g_isOldGround[id]) {
 			g_flPreHorSpeed[id] = g_flHorSpeed[id];
 			if (g_eWhichJump[id] != jt_Not) {
-				ready_jumps(id, g_flOrigin[id]);
+				if (isLadder && g_eWhichJump[id] == jt_LadderJump) {
+					reset_stats(id);
+				} else {
+					ready_jumps(id, g_flOrigin[id]);
+				}
 			}
 		}
 
@@ -128,8 +121,38 @@ public rgPM_Move(id) {
 		}
 	} else {
 		if (g_eWhichJump[id] != jt_Not && !g_eFailJump[id]) {
-			if ((g_bInDuck[id] ? (g_flOrigin[id][2] + 18.0) : g_flOrigin[id][2]) - g_flFirstJump[id][2] < 0) {
-				g_eFailJump[id] = g_eWhichJump[id] == jt_LadderJump ? fj_notshow : fj_fail;
+			new Float:flCurrentZ = g_bInDuck[id] ? g_flOrigin[id][2] + 18.0 : g_flOrigin[id][2];
+
+			if (g_eWhichJump[id] == jt_LadderJump) {
+				new Float:flPreviousZ = g_bPrevInDuck[id] ? g_flPrevOrigin[id][2] + 18.0 : g_flPrevOrigin[id][2];
+
+				if (!g_bLdjAboveStart[id] && flCurrentZ >= g_flFirstJump[id][2]) {
+					g_bLdjAboveStart[id] = true;
+				}
+
+				if (g_bLdjAboveStart[id] && flPreviousZ >= g_flFirstJump[id][2] && flCurrentZ < g_flFirstJump[id][2]) {
+					new Float:flDeltaZ = flPreviousZ - flCurrentZ;
+					new Float:flRatio;
+					if (flDeltaZ > 0.0) {
+						flRatio = (flPreviousZ - g_flFirstJump[id][2]) / flDeltaZ;
+					}
+
+					if (flRatio < 0.0) {
+						flRatio = 0.0;
+					} else if (flRatio > 1.0) {
+						flRatio = 1.0;
+					}
+
+					new Float:flCrossOrigin[3];
+					flCrossOrigin[0] = g_flPrevOrigin[id][0] + (g_flOrigin[id][0] - g_flPrevOrigin[id][0]) * flRatio;
+					flCrossOrigin[1] = g_flPrevOrigin[id][1] + (g_flOrigin[id][1] - g_flPrevOrigin[id][1]) * flRatio;
+					flCrossOrigin[2] = g_flFirstJump[id][2] - (g_bInDuck[id] ? 18.0 : 0.0);
+
+					g_eFailJump[id] = fj_fail;
+					ready_jumps(id, flCrossOrigin);
+				}
+			} else if (flCurrentZ < g_flFirstJump[id][2]) {
+				g_eFailJump[id] = fj_fail;
 				ready_jumps(id, g_flPrevOrigin[id]);
 			}
 		}
@@ -304,13 +327,30 @@ public rgPM_AirMove(id) {
 
 	new Float:flStrSpeed = vector_hor_length(flVelocity);
 
-	new Float:flAngles[3]; get_entvar(id, var_angles, flAngles);
+	new Float:flAngles[3]; get_entvar(id, var_v_angle, flAngles);
+
+	if (g_eWhichJump[id] == jt_LadderJump) {
+		g_flLdjEndCos[id] = velocity_view_cos(flVelocity, flAngles[1]);
+	}
 
 	g_eJumpstats[id][js_iFrames]++;
 
 	new bool:isTiring = bool:(g_flStrOldAngle[id] != flAngles[1]);
+	new iMoveButtons = iButtons & (IN_MOVELEFT|IN_MOVERIGHT|IN_BACK|IN_FORWARD);
 
-	if (iButtons & IN_MOVELEFT && !(g_iOldStrButtons[id] & IN_MOVELEFT) && !(iButtons & (IN_MOVERIGHT|IN_BACK|IN_FORWARD)) && (isTiring)) {
+	if (g_eWhichJump[id] == jt_LadderJump && g_eJumpstats[id][js_iFrames] == 1 && iMoveButtons == IN_MOVELEFT) {
+		g_iStrafes[id]++;
+		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_A;
+	} else if (g_eWhichJump[id] == jt_LadderJump && g_eJumpstats[id][js_iFrames] == 1 && iMoveButtons == IN_MOVERIGHT) {
+		g_iStrafes[id]++;
+		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_D;
+	} else if (g_eWhichJump[id] == jt_LadderJump && g_eJumpstats[id][js_iFrames] == 1 && iMoveButtons == IN_BACK) {
+		g_iStrafes[id]++;
+		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_S;
+	} else if (g_eWhichJump[id] == jt_LadderJump && g_eJumpstats[id][js_iFrames] == 1 && iMoveButtons == IN_FORWARD) {
+		g_iStrafes[id]++;
+		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_W;
+	} else if (iButtons & IN_MOVELEFT && !(g_iOldStrButtons[id] & IN_MOVELEFT) && !(iButtons & (IN_MOVERIGHT|IN_BACK|IN_FORWARD)) && (isTiring)) {
 		g_iStrafes[id]++;
 		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_A;
 	} else if (iButtons & IN_MOVERIGHT && !(g_iOldStrButtons[id] & IN_MOVERIGHT) && !(iButtons & (IN_MOVELEFT|IN_BACK|IN_FORWARD)) && (isTiring)) {
