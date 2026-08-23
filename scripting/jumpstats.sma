@@ -219,10 +219,12 @@ public rgPM_Move(id) {
 					g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
 					show_pre(id, PRE_FALL, g_flHorSpeed[id]);
 				}
-				if (g_flVelocity[id][2] <= -4.0 && g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0 && g_iFog[id] == 1) {
-					show_boost_stats(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
-					show_boost_chat(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
-				}
+			}
+
+			if (is_boost_frame(id)) {
+				show_pre(id, PRE_BOOST, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
+				show_boost_stats(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
+				show_boost_chat(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
 			}
 		}
 
@@ -294,6 +296,15 @@ stock bool:isPlayerSliding(id) {
 	get_tr2(0, TR_vecPlaneNormal, flPlaneNormal);
 
 	return flPlaneNormal[2] > 0.0 && flPlaneNormal[2] <= 0.7;
+}
+
+stock bool:is_boost_frame(id) {
+	return bool:(
+		!g_bSlide[id]
+		&& g_iFog[id] == 1
+		&& g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0
+		&& g_flVelocity[id][2] <= -4.0
+	);
 }
 
 stock bool:isGoingToTouchGround(id, Float:flFrameTime, Float:flPlayerGravity) {
