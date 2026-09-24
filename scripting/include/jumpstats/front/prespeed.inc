@@ -52,9 +52,9 @@ new bool:g_isJof[MAX_PLAYERS + 1];
 
 new Float:g_flHudJofTime[MAX_PLAYERS + 1];
 
-const Float:PRE_HUD_TIME = 3.0;
+const Float:PRE_HUD_TIME = 2.5;
 
-public show_prespeed(id) {
+public show_speed(id) {
 	new Float:g_flGameTime = get_gametime();
 
 	if (g_isJof[id]) {
@@ -72,38 +72,22 @@ public show_prespeed(id) {
 	if (g_flJof[id]) {
 		formatex(szJof, charsmax(szJof), "jof: %.0f", g_flJof[id]);
 	}
-	new szSpeed[64];
-
-	if (g_eOnOff[id][of_bSpeed]) {
-		switch (g_eSettings[id][S_SPEED_MODE]) {
-			case SPEED_MODE_QUAKE: {
-				formatex(szSpeed, charsmax(szSpeed), "%.0f units/seconds^n%.0f velocity", g_flHorSpeed3D[id], g_flHorSpeed[id]);
-			}
-			case SPEED_MODE_NUMBER: {
-				formatex(szSpeed, charsmax(szSpeed), "%.0f", g_flHorSpeed[id]);
-			}
-			default: {
-				formatex(szSpeed, charsmax(szSpeed), "%.0f u/s", g_flHorSpeed[id]);
-			}
-		}
-	}
 
 	new iColors[3];
 	FormatSpeedRGBHud(id, iColors);
-
-	set_hudmessage(
-		iColors[0], iColors[1], iColors[2],
-		g_eSettings[id][S_PRESPEED_X], g_eSettings[id][S_PRESPEED_Y], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
 
 	for (new i = 1; i <= MaxClients; i++) {
 		if (i == id || g_isUserSpec[i] == id) {
 			if (g_isUserSpec[i] && i == id) {
 				continue;
 			}
+			if (!g_eOnOff[i][of_bSpeed] && !g_eOnOff[i][of_bJof]) {
+				continue;
+			}
 
-			new iFrame = g_eSettings[i][S_PRESPEED_FRAME];
+			new iFrame = g_eSettings[i][S_SPEED_FRAME];
 			if (iFrame < 1) {
-				iFrame = g_pCvar[C_PRESPEED_FRAME];
+				iFrame = g_pCvar[C_SPEED_FRAME];
 			}
 
 			g_iSkip[i]++;
@@ -115,7 +99,26 @@ public show_prespeed(id) {
 				continue;
 			}
 
-			ShowSyncHudMsg(i, g_hudPreSpeed, "%s^n%s",
+			new szSpeed[64];
+			if (g_eOnOff[i][of_bSpeed]) {
+				switch (g_eSettings[i][S_SPEED_MODE]) {
+					case SPEED_MODE_QUAKE: {
+						formatex(szSpeed, charsmax(szSpeed), "%.0f units/seconds^n%.0f velocity", g_flHorSpeed3D[id], g_flHorSpeed[id]);
+					}
+					case SPEED_MODE_NUMBER: {
+						formatex(szSpeed, charsmax(szSpeed), "%.0f", g_flHorSpeed[id]);
+					}
+					default: {
+						formatex(szSpeed, charsmax(szSpeed), "%.0f u/s", g_flHorSpeed[id]);
+					}
+				}
+			}
+
+			set_hudmessage(
+				iColors[0], iColors[1], iColors[2],
+				g_eSettings[i][S_SPEED_X], g_eSettings[i][S_SPEED_Y], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iSpeed]);
+
+			ShowSyncHudMsg(i, g_hudSpeed, "%s^n%s",
 				g_eOnOff[i][of_bJof] && g_flJof[id] ? szJof : "",
 				g_eOnOff[i][of_bSpeed] ? szSpeed : "");
 		}
@@ -124,16 +127,20 @@ public show_prespeed(id) {
 }
 
 stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, FOG_TYPE:fogType = FOG_VERYBAD) {
-	if (!g_eSettings[id][S_PRESPEED]) {
+	if (!g_pCvar[C_ENABLE_PRE]) {
 		return;
 	}
 
 	new iColors[3];
-	iColors[0] = g_eSettings[id][S_PRESPEED_R];
-	iColors[1] = g_eSettings[id][S_PRESPEED_G];
-	iColors[2] = g_eSettings[id][S_PRESPEED_B];
+	iColors[0] = g_eSettings[id][S_PRE_R];
+	iColors[1] = g_eSettings[id][S_PRE_G];
+	iColors[2] = g_eSettings[id][S_PRE_B];
 
-	if (iType >= PRE_BHOP && iType <= PRE_DUCKBHOP) {
+	if (iType == PRE_BOOST || iType == PRE_JUMPBUG || iType == PRE_EDGEBUG) {
+		iColors[0] = g_eSettings[id][S_PRE_GOOD_R];
+		iColors[1] = g_eSettings[id][S_PRE_GOOD_G];
+		iColors[2] = g_eSettings[id][S_PRE_GOOD_B];
+	} else if (iType >= PRE_BHOP && iType <= PRE_DUCKBHOP) {
 		new Float:flMaxHorSpeed;
 		get_entvar(id, var_maxspeed, flMaxHorSpeed);
 		flMaxHorSpeed = floatmul(1.2, flMaxHorSpeed);
@@ -200,16 +207,11 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 			continue;
 		}
 
-		new iColorScale = g_eOnOff[i][of_bSpeed] ? 2 : 1;
 		set_hudmessage(
-			iColors[0] / iColorScale, iColors[1] / iColorScale, iColors[2] / iColorScale,
-			g_eSettings[id][S_PRESPEED_X], g_eSettings[id][S_PRESPEED_Y], 0, 0.0, PRE_HUD_TIME, 0.0, 0.0, g_pCvar[c_iPreSpeed]);
+			iColors[0], iColors[1], iColors[2],
+			g_eSettings[i][S_PRE_X], g_eSettings[i][S_PRE_Y], 0, 6.0, PRE_HUD_TIME, 0.1, 0.3, g_pCvar[c_iPre]);
 
-		if (g_eOnOff[i][of_bSpeed] && g_eSettings[id][S_SPEED_MODE] == SPEED_MODE_QUAKE) {
-			ShowSyncHudMsg(i, g_hudPre, "^n^n^n^n%s", szPre);
-		} else {
-			ShowSyncHudMsg(i, g_hudPre, "^n^n^n%s", szPre);
-		}
+		ShowSyncHudMsg(i, g_hudPre, "%s", szPre);
 	}
 
 }
@@ -278,7 +280,7 @@ stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
 }
 
 stock show_jof(id, Float:flJof) {
-	if (!g_eOnOff[id][of_bJof]) {
+	if (!g_pCvar[C_ENABLE_SPEED]) {
 		return;
 	}
 

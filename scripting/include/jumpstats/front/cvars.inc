@@ -1,8 +1,8 @@
 enum JS_CVAR {
 	c_szPrefix[24],
 	C_ENABLE_STATS,
-	C_ENABLE_STRAFE,
-	C_ENABLE_PRESPEED,
+	C_ENABLE_PRE,
+	C_ENABLE_SPEED,
 	C_ENABLE_CONSOLE,
 	C_ENABLE_CHATINFO,
 	C_ENABLE_SOUND,
@@ -12,9 +12,9 @@ enum JS_CVAR {
 	C_FAILSTATS_R,
 	C_FAILSTATS_G,
 	C_FAILSTATS_B,
-	C_PRESPEED_R,
-	C_PRESPEED_G,
-	C_PRESPEED_B,
+	C_PRE_R,
+	C_PRE_G,
+	C_PRE_B,
 	C_PRE_GOOD_R,
 	C_PRE_GOOD_G,
 	C_PRE_GOOD_B,
@@ -25,17 +25,17 @@ enum JS_CVAR {
 	C_PRE_MINLOSS_G,
 	C_PRE_MINLOSS_B,
 	C_SPEED_MODE,
-	C_PRESPEED_FRAME,
+	C_SPEED_FRAME,
 	Float:C_STATS_X,
 	Float:C_STATS_Y,
-	Float:C_STRAFE_X,
-	Float:C_STRAFE_Y,
-	Float:C_PRESPEED_X,
-	Float:C_PRESPEED_Y,
+	Float:C_PRE_X,
+	Float:C_PRE_Y,
+	Float:C_SPEED_X,
+	Float:C_SPEED_Y,
 	C_BHOP_FOGSTATS,
 	c_iStats,
-	c_iStrafe,
-	c_iPreSpeed,
+	c_iPre,
+	c_iSpeed,
 	c_iConsoleBug,
 	c_iNoslow,
 	c_iUseForwards,
@@ -48,8 +48,8 @@ init_cvars() {
 	bind_pcvar_string(register_cvar("js_prefix", "Jump"),	g_pCvar[c_szPrefix], charsmax(g_pCvar[c_szPrefix]));
 
 	bind_pcvar_num(register_cvar("js_enable_stats", "1"),		g_pCvar[C_ENABLE_STATS]);
-	bind_pcvar_num(register_cvar("js_enable_strafe", "1"),		g_pCvar[C_ENABLE_STRAFE]);
-	bind_pcvar_num(register_cvar("js_enable_prespeed", "1"),	g_pCvar[C_ENABLE_PRESPEED]);
+	bind_pcvar_num(register_cvar("js_enable_pre", "1"),		g_pCvar[C_ENABLE_PRE]);
+	bind_pcvar_num(register_cvar("js_enable_speed", "1"),	g_pCvar[C_ENABLE_SPEED]);
 	bind_pcvar_num(register_cvar("js_enable_console", "1"),		g_pCvar[C_ENABLE_CONSOLE]);
 	bind_pcvar_num(register_cvar("js_enable_chat", "1"),		g_pCvar[C_ENABLE_CHATINFO]);
 	bind_pcvar_num(register_cvar("js_enable_sound", "1"),		g_pCvar[C_ENABLE_SOUND]);
@@ -62,9 +62,9 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_failstats_green", "70"),	g_pCvar[C_FAILSTATS_G]);
 	bind_pcvar_num(register_cvar("js_failstats_blue", "120"),	g_pCvar[C_FAILSTATS_B]);
 
-	bind_pcvar_num(register_cvar("js_prespeed_red", "200"),	g_pCvar[C_PRESPEED_R]);
-	bind_pcvar_num(register_cvar("js_prespeed_green", "200"),g_pCvar[C_PRESPEED_G]);
-	bind_pcvar_num(register_cvar("js_prespeed_blue", "200"),	g_pCvar[C_PRESPEED_B]);
+	bind_pcvar_num(register_cvar("js_pre_red", "200"),	g_pCvar[C_PRE_R]);
+	bind_pcvar_num(register_cvar("js_pre_green", "200"),g_pCvar[C_PRE_G]);
+	bind_pcvar_num(register_cvar("js_pre_blue", "200"),	g_pCvar[C_PRE_B]);
 
 	bind_pcvar_num(register_cvar("js_goodpre_red", "20"),		g_pCvar[C_PRE_GOOD_R]);
 	bind_pcvar_num(register_cvar("js_goodpre_green", "255"),	g_pCvar[C_PRE_GOOD_G]);
@@ -80,22 +80,22 @@ init_cvars() {
 
 	bind_pcvar_num(register_cvar("js_speed_mode", "0"),		g_pCvar[C_SPEED_MODE]);
 	
-	bind_pcvar_num(register_cvar("js_prespeed_frame", "3"),	g_pCvar[C_PRESPEED_FRAME]);
+	bind_pcvar_num(register_cvar("js_speed_frame", "3"),	g_pCvar[C_SPEED_FRAME]);
 
-	bind_pcvar_float(register_cvar("js_stats_x", "-1.0"),		g_pCvar[C_STATS_X]);
-	bind_pcvar_float(register_cvar("js_stats_y", "0.7"),		g_pCvar[C_STATS_Y]);
+	bind_pcvar_float(register_cvar("js_stats_x", "0.7"),		g_pCvar[C_STATS_X]);
+	bind_pcvar_float(register_cvar("js_stats_y", "0.35"),		g_pCvar[C_STATS_Y]);
 
-	bind_pcvar_float(register_cvar("js_strafe_x", "0.7"),	g_pCvar[C_STRAFE_X]);
-	bind_pcvar_float(register_cvar("js_strafe_y", "0.35"),	g_pCvar[C_STRAFE_Y]);
+	bind_pcvar_float(register_cvar("js_pre_x", "-1.0"),	g_pCvar[C_PRE_X]);
+	bind_pcvar_float(register_cvar("js_pre_y", "0.62"),	g_pCvar[C_PRE_Y]);
 
-	bind_pcvar_float(register_cvar("js_prespeed_x", "-1.0"),	g_pCvar[C_PRESPEED_X]);
-	bind_pcvar_float(register_cvar("js_prespeed_y", "0.55"),	g_pCvar[C_PRESPEED_Y]);
+	bind_pcvar_float(register_cvar("js_speed_x", "-1.0"),	g_pCvar[C_SPEED_X]);
+	bind_pcvar_float(register_cvar("js_speed_y", "0.55"),	g_pCvar[C_SPEED_Y]);
 
 	bind_pcvar_num(register_cvar("js_bhop_fogstats", "1"),	g_pCvar[C_BHOP_FOGSTATS]);
 
 	bind_pcvar_num(register_cvar("js_hud_stats", "2"),		g_pCvar[c_iStats]);
-	bind_pcvar_num(register_cvar("js_hud_strafe", "3"),		g_pCvar[c_iStrafe]);
-	bind_pcvar_num(register_cvar("js_hud_prespeed", "1"),			g_pCvar[c_iPreSpeed]);
+	bind_pcvar_num(register_cvar("js_hud_pre", "3"),		g_pCvar[c_iPre]);
+	bind_pcvar_num(register_cvar("js_hud_speed", "1"),		g_pCvar[c_iSpeed]);
 
 	bind_pcvar_num(register_cvar("js_console_fix", "0"),	g_pCvar[c_iConsoleBug]);
 

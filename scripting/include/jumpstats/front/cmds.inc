@@ -14,7 +14,6 @@ new g_eOnOff[MAX_PLAYERS + 1][JS_ONOFF];
 
 public init_cmds() {
 	RegisterSayCmd("ljsmenu", "ljs",		"ShowJumpStatsMenu",		ADMIN_ALL, "Jump stats menu");
-	RegisterSayCmd("strafe", "strafestats",	"cmdShowStrafe",	ADMIN_ALL, "Show strafe stats");
 	RegisterSayCmd("stats", "ljstats",		"cmdShowStats",		ADMIN_ALL, "Show main stats");
 	RegisterSayCmd("chatinfo", "ci",		"cmdShowChatInfo",	ADMIN_ALL, "Show jump chat onfo");
 	RegisterSayCmd("showspeed", "speed",	"cmdShowSpeed",		ADMIN_ALL, "Show speed");
@@ -53,23 +52,8 @@ public cmdShowStats(id) {
 	return PLUGIN_HANDLED;
 }
 
-public cmdShowStrafe(id) {
-	if (!g_pCvar[C_ENABLE_STRAFE])
-		return PLUGIN_HANDLED;
-		
-	if (g_eSettings[id][S_STRAFE]) {
-		settings_strafe_set(id, false);
-	} else {
-		settings_strafe_set(id, true);
-	}
-
-	client_print_color(id, print_team_blue, "[^3%s^1] Strafe stats: ^3%s^1.", g_pCvar[c_szPrefix], g_eSettings[id][S_STRAFE] ? "enabled" : "disabled");
-
-	return PLUGIN_HANDLED;
-}
-
 public cmdShowJof(id) {
-	if (!g_pCvar[C_ENABLE_PRESPEED])
+	if (!g_pCvar[C_ENABLE_SPEED])
 		return PLUGIN_HANDLED;
 
 	g_eOnOff[id][of_bJof] = !g_eOnOff[id][of_bJof];
@@ -80,7 +64,7 @@ public cmdShowJof(id) {
 }
 
 public cmdShowSpeed(id) {
-	if (!g_pCvar[C_ENABLE_PRESPEED])
+	if (!g_pCvar[C_ENABLE_SPEED])
 		return PLUGIN_HANDLED;
 
 	g_eOnOff[id][of_bSpeed] = !g_eOnOff[id][of_bSpeed];
@@ -91,7 +75,7 @@ public cmdShowSpeed(id) {
 }
 
 public cmdShowPre(id) {
-	if (!g_pCvar[C_ENABLE_PRESPEED])
+	if (!g_pCvar[C_ENABLE_PRE])
 		return PLUGIN_HANDLED;
 
 	g_eOnOff[id][of_bPre] = !g_eOnOff[id][of_bPre];

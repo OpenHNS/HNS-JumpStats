@@ -6,7 +6,7 @@ new const HUD_COLOR_INPUT_CMD[] = "JS_HUD_COLOR_INPUT";
 new const HUD_POSITION_MENU_ID[] = "JUMPSTATS_HUD_POSITION_MENU";
 new const HUD_POSITION_EDIT_MENU_ID[] = "JUMPSTATS_HUD_POSITION_EDIT_MENU";
 new const HUD_POSITION_INPUT_CMD[] = "JS_HUD_POSITION_INPUT";
-new const PRESPEED_CONFIG_MENU_ID[] = "JUMPSTATS_PRESPEED_CONFIG_MENU";
+new const SPEED_CONFIG_MENU_ID[] = "JUMPSTATS_SPEED_CONFIG_MENU";
 
 enum _:HUD_COLOR_TARGET {
 	HC_TARGET_NONE,
@@ -17,8 +17,8 @@ enum _:HUD_COLOR_TARGET {
 enum _:HUD_POSITION_TARGET {
 	HP_TARGET_NONE,
 	HP_TARGET_STATS,
-	HP_TARGET_STRAFE,
-	HP_TARGET_PRESPEED
+	HP_TARGET_PRE,
+	HP_TARGET_SPEED
 };
 
 new g_iHudColorTarget[MAX_PLAYERS + 1];
@@ -31,7 +31,7 @@ public init_menus() {
 	register_menucmd(register_menuid(HUD_COLOR_EDIT_MENU_ID), 1023, "HandleCustomizeHudColorEditMenu");
 	register_menucmd(register_menuid(HUD_POSITION_MENU_ID), 1023, "HandleCustomizeHudPositionMenu");
 	register_menucmd(register_menuid(HUD_POSITION_EDIT_MENU_ID), 1023, "HandleCustomizeHudPositionEditMenu");
-	register_menucmd(register_menuid(PRESPEED_CONFIG_MENU_ID), 1023, "HandlePreSpeedConfigurationsMenu");
+	register_menucmd(register_menuid(SPEED_CONFIG_MENU_ID), 1023, "HandleSpeedConfigurationsMenu");
 	register_clcmd(HUD_COLOR_INPUT_CMD, "CmdCustomizeHudColorInput");
 	register_clcmd(HUD_POSITION_INPUT_CMD, "CmdCustomizeHudPositionInput");
 }
@@ -54,7 +54,7 @@ public ShowJumpStatsMenu(id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wCustomize HUD Position^n");
 	iKeys |= MENU_KEY_3;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wPreSpeed configurations^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wSpeed configurations^n");
 	iKeys |= MENU_KEY_4;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
@@ -77,7 +77,7 @@ public HandleJumpStatsMenu(const id, const key) {
 			ShowCustomizeHudPositionMenu(id);
 		}
 		case 3: {
-			ShowPreSpeedConfigurationsMenu(id);
+			ShowSpeedConfigurationsMenu(id);
 		}
 		case 9: {
 			return PLUGIN_HANDLED;
@@ -94,14 +94,14 @@ public ShowEnableOptionsMenu(const id) {
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rEnable options:^n^n");
 
-	if (g_pCvar[C_ENABLE_PRESPEED]) {
+	if (g_pCvar[C_ENABLE_SPEED]) {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wSpeed [%s]^n", g_eOnOff[id][of_bSpeed] ? "\yOn\w" : "\dOff\w");
 		iKeys |= MENU_KEY_1;
 	} else {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \dSpeed [server off]^n");
 	}
 
-	if (g_pCvar[C_ENABLE_PRESPEED]) {
+	if (g_pCvar[C_ENABLE_PRE]) {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wShow pre [%s]^n", g_eOnOff[id][of_bPre] ? "\yOn\w" : "\dOff\w");
 		iKeys |= MENU_KEY_2;
 	} else {
@@ -115,25 +115,18 @@ public ShowEnableOptionsMenu(const id) {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \dStats [server off]^n");
 	}
 
-	if (g_pCvar[C_ENABLE_STRAFE]) {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wStrafes stats [%s]^n", g_eSettings[id][S_STRAFE] ? "\yOn\w" : "\dOff\w");
+	if (g_pCvar[C_ENABLE_CHATINFO]) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wChat info [%s]^n", g_eSettings[id][S_CHATINFO] ? "\yOn\w" : "\dOff\w");
 		iKeys |= MENU_KEY_4;
 	} else {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \dStrafes stats [server off]^n");
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \dChat info [server off]^n");
 	}
 
-	if (g_pCvar[C_ENABLE_CHATINFO]) {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wChat info [%s]^n", g_eSettings[id][S_CHATINFO] ? "\yOn\w" : "\dOff\w");
+	if (g_pCvar[C_ENABLE_SPEED]) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wJumpOff [%s]^n", g_eOnOff[id][of_bJof] ? "\yOn\w" : "\dOff\w");
 		iKeys |= MENU_KEY_5;
 	} else {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \dChat info [server off]^n");
-	}
-
-	if (g_pCvar[C_ENABLE_PRESPEED]) {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wJumpOff [%s]^n", g_eOnOff[id][of_bJof] ? "\yOn\w" : "\dOff\w");
-		iKeys |= MENU_KEY_6;
-	} else {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \dJumpOff [server off]^n");
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \dJumpOff [server off]^n");
 	}
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
@@ -161,14 +154,10 @@ public HandleEnableOptionsMenu(const id, const key) {
 			ShowEnableOptionsMenu(id);
 		}
 		case 3: {
-			cmdShowStrafe(id);
-			ShowEnableOptionsMenu(id);
-		}
-		case 4: {
 			cmdShowChatInfo(id);
 			ShowEnableOptionsMenu(id);
 		}
-		case 5: {
+		case 4: {
 			cmdShowJof(id);
 			ShowEnableOptionsMenu(id);
 		}
@@ -255,15 +244,15 @@ public ShowCustomizeHudPositionMenu(const id) {
 	);
 	iKeys |= MENU_KEY_1;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wStrafe \d(%.2f %.2f)^n",
-		g_eSettings[id][S_STRAFE_X],
-		g_eSettings[id][S_STRAFE_Y]
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wPre \d(%.2f %.2f)^n",
+		g_eSettings[id][S_PRE_X],
+		g_eSettings[id][S_PRE_Y]
 	);
 	iKeys |= MENU_KEY_2;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wPrespeed \d(%.2f %.2f)^n",
-		g_eSettings[id][S_PRESPEED_X],
-		g_eSettings[id][S_PRESPEED_Y]
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wSpeed / JOF \d(%.2f %.2f)^n",
+		g_eSettings[id][S_SPEED_X],
+		g_eSettings[id][S_SPEED_Y]
 	);
 	iKeys |= MENU_KEY_3;
 
@@ -284,11 +273,11 @@ public HandleCustomizeHudPositionMenu(const id, const key) {
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 1: {
-			g_iHudPositionTarget[id] = HP_TARGET_STRAFE;
+			g_iHudPositionTarget[id] = HP_TARGET_PRE;
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 2: {
-			g_iHudPositionTarget[id] = HP_TARGET_PRESPEED;
+			g_iHudPositionTarget[id] = HP_TARGET_SPEED;
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 7: {
@@ -315,15 +304,15 @@ public ShowCustomizeHudPositionEditMenu(const id) {
 			g_eSettings[id][S_STATS_X],
 			g_eSettings[id][S_STATS_Y]
 		);
-	} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rStrafe HUD:^n\dCurrent: %.2f %.2f^n^n",
-			g_eSettings[id][S_STRAFE_X],
-			g_eSettings[id][S_STRAFE_Y]
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRE) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rPre HUD:^n\dCurrent: %.2f %.2f^n^n",
+			g_eSettings[id][S_PRE_X],
+			g_eSettings[id][S_PRE_Y]
 		);
 	} else {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rPrespeed HUD:^n\dCurrent: %.2f %.2f^n^n",
-			g_eSettings[id][S_PRESPEED_X],
-			g_eSettings[id][S_PRESPEED_Y]
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rSpeed / JOF HUD:^n\dCurrent: %.2f %.2f^n^n",
+			g_eSettings[id][S_SPEED_X],
+			g_eSettings[id][S_SPEED_Y]
 		);
 	}
 
@@ -364,12 +353,12 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 	if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
 		flX = g_eSettings[id][S_STATS_X];
 		flY = g_eSettings[id][S_STATS_Y];
-	} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
-		flX = g_eSettings[id][S_STRAFE_X];
-		flY = g_eSettings[id][S_STRAFE_Y];
-	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRESPEED) {
-		flX = g_eSettings[id][S_PRESPEED_X];
-		flY = g_eSettings[id][S_PRESPEED_Y];
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRE) {
+		flX = g_eSettings[id][S_PRE_X];
+		flY = g_eSettings[id][S_PRE_Y];
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_SPEED) {
+		flX = g_eSettings[id][S_SPEED_X];
+		flY = g_eSettings[id][S_SPEED_Y];
 	} else {
 		return PLUGIN_HANDLED;
 	}
@@ -378,10 +367,10 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 		case 0: {
 			if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
 				settings_stats_xy_set(id, g_pCvar[C_STATS_X], g_pCvar[C_STATS_Y]);
-			} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
-				settings_strafe_xy_set(id, g_pCvar[C_STRAFE_X], g_pCvar[C_STRAFE_Y]);
+			} else if (g_iHudPositionTarget[id] == HP_TARGET_PRE) {
+				settings_pre_xy_set(id, g_pCvar[C_PRE_X], g_pCvar[C_PRE_Y]);
 			} else {
-				settings_prespeed_xy_set(id, g_pCvar[C_PRESPEED_X], g_pCvar[C_PRESPEED_Y]);
+				settings_speed_xy_set(id, g_pCvar[C_SPEED_X], g_pCvar[C_SPEED_Y]);
 			}
 
 			ShowCustomizeHudPositionEditMenu(id);
@@ -391,7 +380,7 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 			client_cmd(id, "messagemode %s", HUD_POSITION_INPUT_CMD);
 		}
 		case 2: {
-			flY -= 0.05;
+			flY -= 0.02;
 
 			if (flY < 0.0) {
 				flY = 0.0;
@@ -401,7 +390,7 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 3: {
-			flY += 0.05;
+			flY += 0.02;
 
 			if (flY > 1.0) {
 				flY = 1.0;
@@ -411,7 +400,7 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 4: {
-			flX -= 0.05;
+			flX -= 0.02;
 
 			if (flX < -1.0) {
 				flX = -1.0;
@@ -421,7 +410,7 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 5: {
-			flX += 0.05;
+			flX += 0.02;
 
 			if (flX > 1.0) {
 				flX = 1.0;
@@ -646,30 +635,30 @@ public CmdCustomizeHudPositionInput(const id) {
 ApplyHudPosition(const id, Float:flX, Float:flY) {
 	if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
 		settings_stats_xy_set(id, flX, flY);
-	} else if (g_iHudPositionTarget[id] == HP_TARGET_STRAFE) {
-		settings_strafe_xy_set(id, flX, flY);
-	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRESPEED) {
-		settings_prespeed_xy_set(id, flX, flY);
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRE) {
+		settings_pre_xy_set(id, flX, flY);
+	} else if (g_iHudPositionTarget[id] == HP_TARGET_SPEED) {
+		settings_speed_xy_set(id, flX, flY);
 	}
 }
 
-public ShowPreSpeedConfigurationsMenu(const id) {
+public ShowSpeedConfigurationsMenu(const id) {
 	new szBuffer[512];
 	new iLen = 0;
 	new iKeys = 0;
-	new iFrame = g_eSettings[id][S_PRESPEED_FRAME];
+	new iFrame = g_eSettings[id][S_SPEED_FRAME];
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rPreSpeed configurations:^n^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rSpeed configurations:^n^n");
 
 	if (iFrame < 2 || iFrame > 5) {
-		iFrame = g_pCvar[C_PRESPEED_FRAME];
+		iFrame = g_pCvar[C_SPEED_FRAME];
 	}
 
 	if (iFrame < 2 || iFrame > 5) {
 		iFrame = 3;
 	}
 
-	if (iFrame == g_pCvar[C_PRESPEED_FRAME]) {
+	if (iFrame == g_pCvar[C_SPEED_FRAME]) {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wHUD update skip framerate: \y%d \d(default)^n", iFrame);
 	} else {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wHUD update skip framerate: \y%d^n", iFrame);
@@ -688,16 +677,16 @@ public ShowPreSpeedConfigurationsMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
 
-	show_menu(id, iKeys, szBuffer, -1, PRESPEED_CONFIG_MENU_ID);
+	show_menu(id, iKeys, szBuffer, -1, SPEED_CONFIG_MENU_ID);
 }
 
-public HandlePreSpeedConfigurationsMenu(const id, const key) {
+public HandleSpeedConfigurationsMenu(const id, const key) {
 	switch (key) {
 		case 0: {
-			new iFrame = g_eSettings[id][S_PRESPEED_FRAME];
+			new iFrame = g_eSettings[id][S_SPEED_FRAME];
 
 			if (iFrame < 2 || iFrame > 5) {
-				iFrame = g_pCvar[C_PRESPEED_FRAME];
+				iFrame = g_pCvar[C_SPEED_FRAME];
 			}
 
 			if (iFrame < 2 || iFrame > 5) {
@@ -711,8 +700,8 @@ public HandlePreSpeedConfigurationsMenu(const id, const key) {
 				default: iFrame = 2;
 			}
 
-			settings_prespeed_frame_set(id, iFrame);
-			ShowPreSpeedConfigurationsMenu(id);
+			settings_speed_frame_set(id, iFrame);
+			ShowSpeedConfigurationsMenu(id);
 		}
 		case 1: {
 			new iMode = g_eSettings[id][S_SPEED_MODE] + 1;
@@ -721,13 +710,13 @@ public HandlePreSpeedConfigurationsMenu(const id, const key) {
 			}
 
 			settings_speed_mode_set(id, iMode);
-			ShowPreSpeedConfigurationsMenu(id);
+			ShowSpeedConfigurationsMenu(id);
 		}
 		case 7: {
 			ShowJumpStatsMenu(id);
 		}
 		case 8: {
-			ShowPreSpeedConfigurationsMenu(id);
+			ShowSpeedConfigurationsMenu(id);
 		}
 		case 9: {
 			return PLUGIN_HANDLED;

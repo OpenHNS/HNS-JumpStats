@@ -12,8 +12,6 @@ new const g_szSpeedMode[SPEED_MODE][] = {
 
 enum _:SETTINGS {
 	bool:S_STATS,
-    bool:S_STRAFE,
-    bool:S_PRESPEED,
     bool:S_CHATINFO,
     bool:S_SOUND,
     S_STATS_R,
@@ -22,9 +20,9 @@ enum _:SETTINGS {
     S_FAILSTATS_R,
     S_FAILSTATS_G,
     S_FAILSTATS_B,
-    S_PRESPEED_R,
-    S_PRESPEED_G,
-    S_PRESPEED_B,
+    S_PRE_R,
+    S_PRE_G,
+    S_PRE_B,
     S_PRE_GOOD_R,
     S_PRE_GOOD_G,
     S_PRE_GOOD_B,
@@ -35,29 +33,23 @@ enum _:SETTINGS {
     S_PRE_MINLOSS_G,
     S_PRE_MINLOSS_B,
     S_SPEED_MODE,
-    S_PRESPEED_FRAME,
+    S_SPEED_FRAME,
     Float:S_STATS_X,
     Float:S_STATS_Y,
-    Float:S_STRAFE_X,
-    Float:S_STRAFE_Y,
-    Float:S_PRESPEED_X,
-    Float:S_PRESPEED_Y,
+    Float:S_PRE_X,
+    Float:S_PRE_Y,
+    Float:S_SPEED_X,
+    Float:S_SPEED_Y,
     S_BHOP_FOGSTATS
 };
 
 new g_eSettings[MAX_PLAYERS + 1][SETTINGS];
 
 public settings_player_connect(id) {
+    arrayset(g_eSettings[id], 0, SETTINGS);
+
     if (g_pCvar[C_ENABLE_STATS]) {
         g_eSettings[id][S_STATS] = true;
-    }
-
-    if (g_pCvar[C_ENABLE_STRAFE]) {
-        g_eSettings[id][S_STRAFE] = true;
-    }
-
-    if (g_pCvar[C_ENABLE_PRESPEED]) {
-        g_eSettings[id][S_PRESPEED] = true;
     }
 
     if (g_pCvar[C_ENABLE_CHATINFO]) {
@@ -76,9 +68,9 @@ public settings_player_connect(id) {
     g_eSettings[id][S_FAILSTATS_G] = g_pCvar[C_FAILSTATS_G];
     g_eSettings[id][S_FAILSTATS_B] = g_pCvar[C_FAILSTATS_B];
 
-    g_eSettings[id][S_PRESPEED_R] = g_pCvar[C_PRESPEED_R];
-    g_eSettings[id][S_PRESPEED_G] = g_pCvar[C_PRESPEED_G];
-    g_eSettings[id][S_PRESPEED_B] = g_pCvar[C_PRESPEED_B];
+    g_eSettings[id][S_PRE_R] = g_pCvar[C_PRE_R];
+    g_eSettings[id][S_PRE_G] = g_pCvar[C_PRE_G];
+    g_eSettings[id][S_PRE_B] = g_pCvar[C_PRE_B];
 
     g_eSettings[id][S_PRE_GOOD_R] = g_pCvar[C_PRE_GOOD_R];
     g_eSettings[id][S_PRE_GOOD_G] = g_pCvar[C_PRE_GOOD_G];
@@ -97,16 +89,16 @@ public settings_player_connect(id) {
         g_eSettings[id][S_SPEED_MODE] = SPEED_MODE_DEFAULT;
     }
 
-    g_eSettings[id][S_PRESPEED_FRAME] = g_pCvar[C_PRESPEED_FRAME];
+    g_eSettings[id][S_SPEED_FRAME] = g_pCvar[C_SPEED_FRAME];
 
     g_eSettings[id][S_STATS_X] = g_pCvar[C_STATS_X];
     g_eSettings[id][S_STATS_Y] = g_pCvar[C_STATS_Y];
 
-    g_eSettings[id][S_STRAFE_X] = g_pCvar[C_STRAFE_X];
-    g_eSettings[id][S_STRAFE_Y] = g_pCvar[C_STRAFE_Y];
+    g_eSettings[id][S_PRE_X] = g_pCvar[C_PRE_X];
+    g_eSettings[id][S_PRE_Y] = g_pCvar[C_PRE_Y];
 
-    g_eSettings[id][S_PRESPEED_X] = g_pCvar[C_PRESPEED_X];
-    g_eSettings[id][S_PRESPEED_Y] = g_pCvar[C_PRESPEED_Y];
+    g_eSettings[id][S_SPEED_X] = g_pCvar[C_SPEED_X];
+    g_eSettings[id][S_SPEED_Y] = g_pCvar[C_SPEED_Y];
 
     g_eSettings[id][S_BHOP_FOGSTATS] = g_pCvar[C_BHOP_FOGSTATS];
 }
@@ -114,18 +106,6 @@ public settings_player_connect(id) {
 public settings_stats_set(id, bool:bStats) {
     if (g_pCvar[C_ENABLE_STATS]) {
         g_eSettings[id][S_STATS] = bStats;
-    }
-}
-
-public settings_strafe_set(id, bool:bStrafe) {
-    if (g_pCvar[C_ENABLE_STRAFE]) {
-        g_eSettings[id][S_STRAFE] = bStrafe;
-    }
-}
-
-public settings_prespeed_set(id, bool:bPreSpeed) {
-    if (g_pCvar[C_ENABLE_PRESPEED]) {
-        g_eSettings[id][S_PRESPEED] = bPreSpeed;
     }
 }
 
@@ -151,12 +131,6 @@ public settings_failstats_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_FAILSTATS_R] = iRed;
     g_eSettings[id][S_FAILSTATS_G] = iGreen;
     g_eSettings[id][S_FAILSTATS_B] = iBlue;
-}
-
-public settings_prespeed_rgb_set(id, iRed, iGreen, iBlue) {
-    g_eSettings[id][S_PRESPEED_R] = iRed;
-    g_eSettings[id][S_PRESPEED_G] = iGreen;
-    g_eSettings[id][S_PRESPEED_B] = iBlue;
 }
 
 public settings_pre_good_rgb_set(id, iRed, iGreen, iBlue) {
@@ -185,8 +159,8 @@ public settings_speed_mode_set(id, iMode) {
     g_eSettings[id][S_SPEED_MODE] = iMode;
 }
 
-public settings_prespeed_frame_set(id, iFrame) {
-    g_eSettings[id][S_PRESPEED_FRAME] = iFrame;
+public settings_speed_frame_set(id, iFrame) {
+    g_eSettings[id][S_SPEED_FRAME] = iFrame;
 }
 
 public settings_stats_xy_set(id, Float:flX, Float:flY) {
@@ -194,14 +168,14 @@ public settings_stats_xy_set(id, Float:flX, Float:flY) {
     g_eSettings[id][S_STATS_Y] = flY;
 }
 
-public settings_strafe_xy_set(id, Float:flX, Float:flY) {
-    g_eSettings[id][S_STRAFE_X] = flX;
-    g_eSettings[id][S_STRAFE_Y] = flY;
+public settings_pre_xy_set(id, Float:flX, Float:flY) {
+    g_eSettings[id][S_PRE_X] = flX;
+    g_eSettings[id][S_PRE_Y] = flY;
 }
 
-public settings_prespeed_xy_set(id, Float:flX, Float:flY) {
-    g_eSettings[id][S_PRESPEED_X] = flX;
-    g_eSettings[id][S_PRESPEED_Y] = flY;
+public settings_speed_xy_set(id, Float:flX, Float:flY) {
+    g_eSettings[id][S_SPEED_X] = flX;
+    g_eSettings[id][S_SPEED_Y] = flY;
 }
 
 public settings_bhop_fogstats_set(id, bFogStats) {

@@ -55,11 +55,11 @@
 
 ![jumpoff_landing](https://github.com/WessTorn/HNS-JumpStats/assets/63194135/d25817ff-0239-4864-904c-9a331d895cd5)
 
-### Престрейфы (prespeed - jof, speed, speed)
+### HUD скорости и престрейфов
 
 ![prespeed](https://github.com/WessTorn/HNS-JumpStats/assets/63194135/ee3d850a-7739-480d-b9c1-8ac023ad5666)
 
-В prespeed (hud) отображаются jof, тип пресрейфа, speed, FOG и prestrafe pre - скорость до прыжка или дака (перед попаданием на землю) / post -  скорость после
+HUD разделён на три независимых блока со своими позициями: speed/JOF, pre и статистика прыжка со стрейфами. В pre отображаются тип престрейфа, FOG, скорость до прыжка или дака и скорость после.
 
 FOG (frames on the ground) - в двух словах, это кол-во frame (кадров) на земле.
 - Зачем нам показывают FOG и что мы должны знать?
@@ -88,8 +88,8 @@ FOG (frames on the ground) - в двух словах, это кол-во frame 
 | :--- | :---: | :--- |
 | `js_prefix` | Jump | Префикс статистики |
 | `js_enable_stats` | 1 | Включает HUD основной статистики |
-| `js_enable_strafe` | 1 | Включает HUD статистики стрейфов |
-| `js_enable_prespeed` | 1 | Включает HUD скорости, pre и JOF |
+| `js_enable_pre` | 1 | Включает pre HUD |
+| `js_enable_speed` | 1 | Включает speed/JOF HUD |
 | `js_enable_console` | 1 | Включает статистику прыжков в консоли |
 | `js_enable_chat` | 1 | Включает статистику лучших прыжков в чате |
 | `js_enable_sound` | 1 | Включает звуки лучших прыжков |
@@ -99,30 +99,30 @@ FOG (frames on the ground) - в двух словах, это кол-во frame 
 | `js_failstats_red` | 200 | Красный канал HUD неудачного прыжка |
 | `js_failstats_green` | 10 | Зелёный канал HUD неудачного прыжка |
 | `js_failstats_blue` | 50 | Синий канал HUD неудачного прыжка |
-| `js_prespeed_red` | 200 | Базовый красный канал prespeed HUD |
-| `js_prespeed_green` | 200 | Базовый зелёный канал prespeed HUD |
-| `js_prespeed_blue` | 200 | Базовый синий канал prespeed HUD |
-| `js_goodpre_red` | 20 | Красный канал GOOD pre в режиме KZRush |
-| `js_goodpre_green` | 255 | Зелёный канал GOOD pre в режиме KZRush |
-| `js_goodpre_blue` | 150 | Синий канал GOOD pre в режиме KZRush |
-| `js_badpre_red` | 255 | Красный канал BAD pre в режиме KZRush |
-| `js_badpre_green` | 70 | Зелёный канал BAD pre в режиме KZRush |
-| `js_badpre_blue` | 120 | Синий канал BAD pre в режиме KZRush |
-| `js_minlosspre_red` | 30 | Красный канал MINLOSS pre в режиме KZRush |
-| `js_minlosspre_green` | 135 | Зелёный канал MINLOSS pre в режиме KZRush |
-| `js_minlosspre_blue` | 255 | Синий канал MINLOSS pre в режиме KZRush |
+| `js_pre_red` | 200 | Базовый красный канал pre HUD |
+| `js_pre_green` | 200 | Базовый зелёный канал pre HUD |
+| `js_pre_blue` | 200 | Базовый синий канал pre HUD |
+| `js_goodpre_red` | 20 | Красный канал GOOD pre |
+| `js_goodpre_green` | 255 | Зелёный канал GOOD pre |
+| `js_goodpre_blue` | 150 | Синий канал GOOD pre |
+| `js_badpre_red` | 255 | Красный канал BAD pre |
+| `js_badpre_green` | 70 | Зелёный канал BAD pre |
+| `js_badpre_blue` | 120 | Синий канал BAD pre |
+| `js_minlosspre_red` | 30 | Красный канал MINLOSS pre |
+| `js_minlosspre_green` | 135 | Зелёный канал MINLOSS pre |
+| `js_minlosspre_blue` | 255 | Синий канал MINLOSS pre |
 | `js_speed_mode` | 0 | Стиль скорости: `0` — Default (`u/s`), `1` — Quake (`units/seconds` + `velocity`), `2` — Number |
-| `js_prespeed_frame` | 3 | Количество пропускаемых кадров между обновлениями prespeed HUD |
-| `js_stats_x` | -1.0 | Координата X HUD основной статистики |
-| `js_stats_y` | 0.7 | Координата Y HUD основной статистики |
-| `js_strafe_x` | 0.7 | Координата X HUD стрейфов |
-| `js_strafe_y` | 0.35 | Координата Y HUD стрейфов |
-| `js_prespeed_x` | -1.0 | Координата X prespeed HUD |
-| `js_prespeed_y` | 0.55 | Координата Y prespeed HUD |
+| `js_speed_frame` | 3 | Количество пропускаемых кадров между обновлениями speed HUD |
+| `js_stats_x` | 0.7 | Координата X HUD статистики и стрейфов |
+| `js_stats_y` | 0.35 | Координата Y HUD статистики и стрейфов |
+| `js_pre_x` | -1.0 | Координата X pre HUD |
+| `js_pre_y` | 0.62 | Координата Y pre HUD |
+| `js_speed_x` | -1.0 | Координата X speed/JOF HUD |
+| `js_speed_y` | 0.55 | Координата Y speed/JOF HUD |
 | `js_bhop_fogstats` | 0 | Включает сводную FOG-статистику серии bhop |
 | `js_hud_stats` | 2 | HUD-канал основной статистики |
-| `js_hud_strafe` | 3 | HUD-канал статистики стрейфов |
-| `js_hud_prespeed` | 1 | HUD-канал prespeed |
+| `js_hud_pre` | 3 | HUD-канал pre |
+| `js_hud_speed` | 1 | HUD-канал speed/JOF |
 | `js_console_fix` | 0 | Добавляет перевод строки для серверов со сломанным форматом консоли |
 | `js_noslowdown` | 0 | Отключает проверку slowdown по `fuser2` |
 | `js_use_forwards` | 0 | Источник movement-данных: `0` — ReAPI `PM_Move`, `1` — Fakemeta forwards |

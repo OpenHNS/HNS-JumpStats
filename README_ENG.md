@@ -55,11 +55,11 @@ Hide'n'Seek jump statistics for Counter-Strike 1.6
 
 ![jumpoff_landing](https://github.com/WessTorn/HNS-JumpStats/assets/63194135/d25817ff-0239-4864-904c-9a331d895cd5)
 
-### prestreifs (prespeed - jof, speed, speed)
+### Speed and prestrafe HUD
 
 ![prespeed](https://github.com/WessTorn/HNS-JumpStats/assets/63194135/ee3d850a-7739-480d-b9c1-8ac023ad5666)
 
-Prespeed (hud) displays jof, prespeed type, speed, FOG and prestrafe pre - speed before jump or duck (before hitting the ground) / post - speed after
+The HUD is split into three independent blocks with separate positions: speed/JOF, pre, and jump statistics with strafes. The pre HUD displays the prestrafe type, FOG, speed before the jump or duck, and speed after it.
 
 FOG (frames on the ground) - in a nutshell, this is the number of frames (frames) on the ground.
 - Why are we shown the FOG and what do we need to know?
@@ -87,8 +87,8 @@ FOG (frames on the ground) - in a nutshell, this is the number of frames (frames
 | :--- | :---: | :--- |
 | `js_prefix` | Jump | Statistics prefix |
 | `js_enable_stats` | 1 | Enables the main statistics HUD |
-| `js_enable_strafe` | 1 | Enables the strafe statistics HUD |
-| `js_enable_prespeed` | 1 | Enables the speed, pre and JOF HUD |
+| `js_enable_pre` | 1 | Enables the pre HUD |
+| `js_enable_speed` | 1 | Enables the speed/JOF HUD |
 | `js_enable_console` | 1 | Enables jump statistics in the console |
 | `js_enable_chat` | 1 | Enables announcements for the best jumps in chat |
 | `js_enable_sound` | 1 | Enables sounds for the best jumps |
@@ -98,30 +98,30 @@ FOG (frames on the ground) - in a nutshell, this is the number of frames (frames
 | `js_failstats_red` | 200 | Red channel of the failed-jump HUD |
 | `js_failstats_green` | 10 | Green channel of the failed-jump HUD |
 | `js_failstats_blue` | 50 | Blue channel of the failed-jump HUD |
-| `js_prespeed_red` | 200 | Base red channel of the prespeed HUD |
-| `js_prespeed_green` | 200 | Base green channel of the prespeed HUD |
-| `js_prespeed_blue` | 200 | Base blue channel of the prespeed HUD |
-| `js_goodpre_red` | 20 | Red channel of GOOD pre in KZRush mode |
-| `js_goodpre_green` | 255 | Green channel of GOOD pre in KZRush mode |
-| `js_goodpre_blue` | 150 | Blue channel of GOOD pre in KZRush mode |
-| `js_badpre_red` | 255 | Red channel of BAD pre in KZRush mode |
-| `js_badpre_green` | 70 | Green channel of BAD pre in KZRush mode |
-| `js_badpre_blue` | 120 | Blue channel of BAD pre in KZRush mode |
-| `js_minlosspre_red` | 30 | Red channel of MINLOSS pre in KZRush mode |
-| `js_minlosspre_green` | 135 | Green channel of MINLOSS pre in KZRush mode |
-| `js_minlosspre_blue` | 255 | Blue channel of MINLOSS pre in KZRush mode |
+| `js_pre_red` | 200 | Base red channel of the pre HUD |
+| `js_pre_green` | 200 | Base green channel of the pre HUD |
+| `js_pre_blue` | 200 | Base blue channel of the pre HUD |
+| `js_goodpre_red` | 20 | Red channel of GOOD pre |
+| `js_goodpre_green` | 255 | Green channel of GOOD pre |
+| `js_goodpre_blue` | 150 | Blue channel of GOOD pre |
+| `js_badpre_red` | 255 | Red channel of BAD pre |
+| `js_badpre_green` | 70 | Green channel of BAD pre |
+| `js_badpre_blue` | 120 | Blue channel of BAD pre |
+| `js_minlosspre_red` | 30 | Red channel of MINLOSS pre |
+| `js_minlosspre_green` | 135 | Green channel of MINLOSS pre |
+| `js_minlosspre_blue` | 255 | Blue channel of MINLOSS pre |
 | `js_speed_mode` | 0 | Speed style: `0` — Default (`u/s`), `1` — Quake (`units/seconds` + `velocity`), `2` — Number |
-| `js_prespeed_frame` | 3 | Number of skipped frames between prespeed HUD updates |
-| `js_stats_x` | -1.0 | X coordinate of the main statistics HUD |
-| `js_stats_y` | 0.7 | Y coordinate of the main statistics HUD |
-| `js_strafe_x` | 0.7 | X coordinate of the strafe HUD |
-| `js_strafe_y` | 0.35 | Y coordinate of the strafe HUD |
-| `js_prespeed_x` | -1.0 | X coordinate of the prespeed HUD |
-| `js_prespeed_y` | 0.55 | Y coordinate of the prespeed HUD |
+| `js_speed_frame` | 3 | Number of skipped frames between speed HUD updates |
+| `js_stats_x` | 0.7 | X coordinate of the statistics and strafes HUD |
+| `js_stats_y` | 0.35 | Y coordinate of the statistics and strafes HUD |
+| `js_pre_x` | -1.0 | X coordinate of the pre HUD |
+| `js_pre_y` | 0.62 | Y coordinate of the pre HUD |
+| `js_speed_x` | -1.0 | X coordinate of the speed/JOF HUD |
+| `js_speed_y` | 0.55 | Y coordinate of the speed/JOF HUD |
 | `js_bhop_fogstats` | 0 | Enables aggregate FOG statistics for a bhop sequence |
 | `js_hud_stats` | 2 | HUD channel for the main statistics |
-| `js_hud_strafe` | 3 | HUD channel for strafe statistics |
-| `js_hud_prespeed` | 1 | HUD channel for prespeed |
+| `js_hud_pre` | 3 | HUD channel for pre |
+| `js_hud_speed` | 1 | HUD channel for speed/JOF |
 | `js_console_fix` | 0 | Adds a line break for servers with broken console formatting |
 | `js_noslowdown` | 0 | Disables the slowdown validation based on `fuser2` |
 | `js_use_forwards` | 0 | Movement data source: `0` — ReAPI `PM_Move`, `1` — Fakemeta forwards |

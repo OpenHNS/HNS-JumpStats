@@ -15,10 +15,9 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = true);
 	RegisterHookChain(RG_CBasePlayer_Observer_FindNextPlayer,"RG_CBasePlayerObserverFindNextPlayer_Post", .post = true);
 
-	g_hudStrafe = CreateHudSyncObj();
 	g_hudStats = CreateHudSyncObj();
-	g_hudPreSpeed = CreateHudSyncObj();
 	g_hudPre = CreateHudSyncObj();
+	g_hudSpeed = CreateHudSyncObj();
 
 	g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 
@@ -102,8 +101,8 @@ stock process_player_move(id, Float:flFrameTime) {
 	}
 
 
-	if (g_eSettings[id][S_PRESPEED] && (g_eOnOff[id][of_bSpeed] || g_eOnOff[id][of_bJof])) {
-		show_prespeed(id);
+	if (g_pCvar[C_ENABLE_SPEED]) {
+		show_speed(id);
 	}
 
 	if (isGround) {
