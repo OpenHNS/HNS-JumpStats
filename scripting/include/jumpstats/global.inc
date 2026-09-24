@@ -131,7 +131,30 @@ new FAIL_JUMP:g_eFailJump[MAX_PLAYERS + 1];
 new bool:g_isOldGround[MAX_PLAYERS + 1];
 
 new g_iPrevButtons[MAX_PLAYERS + 1];
-new g_iOldButtons[MAX_PLAYERS + 1];
+// Per-command PM snapshots. These survive reset_stats() until PM_Move Post.
+new bool:g_bPmActive[MAX_PLAYERS + 1];
+new bool:g_bPmHistory[MAX_PLAYERS + 1];
+new g_iPmButtons[MAX_PLAYERS + 1];
+new Float:g_flPmAngles[MAX_PLAYERS + 1][3];
+new bool:g_bPmJumpGround[MAX_PLAYERS + 1];
+new bool:g_bPmJumped[MAX_PLAYERS + 1];
+new bool:g_bPmJumpbugAttempt[MAX_PLAYERS + 1];
+new Float:g_flPmJumpOrigin[MAX_PLAYERS + 1][3];
+new Float:g_flPmJumpVelocity[MAX_PLAYERS + 1][3];
+new bool:g_bPmJumpDuck[MAX_PLAYERS + 1];
+new Float:g_flPmJumpPreSpeed[MAX_PLAYERS + 1];
+new Float:g_flPmJumpPostSpeed[MAX_PLAYERS + 1];
+new bool:g_bPmAirMove[MAX_PLAYERS + 1];
+new bool:g_bPmAirAccelerated[MAX_PLAYERS + 1];
+new bool:g_bPmAirSurf[MAX_PLAYERS + 1];
+new Float:g_flPmAirOrigin[MAX_PLAYERS + 1][3];
+new Float:g_flPmAirVelocity[MAX_PLAYERS + 1][3];
+new Float:g_flPmAirBaseVelocity[MAX_PLAYERS + 1][3];
+new Float:g_flPmAirPreSpeed[MAX_PLAYERS + 1];
+new Float:g_flPmAirAngles[MAX_PLAYERS + 1][3];
+new g_iPmAirButtons[MAX_PLAYERS + 1];
+new g_iPmAirHull[MAX_PLAYERS + 1];
+new g_iPmAirTouches[MAX_PLAYERS + 1];
 
 new g_iFog[MAX_PLAYERS + 1];
 
@@ -148,7 +171,6 @@ new Float:g_flHorSpeed3D[MAX_PLAYERS + 1];
 new Float:g_flPrevHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flOldHorSpeed[MAX_PLAYERS + 1];
 new Float:g_flPreHorSpeed[MAX_PLAYERS + 1];
-new Float:g_flStartSpeed[MAX_PLAYERS + 1];
 
 new bool:g_bInDuck[MAX_PLAYERS + 1];
 new bool:g_bPrevInDuck[MAX_PLAYERS + 1];
@@ -167,7 +189,6 @@ new bool:g_isFalling[MAX_PLAYERS + 1];
 new bool:g_isTouched[MAX_PLAYERS + 1];
 new bool:g_bSlide[MAX_PLAYERS + 1];
 new bool:g_bPrevSlide[MAX_PLAYERS + 1];
-new g_iJumpBug[MAX_PLAYERS + 1];
 new bool:g_bCheckJumpBug[MAX_PLAYERS + 1];
 new bool:g_bJumpbugDone[MAX_PLAYERS + 1];
 new Float:g_flJumpbugStart[MAX_PLAYERS + 1][3];

@@ -312,11 +312,11 @@ stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
 stock KZRUSH_PRE_COLOR:GetKzRushPreColor(id, iType, iFog) {
 	if (iType >= PRE_BHOP && iType <= PRE_DUCKBHOP) {
 		new Float:flMaxHorSpeed;
-		get_entvar(id, var_maxspeed, flMaxHorSpeed);
+		flMaxHorSpeed = Float:get_pmove(pm_maxspeed);
 		flMaxHorSpeed = floatmul(1.2, flMaxHorSpeed);
-		flMaxHorSpeed = floatsqroot(floatmul(flMaxHorSpeed, flMaxHorSpeed) - 16.0);
+		flMaxHorSpeed = floatsqroot(floatmax(0.0, floatmul(flMaxHorSpeed, flMaxHorSpeed) - 16.0));
 
-		if (g_flPrevHorSpeed[id] <= flMaxHorSpeed) {
+		if (g_flPmJumpPostSpeed[id] >= g_flPmJumpPreSpeed[id] - 0.01) {
 			if (iFog == 1) {
 				return KZRUSH_PRE_GOOD;
 			}

@@ -63,7 +63,7 @@ public ready_jumps(id, Float:flEndJump[3]) {
 		g_eJumpstats[id][js_flLanding] = g_eJumpstats[id][js_flDistance] - (g_eJumpstats[id][js_iJumpBlock] + g_eJumpstats[id][js_flJof]);
 	}
 
-	if (!g_pCvar[c_iNoslow] && get_entvar(id, var_fuser2) == 0.0 && g_eWhichJump[id] != jt_LadderJump) {
+	if (!g_pCvar[c_iNoslow] && Float:get_pmove(pm_fuser2) == 0.0 && g_eWhichJump[id] != jt_LadderJump) {
 		g_eFailJump[id] = fj_notshow;
 	}
 
@@ -138,7 +138,6 @@ public ready_jumps(id, Float:flEndJump[3]) {
 	g_isTouched[id] = false;
 
 	g_iDetectHJ[id] = 0;
-	g_flStartSpeed[id] = 0.0;
 }
 
 public calc_strafe(id) {

@@ -36,7 +36,6 @@ stock reset_stats(id) {
 	g_isTouched[id] = false;
 	g_bSlide[id] = false;
 	g_bPrevSlide[id] = false;
-	g_iJumpBug[id] = 0;
 	g_bCheckJumpBug[id] = false;
 	g_bJumpbugDone[id] = false;
 	arrayset(g_flJumpbugStart[id], 0.0, 3);
@@ -46,7 +45,6 @@ stock reset_stats(id) {
 	g_flLastGroundZ[id] = 0.0;
 
 	g_iDetectHJ[id] = 0;
-	g_flStartSpeed[id] = 0.0;
 }
 
 stock Float:velocity_view_cos(Float:flVelocity[3], Float:flYaw) {
@@ -203,7 +201,7 @@ public get_colorchat_by_distance(id, aDistance[ChatDist], JumpType:iJumpType) {
 	return PLUGIN_HANDLED;
 }
 
-public calc_jof_block(id, Float:flJumpOff[3]) {
+public calc_jof_block(id, Float:flJumpOff[3], Float:flJumpVelocity[3]) {
 	new Float:flOrigin[3];
 	new Float:tmpblock[3], tmpjblock[3], Float:tmpOrigin[3], Float:tmpOrigin2[3];
 	flOrigin = flJumpOff;
@@ -215,7 +213,7 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 		tmpOrigin = flOrigin;
 		tmpOrigin2 = flOrigin;
 		tmpblock = flOrigin;
-		if (g_flVelocity[id][1] > 0 && floatabs(g_flVelocity[id][1]) > floatabs(g_flVelocity[id][0])) {
+		if (flJumpVelocity[1] > 0 && floatabs(flJumpVelocity[1]) > floatabs(flJumpVelocity[0])) {
 			tmpOrigin[1] = flOrigin[1] + 100;
 			tmpOrigin2[1] = flOrigin[1] - 16;
 
@@ -224,7 +222,7 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 
 			tmpblock[1] = flOrigin[1] + 290.0 + 1;
 			tmpblock[0] = tmpblock[0] + j;
-		} else if (g_flVelocity[id][1] < 0 && floatabs(g_flVelocity[id][1]) > floatabs(g_flVelocity[id][0])) {
+		} else if (flJumpVelocity[1] < 0 && floatabs(flJumpVelocity[1]) > floatabs(flJumpVelocity[0])) {
 			tmpOrigin[1] = flOrigin[1] - 100;
 			tmpOrigin2[1] = flOrigin[1] + 16;
 
@@ -233,7 +231,7 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 
 			tmpblock[1] = flOrigin[1] - 290.0 + 1;
 			tmpblock[0] = tmpblock[0] + j;
-		} else if (g_flVelocity[id][0] > 0 && floatabs(g_flVelocity[id][0]) > floatabs(g_flVelocity[id][1])) {
+		} else if (flJumpVelocity[0] > 0 && floatabs(flJumpVelocity[0]) > floatabs(flJumpVelocity[1])) {
 			tmpOrigin[0] = flOrigin[0] + 100;
 			tmpOrigin2[0] = flOrigin[0] - 16;
 
@@ -242,7 +240,7 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 
 			tmpblock[0] = flOrigin[0] + 290.0 + 1;
 			tmpblock[1] = tmpblock[1] + j;
-		} else if (g_flVelocity[id][0] < 0 && floatabs(g_flVelocity[id][0]) > floatabs(g_flVelocity[id][1])) {
+		} else if (flJumpVelocity[0] < 0 && floatabs(flJumpVelocity[0]) > floatabs(flJumpVelocity[1])) {
 			tmpOrigin[0] = flOrigin[0] - 100;
 			tmpOrigin2[0] = flOrigin[0] + 16;
 
@@ -277,13 +275,13 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 
 		checkblock1 = tmpblockOrigin;
 
-		if (g_flVelocity[id][1] > 0 && floatabs(g_flVelocity[id][1]) > floatabs(g_flVelocity[id][0])) {
+		if (flJumpVelocity[1] > 0 && floatabs(flJumpVelocity[1]) > floatabs(flJumpVelocity[0])) {
 			checkblock1[1] = checkblock1[1] + 2.0;
-		} else if (g_flVelocity[id][1] < 0 && floatabs(g_flVelocity[id][1]) > floatabs(g_flVelocity[id][0])) {
+		} else if (flJumpVelocity[1] < 0 && floatabs(flJumpVelocity[1]) > floatabs(flJumpVelocity[0])) {
 			checkblock1[1] = checkblock1[1] - 2.0;
-		} else if (g_flVelocity[id][0] > 0 && floatabs(g_flVelocity[id][0]) > floatabs(g_flVelocity[id][1])) {
+		} else if (flJumpVelocity[0] > 0 && floatabs(flJumpVelocity[0]) > floatabs(flJumpVelocity[1])) {
 			checkblock1[0] = checkblock1[0] + 2.0;
-		} else if (g_flVelocity[id][0] < 0 && floatabs(g_flVelocity[id][0]) > floatabs(g_flVelocity[id][1])) {
+		} else if (flJumpVelocity[0] < 0 && floatabs(flJumpVelocity[0]) > floatabs(flJumpVelocity[1])) {
 			checkblock1[0] = checkblock1[0] - 2.0;
 		}
 
@@ -313,7 +311,7 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 
 stock bool:isUserSurfing(id) {
 	new Float:origin[3], Float:dest[3];
-	get_entvar(id, var_origin, origin);
+	get_pmove(pm_origin, origin);
 	
 	dest[0] = origin[0];
 	dest[1] = origin[1];
@@ -322,7 +320,7 @@ stock bool:isUserSurfing(id) {
 	new Float:flFraction;
 
 	engfunc(EngFunc_TraceHull, origin, dest, 0, 
-		g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, 0);
+		get_pmove(pm_usehull) ? HULL_HEAD : HULL_HUMAN, id, 0);
 
 	get_tr2(0, TR_flFraction, flFraction);
 

@@ -9,15 +9,14 @@ public in_ladder(id, bool:isJump) {
 
 	g_eJumpType[id] = IS_JUMP;
 	g_iJumps[id] = 0;
-	g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = isJump ? g_flHorSpeed[id] : g_flPrevHorSpeed[id];
-	g_flStartSpeed[id] = g_eJumpData[id][g_iJumps[id]][JUMP_PRE];
+	g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = isJump && g_bPmAirAccelerated[id] ? g_flPmAirPreSpeed[id] : g_flPrevHorSpeed[id];
 
 	g_isLadderBhop[id] = true;
 
 	g_ePreStats[id][ptBackWards] = false;
 
 	new Float:flViewAngles[3];
-	get_entvar(id, var_v_angle, flViewAngles);
+	flViewAngles = g_flPmAngles[id];
 
 	g_eWhichJump[id] = jt_LadderJump;
 	g_flLdjStartCos[id] = velocity_view_cos(g_flPrevVelocity[id], flViewAngles[1]);

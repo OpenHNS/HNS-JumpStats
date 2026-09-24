@@ -1,36 +1,34 @@
 public in_bhop_js(id, iFog) {
-	g_flFirstJump[id] = g_flPrevOrigin[id];
-	if (iFog == 1) {
-		g_flPrevHorSpeed[id] = g_flHorSpeed[id];
-	}
-
-	g_flStartSpeed[id] = g_flPrevHorSpeed[id];
+	// PM_Jump snapshots exclude the first air acceleration and include
+	// any hull/origin change performed by PM_Duck before the jump.
+	g_flFirstJump[id] = g_flPmJumpOrigin[id];
+	new Float:flPreHorSpeed = g_flPmJumpPreSpeed[id];
 	
 	if (iFog > 10) {
 		//ready_moves(id);
 
 		g_iJumps[id] = 0;
-		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flPrevHorSpeed[id];
+		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = flPreHorSpeed;
 		g_eJumpData[id][g_iJumps[id]][JUMP_FOG] = iFog;
 		g_iVerInfo[id] = IS_MIDDLE;
 		
-		if (g_bPrevInDuck[id]) {
+		if (g_bPmJumpDuck[id]) {
 			g_eJumpType[id] = IS_DUCKBHOP;
 			g_flFirstJump[id][2] = g_flFirstJump[id][2] + 18.0;
-			g_flJumpFirstZ[id] = g_flPrevOrigin[id][2] + 18.0;
+			g_flJumpFirstZ[id] = g_flPmJumpOrigin[id][2] + 18.0;
 		} else {
 			g_eJumpType[id] = IS_JUMP;
 			g_eWhichJump[id] = jt_LongJump;
-			g_flJumpFirstZ[id] = g_flPrevOrigin[id][2];
+			g_flJumpFirstZ[id] = g_flPmJumpOrigin[id][2];
 		}
 
-		show_pre(id, PRE_JUMP, g_flPrevHorSpeed[id]);
+		show_pre(id, PRE_JUMP, flPreHorSpeed);
 		// ЖАМП
 	} else {
 		g_iJumps[id]++;
 
 		if (!g_flJumpFirstZ[id])
-			g_flJumpFirstZ[id] = g_bPrevInDuck[id] ? g_flPrevOrigin[id][2] + 18.0 : g_flPrevOrigin[id][2]; 
+			g_flJumpFirstZ[id] = g_bPmJumpDuck[id] ? g_flPmJumpOrigin[id][2] + 18.0 : g_flPmJumpOrigin[id][2];
 
 		if (g_iJumps[id] >= NJUMPS) {
 			g_iJumps[id] = 2;
@@ -40,22 +38,21 @@ public in_bhop_js(id, iFog) {
 			ShowSyncHudMsg(id, g_hudStats, "Reset jumps!");
 		}
 
-		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flPrevHorSpeed[id];
+		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = flPreHorSpeed;
 		g_eJumpData[id][g_iJumps[id]][JUMP_FOG] = iFog;
 
-		g_flFirstJump[id][2] = g_bPrevInDuck[id] ? g_flFirstJump[id][2] + 18.0 : g_flFirstJump[id][2];
+		g_flFirstJump[id][2] = g_bPmJumpDuck[id] ? g_flFirstJump[id][2] + 18.0 : g_flFirstJump[id][2];
 
 		new FOG_TYPE:iFogType;
 
 		new Float:flMaxHorSpeed;
-		flMaxHorSpeed = get_entvar(id, var_maxspeed);
+		flMaxHorSpeed = Float:get_pmove(pm_maxspeed);
 		flMaxHorSpeed = floatmul(1.2, flMaxHorSpeed);
-		flMaxHorSpeed = floatsqroot(floatmul(flMaxHorSpeed, flMaxHorSpeed) - 16.0);
+		flMaxHorSpeed = floatsqroot(floatmax(0.0, floatmul(flMaxHorSpeed, flMaxHorSpeed) - 16.0));
 
-		new Float:flPostHorSpeed = g_flPrevHorSpeed[id];
+		new Float:flPostHorSpeed = g_flPmJumpPostSpeed[id];
 
-		if (flPostHorSpeed > flMaxHorSpeed) {
-			flPostHorSpeed = floatmul(0.8, flMaxHorSpeed);
+		if (flPostHorSpeed < flPreHorSpeed - 0.01) {
 			iFogType = FOG_BAD;
 		} else if (iFog == 1) {
 			iFogType = FOG_PERFECT;
@@ -74,7 +71,7 @@ public in_bhop_js(id, iFog) {
 
 		if (g_eDuckType[id] != IS_DUCK_NOT && g_iDucks[id]) {
 			if (g_iVerInfo[id] == IS_MIDDLE && !g_isFalling[id]) {
-				new Float:flDuckZ = g_bPrevInDuck[id] ? g_flPrevOrigin[id][2] + 18.0 : g_flPrevOrigin[id][2]; 
+				new Float:flDuckZ = g_bPmJumpDuck[id] ? g_flPmJumpOrigin[id][2] + 18.0 : g_flPmJumpOrigin[id][2];
 
 				if (flDuckZ - g_flDuckFirstZ[id] < -4.0) {
 					g_iVerInfo[id] = IS_DROPPED;
@@ -116,7 +113,7 @@ public in_bhop_js(id, iFog) {
 					}
 
 					if (g_iVerInfo[id] == IS_MIDDLE && !g_isLadderBhop[id] && !g_isFalling[id]) {
-						new Float:flJumpZ = g_bPrevInDuck[id] ? g_flPrevOrigin[id][2] + 18.0 : g_flPrevOrigin[id][2];
+						new Float:flJumpZ = g_bPmJumpDuck[id] ? g_flPmJumpOrigin[id][2] + 18.0 : g_flPmJumpOrigin[id][2];
 
 						if (flJumpZ - g_flJumpFirstZ[id] < -4.0) {
 							g_iVerInfo[id] = IS_DROPPED;
