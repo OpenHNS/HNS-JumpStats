@@ -552,6 +552,8 @@ public ShowCustomizeHudColorEditMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wCustom color^n");
 	iKeys |= MENU_KEY_2;
 
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wGreen \d(20 255 150)^n");
 	iKeys |= MENU_KEY_3;
 
@@ -581,7 +583,16 @@ public HandleCustomizeHudColorEditMenu(const id, const key) {
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 1: {
-			client_print(id, print_chat, "Please enter your color in RGB format: 255 255 255");
+			new szTitle[32];
+			new iRed;
+			new iGreen;
+			new iBlue;
+
+			if (!GetHudColor(id, szTitle, charsmax(szTitle), iRed, iGreen, iBlue)) {
+				return PLUGIN_HANDLED;
+			}
+
+			client_print(id, print_chat, "Please enter your color in RGB format: %d %d %d", iRed, iGreen, iBlue);
 			client_cmd(id, "messagemode %s", HUD_COLOR_INPUT_CMD);
 		}
 		case 2: {
@@ -617,8 +628,12 @@ public HandleCustomizeHudColorEditMenu(const id, const key) {
 public CmdCustomizeHudColorInput(const id) {
 	new szArgs[64];
 	new szRed[8], szGreen[8], szBlue[8];
+	new szTitle[32];
+	new iCurrentRed;
+	new iCurrentGreen;
+	new iCurrentBlue;
 
-	if (g_iHudColorTarget[id] == HC_TARGET_NONE) {
+	if (!GetHudColor(id, szTitle, charsmax(szTitle), iCurrentRed, iCurrentGreen, iCurrentBlue)) {
 		return PLUGIN_HANDLED;
 	}
 
@@ -634,7 +649,8 @@ public CmdCustomizeHudColorInput(const id) {
 	parse(szArgs, szRed, charsmax(szRed), szGreen, charsmax(szGreen), szBlue, charsmax(szBlue));
 
 	if (!szRed[0] || !szGreen[0] || !szBlue[0]) {
-		client_print(id, print_chat, "Invalid RGB format. Example: 255 255 255");
+		client_print(id, print_chat, "Invalid RGB format. Example: %d %d %d",
+			iCurrentRed, iCurrentGreen, iCurrentBlue);
 		ShowCustomizeHudColorEditMenu(id);
 		return PLUGIN_HANDLED;
 	}
