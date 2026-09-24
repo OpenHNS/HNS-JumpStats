@@ -4,14 +4,6 @@
 
 #define _cmds_included
 
-enum _:JS_ONOFF {
-	bool:of_bJof,
-	bool:of_bSpeed,
-	bool:of_bPre,
-};
-
-new g_eOnOff[MAX_PLAYERS + 1][JS_ONOFF];
-
 public init_cmds() {
 	RegisterSayCmd("ljsmenu", "ljs",		"ShowJumpStatsMenu",		ADMIN_ALL, "Jump stats menu");
 	RegisterSayCmd("stats", "ljstats",		"cmdShowStats",		ADMIN_ALL, "Show main stats");

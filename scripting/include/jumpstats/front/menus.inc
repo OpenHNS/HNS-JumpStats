@@ -66,6 +66,13 @@ public ShowJumpStatsMenu(id) {
 	iKeys |= MENU_KEY_4;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wReset settings^n");
+	iKeys |= MENU_KEY_6;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r7. \wSave settings^n");
+	iKeys |= MENU_KEY_7;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
@@ -86,6 +93,24 @@ public HandleJumpStatsMenu(const id, const key) {
 		}
 		case 3: {
 			ShowSpeedConfigurationsMenu(id);
+		}
+		case 5: {
+			if (settings_reset_player(id)) {
+				client_print_color(id, print_team_blue, "[^3%s^1] Settings reset to server defaults.", g_pCvar[c_szPrefix]);
+			} else {
+				client_print_color(id, print_team_blue, "[^3%s^1] Settings reset, but saved data could not be removed.", g_pCvar[c_szPrefix]);
+			}
+
+			ShowJumpStatsMenu(id);
+		}
+		case 6: {
+			if (settings_save_player(id)) {
+				client_print_color(id, print_team_blue, "[^3%s^1] Settings saved.", g_pCvar[c_szPrefix]);
+			} else {
+				client_print_color(id, print_team_blue, "[^3%s^1] Settings could not be saved.", g_pCvar[c_szPrefix]);
+			}
+
+			ShowJumpStatsMenu(id);
 		}
 		case 9: {
 			return PLUGIN_HANDLED;

@@ -97,7 +97,7 @@ public show_speed(id) {
 			}
 
 			new iColors[3];
-			FormatSpeedRGBHud(id, i, iColors);
+			FormatSpeedRGBHud(id, iColors);
 
 			new szSpeed[64];
 			if (g_eOnOff[i][of_bSpeed]) {
@@ -116,7 +116,7 @@ public show_speed(id) {
 
 			set_hudmessage(
 				iColors[0], iColors[1], iColors[2],
-				g_eSettings[i][S_SPEED_X], g_eSettings[i][S_SPEED_Y], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iSpeed]);
+				g_eSettings[id][S_SPEED_X], g_eSettings[id][S_SPEED_Y], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iSpeed]);
 
 			ShowSyncHudMsg(i, g_hudSpeed, "%s^n%s",
 				g_eOnOff[i][of_bJof] && g_flJof[id] ? szJof : "",
@@ -209,7 +209,7 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 
 		set_hudmessage(
 			iColors[0], iColors[1], iColors[2],
-			g_eSettings[i][S_PRE_X], g_eSettings[i][S_PRE_Y], 0, 6.0, PRE_HUD_TIME, 0.1, 0.3, g_pCvar[c_iPre]);
+			g_eSettings[id][S_PRE_X], g_eSettings[id][S_PRE_Y], 0, 6.0, PRE_HUD_TIME, 0.1, 0.3, g_pCvar[c_iPre]);
 
 		ShowSyncHudMsg(i, g_hudPre, "%s", szPre);
 	}
@@ -227,8 +227,8 @@ stock show_special_stats(id, iType, Float:flValue) {
 		}
 
 		set_hudmessage(
-			g_eSettings[i][S_STATS_R], g_eSettings[i][S_STATS_G], g_eSettings[i][S_STATS_B],
-			g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 
 		switch (iType) {
 			case PRE_JUMPBUG, PRE_EDGEBUG: {
@@ -272,8 +272,8 @@ stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
 		}
 
 		set_hudmessage(
-			g_eSettings[i][S_STATS_R], g_eSettings[i][S_STATS_G], g_eSettings[i][S_STATS_B],
-			g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 
 		ShowSyncHudMsg(i, g_hudStats, "BOOST^n%.0f => %.0f^ngain %.0f%%", flBefore, flAfter, flGainPercent);
 	}
@@ -289,9 +289,9 @@ stock show_jof(id, Float:flJof) {
 	g_flJof[id] = flJof;
 }
 
-FormatSpeedRGBHud(id, iViewer, colors[3]) {
+FormatSpeedRGBHud(id, colors[3]) {
 	new Float:val = convertToRange(floatmin(g_flHorSpeed[id], 285.0), 40.0, 285.0);
-	FormatSpeedGradient(iViewer, val, colors);
+	FormatSpeedGradient(id, val, colors);
 }
 
 FormatSpeedGradient(const id, const Float:val, colors[3]) {

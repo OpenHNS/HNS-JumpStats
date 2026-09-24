@@ -10,6 +10,12 @@ new const g_szSpeedMode[SPEED_MODE][] = {
     "Number"
 };
 
+enum _:JS_ONOFF {
+    bool:of_bJof,
+    bool:of_bSpeed,
+    bool:of_bPre
+};
+
 enum _:SETTINGS {
 	bool:S_STATS,
     bool:S_CHATINFO,
@@ -50,6 +56,7 @@ enum _:SETTINGS {
 };
 
 new g_eSettings[MAX_PLAYERS + 1][SETTINGS];
+new g_eOnOff[MAX_PLAYERS + 1][JS_ONOFF];
 
 public settings_player_connect(id) {
     arrayset(g_eSettings[id], 0, SETTINGS);
@@ -214,4 +221,163 @@ public settings_bhop_fogstats_set(id, bFogStats) {
     if (g_pCvar[C_BHOP_FOGSTATS]) {
         g_eSettings[id][S_BHOP_FOGSTATS] = bFogStats;
     }
+}
+
+const SETTINGS_STORAGE_VERSION = 1;
+const SETTINGS_STORAGE_TOKENS = 1 + JS_ONOFF + SETTINGS;
+
+new g_iSettingsVault = INVALID_HANDLE;
+
+stock settings_storage_init() {
+    g_iSettingsVault = nvault_open("jumpstats_settings");
+
+    if (g_iSettingsVault == INVALID_HANDLE) {
+        set_fail_state("Could not open jumpstats_settings nVault");
+    }
+}
+
+stock settings_storage_close() {
+    if (g_iSettingsVault != INVALID_HANDLE) {
+        nvault_close(g_iSettingsVault);
+        g_iSettingsVault = INVALID_HANDLE;
+    }
+}
+
+stock settings_apply_defaults(const id) {
+    arrayset(g_eOnOff[id], true, JS_ONOFF);
+    settings_player_connect(id);
+}
+
+stock bool:settings_save_player(const id) {
+    new szAuthId[35];
+
+    if (!GetSettingsAuthId(id, szAuthId, charsmax(szAuthId))) {
+        return false;
+    }
+
+    new szData[512];
+    new iLen = formatex(szData, charsmax(szData), "%d", SETTINGS_STORAGE_VERSION);
+
+    for (new i = 0; i < JS_ONOFF; i++) {
+        iLen += formatex(szData[iLen], charsmax(szData) - iLen, " %d", g_eOnOff[id][i]);
+    }
+
+    for (new i = 0; i < SETTINGS; i++) {
+        iLen += formatex(szData[iLen], charsmax(szData) - iLen, " %d", g_eSettings[id][i]);
+    }
+
+    nvault_set(g_iSettingsVault, szAuthId, szData);
+    return true;
+}
+
+stock bool:settings_load_player(const id, const szAuthId[]) {
+    if (g_iSettingsVault == INVALID_HANDLE || !IsValidSettingsAuthId(szAuthId)) {
+        return false;
+    }
+
+    new szData[512];
+
+    if (!nvault_get(g_iSettingsVault, szAuthId, szData, charsmax(szData))) {
+        return false;
+    }
+
+    if (CountSettingsTokens(szData) != SETTINGS_STORAGE_TOKENS) {
+        return false;
+    }
+
+    new szToken[16];
+    new iPosition = argparse(szData, 0, szToken, charsmax(szToken));
+
+    if (str_to_num(szToken) != SETTINGS_STORAGE_VERSION) {
+        return false;
+    }
+
+    new iSavedOnOff[JS_ONOFF];
+    new iSavedSettings[SETTINGS];
+
+    for (new i = 0; i < JS_ONOFF; i++) {
+        iPosition = argparse(szData, iPosition, szToken, charsmax(szToken));
+        iSavedOnOff[i] = str_to_num(szToken);
+    }
+
+    for (new i = 0; i < SETTINGS; i++) {
+        iPosition = argparse(szData, iPosition, szToken, charsmax(szToken));
+        iSavedSettings[i] = str_to_num(szToken);
+    }
+
+    for (new i = 0; i < JS_ONOFF; i++) {
+        g_eOnOff[id][i] = bool:(iSavedOnOff[i] != 0);
+    }
+
+    for (new i = 0; i < SETTINGS; i++) {
+        g_eSettings[id][i] = iSavedSettings[i];
+    }
+
+    ValidateLoadedSettings(id);
+    return true;
+}
+
+stock bool:settings_reset_player(const id) {
+    settings_apply_defaults(id);
+
+    new szAuthId[35];
+
+    if (!GetSettingsAuthId(id, szAuthId, charsmax(szAuthId))) {
+        return false;
+    }
+
+    nvault_remove(g_iSettingsVault, szAuthId);
+    return true;
+}
+
+stock bool:GetSettingsAuthId(const id, szAuthId[], const iLen) {
+    if (g_iSettingsVault == INVALID_HANDLE || is_user_bot(id) || is_user_hltv(id)) {
+        return false;
+    }
+
+    get_user_authid(id, szAuthId, iLen);
+    return IsValidSettingsAuthId(szAuthId);
+}
+
+stock bool:IsValidSettingsAuthId(const szAuthId[]) {
+    return szAuthId[0]
+        && !equal(szAuthId, "STEAM_ID_PENDING")
+        && !equal(szAuthId, "STEAM_ID_LAN")
+        && !equal(szAuthId, "VALVE_ID_LAN")
+        && !equal(szAuthId, "BOT")
+        && !equal(szAuthId, "HLTV");
+}
+
+stock CountSettingsTokens(const szData[]) {
+    new szToken[16];
+    new iPosition;
+    new iCount;
+
+    while ((iPosition = argparse(szData, iPosition, szToken, charsmax(szToken))) != -1) {
+        iCount++;
+    }
+
+    return iCount;
+}
+
+stock ValidateLoadedSettings(const id) {
+    g_eSettings[id][S_STATS] = bool:(g_eSettings[id][S_STATS] != false);
+    g_eSettings[id][S_CHATINFO] = bool:(g_eSettings[id][S_CHATINFO] != false);
+    g_eSettings[id][S_SOUND] = bool:(g_eSettings[id][S_SOUND] != false);
+
+    for (new i = S_STATS_R; i <= S_SPEED_MAX_B; i++) {
+        g_eSettings[id][i] = clamp(g_eSettings[id][i], 0, 255);
+    }
+
+    g_eSettings[id][S_SPEED_MODE] = clamp(g_eSettings[id][S_SPEED_MODE], SPEED_MODE_DEFAULT, SPEED_MODE_NUMBER);
+    g_eSettings[id][S_SPEED_FRAME] = clamp(g_eSettings[id][S_SPEED_FRAME], 2, 5);
+
+    g_eSettings[id][S_STATS_X] = floatclamp(g_eSettings[id][S_STATS_X], -1.0, 1.0);
+    g_eSettings[id][S_STATS_Y] = floatclamp(g_eSettings[id][S_STATS_Y], 0.0, 1.0);
+    g_eSettings[id][S_PRE_X] = floatclamp(g_eSettings[id][S_PRE_X], -1.0, 1.0);
+    g_eSettings[id][S_PRE_Y] = floatclamp(g_eSettings[id][S_PRE_Y], 0.0, 1.0);
+    g_eSettings[id][S_SPEED_X] = floatclamp(g_eSettings[id][S_SPEED_X], -1.0, 1.0);
+    g_eSettings[id][S_SPEED_Y] = floatclamp(g_eSettings[id][S_SPEED_Y], 0.0, 1.0);
+
+    g_eSettings[id][S_BHOP_FOGSTATS] = bool:(g_eSettings[id][S_BHOP_FOGSTATS] != 0);
 }

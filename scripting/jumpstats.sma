@@ -5,6 +5,7 @@ public plugin_init() {
 
 	init_cvars();
 	init_cmds();
+	settings_storage_init();
 
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
 	RegisterHookChain(RG_PM_Move, "rgPM_Move", true);
@@ -22,6 +23,10 @@ public plugin_init() {
 	g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 
 	init_menus();
+}
+
+public plugin_end() {
+	settings_storage_close();
 }
 
 // public plugin_precache() {
@@ -528,12 +533,14 @@ public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
 
 
 public client_connect(id) {
-	arrayset(g_eOnOff[id], true, JS_ONOFF); // Ну потом
+	settings_apply_defaults(id);
 	g_bOldInDuck[0][id] = false;
 	g_bOldInDuck[1][id] = false;
 	g_bOldInDuck[2][id] = false;
 
-	settings_player_connect(id)
-
 	reset_stats(id);
+}
+
+public client_authorized(id, const authid[]) {
+	settings_load_player(id, authid);
 }

@@ -2,6 +2,7 @@
 #include <fakemeta>
 #include <reapi>
 #include <engine>
+#include <nvault>
 
 #include <jumpstats/global>
 #include <jumpstats/front/cvars>

@@ -267,12 +267,12 @@ public show_stats_hud(id) {
 		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[i][S_STATS]) {
 			if (!g_eFailJump[id]) {
 				set_hudmessage(
-					g_eSettings[i][S_STATS_R], g_eSettings[i][S_STATS_G], g_eSettings[i][S_STATS_B],
-					g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+					g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 			} else {
 				set_hudmessage(
-					g_eSettings[i][S_FAILSTATS_R], g_eSettings[i][S_FAILSTATS_G], g_eSettings[i][S_FAILSTATS_B],
-					g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+					g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B],
+					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 			}
 
 			ShowSyncHudMsg(i, g_hudStats, szStatsMess);
@@ -497,8 +497,8 @@ public show_moves_bhop(id) {
 	for (new i = 1; i <= MaxClients; i++) {
 		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[i][S_STATS]) {
 			set_hudmessage(
-				g_eSettings[i][S_STATS_R], g_eSettings[i][S_STATS_G], g_eSettings[i][S_STATS_B],
-				g_eSettings[i][S_STATS_X], g_eSettings[i][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+				g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+				g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 
 			ShowSyncHudMsg(i, g_hudStats, szMultiBhop);
 		}
