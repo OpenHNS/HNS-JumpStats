@@ -32,6 +32,12 @@ enum _:SETTINGS {
     S_PRE_MINLOSS_R,
     S_PRE_MINLOSS_G,
     S_PRE_MINLOSS_B,
+    S_SPEED_MIN_R,
+    S_SPEED_MIN_G,
+    S_SPEED_MIN_B,
+    S_SPEED_MAX_R,
+    S_SPEED_MAX_G,
+    S_SPEED_MAX_B,
     S_SPEED_MODE,
     S_SPEED_FRAME,
     Float:S_STATS_X,
@@ -84,6 +90,14 @@ public settings_player_connect(id) {
     g_eSettings[id][S_PRE_MINLOSS_G] = g_pCvar[C_PRE_MINLOSS_G];
     g_eSettings[id][S_PRE_MINLOSS_B] = g_pCvar[C_PRE_MINLOSS_B];
 
+    g_eSettings[id][S_SPEED_MIN_R] = g_pCvar[C_SPEED_MIN_R];
+    g_eSettings[id][S_SPEED_MIN_G] = g_pCvar[C_SPEED_MIN_G];
+    g_eSettings[id][S_SPEED_MIN_B] = g_pCvar[C_SPEED_MIN_B];
+
+    g_eSettings[id][S_SPEED_MAX_R] = g_pCvar[C_SPEED_MAX_R];
+    g_eSettings[id][S_SPEED_MAX_G] = g_pCvar[C_SPEED_MAX_G];
+    g_eSettings[id][S_SPEED_MAX_B] = g_pCvar[C_SPEED_MAX_B];
+
     g_eSettings[id][S_SPEED_MODE] = g_pCvar[C_SPEED_MODE];
     if (g_eSettings[id][S_SPEED_MODE] < SPEED_MODE_DEFAULT || g_eSettings[id][S_SPEED_MODE] > SPEED_MODE_NUMBER) {
         g_eSettings[id][S_SPEED_MODE] = SPEED_MODE_DEFAULT;
@@ -133,6 +147,12 @@ public settings_failstats_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_FAILSTATS_B] = iBlue;
 }
 
+public settings_pre_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_PRE_R] = iRed;
+    g_eSettings[id][S_PRE_G] = iGreen;
+    g_eSettings[id][S_PRE_B] = iBlue;
+}
+
 public settings_pre_good_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_PRE_GOOD_R] = iRed;
     g_eSettings[id][S_PRE_GOOD_G] = iGreen;
@@ -149,6 +169,18 @@ public settings_pre_minloss_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_PRE_MINLOSS_R] = iRed;
     g_eSettings[id][S_PRE_MINLOSS_G] = iGreen;
     g_eSettings[id][S_PRE_MINLOSS_B] = iBlue;
+}
+
+public settings_speed_min_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_SPEED_MIN_R] = iRed;
+    g_eSettings[id][S_SPEED_MIN_G] = iGreen;
+    g_eSettings[id][S_SPEED_MIN_B] = iBlue;
+}
+
+public settings_speed_max_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_SPEED_MAX_R] = iRed;
+    g_eSettings[id][S_SPEED_MAX_G] = iGreen;
+    g_eSettings[id][S_SPEED_MAX_B] = iBlue;
 }
 
 public settings_speed_mode_set(id, iMode) {

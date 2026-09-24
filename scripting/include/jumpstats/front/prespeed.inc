@@ -73,9 +73,6 @@ public show_speed(id) {
 		formatex(szJof, charsmax(szJof), "jof: %.0f", g_flJof[id]);
 	}
 
-	new iColors[3];
-	FormatSpeedRGBHud(id, iColors);
-
 	for (new i = 1; i <= MaxClients; i++) {
 		if (i == id || g_isUserSpec[i] == id) {
 			if (g_isUserSpec[i] && i == id) {
@@ -98,6 +95,9 @@ public show_speed(id) {
 			if (g_iSkip[i]) {
 				continue;
 			}
+
+			new iColors[3];
+			FormatSpeedRGBHud(id, i, iColors);
 
 			new szSpeed[64];
 			if (g_eOnOff[i][of_bSpeed]) {
@@ -289,18 +289,15 @@ stock show_jof(id, Float:flJof) {
 	g_flJof[id] = flJof;
 }
 
-FormatSpeedRGBHud(id, colors[3]) {
+FormatSpeedRGBHud(id, iViewer, colors[3]) {
 	new Float:val = convertToRange(floatmin(g_flHorSpeed[id], 285.0), 40.0, 285.0);
-	FormatSpeedGradient(val, colors);
+	FormatSpeedGradient(iViewer, val, colors);
 }
 
-FormatSpeedGradient(const Float:val, colors[3]) {
-	new iColorSpeedMin[3] = {255, 255, 255};
-	new iColorSpeedMax[3] = {0, 250, 0};
-
-	colors[0] = floatround(float(iColorSpeedMax[0] - iColorSpeedMin[0]) * val + iColorSpeedMin[0]);
-	colors[1] = floatround(float(iColorSpeedMax[1] - iColorSpeedMin[1]) * val + iColorSpeedMin[1]);
-	colors[2] = floatround(float(iColorSpeedMax[2] - iColorSpeedMin[2]) * val + iColorSpeedMin[2]);
+FormatSpeedGradient(const id, const Float:val, colors[3]) {
+	colors[0] = floatround(float(g_eSettings[id][S_SPEED_MAX_R] - g_eSettings[id][S_SPEED_MIN_R]) * val + g_eSettings[id][S_SPEED_MIN_R]);
+	colors[1] = floatround(float(g_eSettings[id][S_SPEED_MAX_G] - g_eSettings[id][S_SPEED_MIN_G]) * val + g_eSettings[id][S_SPEED_MIN_G]);
+	colors[2] = floatround(float(g_eSettings[id][S_SPEED_MAX_B] - g_eSettings[id][S_SPEED_MIN_B]) * val + g_eSettings[id][S_SPEED_MIN_B]);
 }
 
 stock Float: convertToRange(Float:value, Float:FromMin, Float:FromMax, Float:ToMin = 0.0, Float:ToMax = 1.0) {

@@ -24,6 +24,12 @@ enum JS_CVAR {
 	C_PRE_MINLOSS_R,
 	C_PRE_MINLOSS_G,
 	C_PRE_MINLOSS_B,
+	C_SPEED_MIN_R,
+	C_SPEED_MIN_G,
+	C_SPEED_MIN_B,
+	C_SPEED_MAX_R,
+	C_SPEED_MAX_G,
+	C_SPEED_MAX_B,
 	C_SPEED_MODE,
 	C_SPEED_FRAME,
 	Float:C_STATS_X,
@@ -77,6 +83,14 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_minlosspre_red", "30"),	g_pCvar[C_PRE_MINLOSS_R]);
 	bind_pcvar_num(register_cvar("js_minlosspre_green", "135"),g_pCvar[C_PRE_MINLOSS_G]);
 	bind_pcvar_num(register_cvar("js_minlosspre_blue", "255"),	g_pCvar[C_PRE_MINLOSS_B]);
+
+	bind_pcvar_num(register_cvar("js_speed_min_red", "255"),	g_pCvar[C_SPEED_MIN_R]);
+	bind_pcvar_num(register_cvar("js_speed_min_green", "255"),	g_pCvar[C_SPEED_MIN_G]);
+	bind_pcvar_num(register_cvar("js_speed_min_blue", "255"),	g_pCvar[C_SPEED_MIN_B]);
+
+	bind_pcvar_num(register_cvar("js_speed_max_red", "0"),	g_pCvar[C_SPEED_MAX_R]);
+	bind_pcvar_num(register_cvar("js_speed_max_green", "250"),	g_pCvar[C_SPEED_MAX_G]);
+	bind_pcvar_num(register_cvar("js_speed_max_blue", "0"),	g_pCvar[C_SPEED_MAX_B]);
 
 	bind_pcvar_num(register_cvar("js_speed_mode", "0"),		g_pCvar[C_SPEED_MODE]);
 	

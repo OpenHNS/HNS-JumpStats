@@ -6,12 +6,20 @@ new const HUD_COLOR_INPUT_CMD[] = "JS_HUD_COLOR_INPUT";
 new const HUD_POSITION_MENU_ID[] = "JUMPSTATS_HUD_POSITION_MENU";
 new const HUD_POSITION_EDIT_MENU_ID[] = "JUMPSTATS_HUD_POSITION_EDIT_MENU";
 new const HUD_POSITION_INPUT_CMD[] = "JS_HUD_POSITION_INPUT";
+
+const Float:HUD_POSITION_DISPLAY_EPSILON = 0.0001;
 new const SPEED_CONFIG_MENU_ID[] = "JUMPSTATS_SPEED_CONFIG_MENU";
 
 enum _:HUD_COLOR_TARGET {
 	HC_TARGET_NONE,
 	HC_TARGET_STATS,
-	HC_TARGET_FAILSTATS
+	HC_TARGET_FAILSTATS,
+	HC_TARGET_PRE,
+	HC_TARGET_PRE_GOOD,
+	HC_TARGET_PRE_BAD,
+	HC_TARGET_PRE_MINLOSS,
+	HC_TARGET_SPEED_MIN,
+	HC_TARGET_SPEED_MAX
 };
 
 enum _:HUD_POSITION_TARGET {
@@ -197,9 +205,51 @@ public ShowCustomizeHudColorMenu(const id) {
 	);
 	iKeys |= MENU_KEY_2;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wPre: Normal \d(%d %d %d)^n",
+		g_eSettings[id][S_PRE_R],
+		g_eSettings[id][S_PRE_G],
+		g_eSettings[id][S_PRE_B]
+	);
+	iKeys |= MENU_KEY_3;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wPre: Good \d(%d %d %d)^n",
+		g_eSettings[id][S_PRE_GOOD_R],
+		g_eSettings[id][S_PRE_GOOD_G],
+		g_eSettings[id][S_PRE_GOOD_B]
+	);
+	iKeys |= MENU_KEY_4;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wPre: Bad \d(%d %d %d)^n",
+		g_eSettings[id][S_PRE_BAD_R],
+		g_eSettings[id][S_PRE_BAD_G],
+		g_eSettings[id][S_PRE_BAD_B]
+	);
+	iKeys |= MENU_KEY_5;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wPre: Minloss \d(%d %d %d)^n",
+		g_eSettings[id][S_PRE_MINLOSS_R],
+		g_eSettings[id][S_PRE_MINLOSS_G],
+		g_eSettings[id][S_PRE_MINLOSS_B]
+	);
+	iKeys |= MENU_KEY_6;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r7. \wSpeed: Minimum \d(%d %d %d)^n",
+		g_eSettings[id][S_SPEED_MIN_R],
+		g_eSettings[id][S_SPEED_MIN_G],
+		g_eSettings[id][S_SPEED_MIN_B]
+	);
+	iKeys |= MENU_KEY_7;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wSpeed: Maximum \d(%d %d %d)^n",
+		g_eSettings[id][S_SPEED_MAX_R],
+		g_eSettings[id][S_SPEED_MAX_G],
+		g_eSettings[id][S_SPEED_MAX_B]
+	);
 	iKeys |= MENU_KEY_8;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wBack^n");
+	iKeys |= MENU_KEY_9;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
@@ -217,11 +267,32 @@ public HandleCustomizeHudColorMenu(const id, const key) {
 			g_iHudColorTarget[id] = HC_TARGET_FAILSTATS;
 			ShowCustomizeHudColorEditMenu(id);
 		}
+		case 2: {
+			g_iHudColorTarget[id] = HC_TARGET_PRE;
+			ShowCustomizeHudColorEditMenu(id);
+		}
+		case 3: {
+			g_iHudColorTarget[id] = HC_TARGET_PRE_GOOD;
+			ShowCustomizeHudColorEditMenu(id);
+		}
+		case 4: {
+			g_iHudColorTarget[id] = HC_TARGET_PRE_BAD;
+			ShowCustomizeHudColorEditMenu(id);
+		}
+		case 5: {
+			g_iHudColorTarget[id] = HC_TARGET_PRE_MINLOSS;
+			ShowCustomizeHudColorEditMenu(id);
+		}
+		case 6: {
+			g_iHudColorTarget[id] = HC_TARGET_SPEED_MIN;
+			ShowCustomizeHudColorEditMenu(id);
+		}
 		case 7: {
-			ShowJumpStatsMenu(id);
+			g_iHudColorTarget[id] = HC_TARGET_SPEED_MAX;
+			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 8: {
-			ShowCustomizeHudColorMenu(id);
+			ShowJumpStatsMenu(id);
 		}
 		case 9: {
 			return PLUGIN_HANDLED;
@@ -239,20 +310,20 @@ public ShowCustomizeHudPositionMenu(const id) {
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rCustomize HUD Position:^n^n");
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wStats \d(%.2f %.2f)^n",
-		g_eSettings[id][S_STATS_X],
-		g_eSettings[id][S_STATS_Y]
+		HudPositionForDisplay(g_eSettings[id][S_STATS_X]),
+		HudPositionForDisplay(g_eSettings[id][S_STATS_Y])
 	);
 	iKeys |= MENU_KEY_1;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wPre \d(%.2f %.2f)^n",
-		g_eSettings[id][S_PRE_X],
-		g_eSettings[id][S_PRE_Y]
+		HudPositionForDisplay(g_eSettings[id][S_PRE_X]),
+		HudPositionForDisplay(g_eSettings[id][S_PRE_Y])
 	);
 	iKeys |= MENU_KEY_2;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wSpeed / JOF \d(%.2f %.2f)^n",
-		g_eSettings[id][S_SPEED_X],
-		g_eSettings[id][S_SPEED_Y]
+		HudPositionForDisplay(g_eSettings[id][S_SPEED_X]),
+		HudPositionForDisplay(g_eSettings[id][S_SPEED_Y])
 	);
 	iKeys |= MENU_KEY_3;
 
@@ -301,18 +372,18 @@ public ShowCustomizeHudPositionEditMenu(const id) {
 
 	if (g_iHudPositionTarget[id] == HP_TARGET_STATS) {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rStats HUD:^n\dCurrent: %.2f %.2f^n^n",
-			g_eSettings[id][S_STATS_X],
-			g_eSettings[id][S_STATS_Y]
+			HudPositionForDisplay(g_eSettings[id][S_STATS_X]),
+			HudPositionForDisplay(g_eSettings[id][S_STATS_Y])
 		);
 	} else if (g_iHudPositionTarget[id] == HP_TARGET_PRE) {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rPre HUD:^n\dCurrent: %.2f %.2f^n^n",
-			g_eSettings[id][S_PRE_X],
-			g_eSettings[id][S_PRE_Y]
+			HudPositionForDisplay(g_eSettings[id][S_PRE_X]),
+			HudPositionForDisplay(g_eSettings[id][S_PRE_Y])
 		);
 	} else {
 		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rSpeed / JOF HUD:^n\dCurrent: %.2f %.2f^n^n",
-			g_eSettings[id][S_SPEED_X],
-			g_eSettings[id][S_SPEED_Y]
+			HudPositionForDisplay(g_eSettings[id][S_SPEED_X]),
+			HudPositionForDisplay(g_eSettings[id][S_SPEED_Y])
 		);
 	}
 
@@ -376,7 +447,8 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 			ShowCustomizeHudPositionEditMenu(id);
 		}
 		case 1: {
-			client_print(id, print_chat, "Please enter your position in format X Y: -1.0 0.7");
+			client_print(id, print_chat, "Please enter your position in format X Y: %.2f %.2f",
+				HudPositionForDisplay(flX), HudPositionForDisplay(flY));
 			client_cmd(id, "messagemode %s", HUD_POSITION_INPUT_CMD);
 		}
 		case 2: {
@@ -435,23 +507,19 @@ public HandleCustomizeHudPositionEditMenu(const id, const key) {
 
 public ShowCustomizeHudColorEditMenu(const id) {
 	new szBuffer[768];
+	new szTitle[32];
 	new iLen = 0;
 	new iKeys = 0;
+	new iRed;
+	new iGreen;
+	new iBlue;
 
-	if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rGood stats HUD:^n\dCurrent: %d %d %d^n^n",
-			g_eSettings[id][S_STATS_R],
-			g_eSettings[id][S_STATS_G],
-			g_eSettings[id][S_STATS_B]
-		);
-	} else {
-		iLen += formatex(
-			szBuffer[iLen], charsmax(szBuffer) - iLen, "\rFail stats HUD:^n\dCurrent: %d %d %d^n^n",
-			g_eSettings[id][S_FAILSTATS_R],
-			g_eSettings[id][S_FAILSTATS_G],
-			g_eSettings[id][S_FAILSTATS_B]
-		);
+	if (!GetHudColor(id, szTitle, charsmax(szTitle), iRed, iGreen, iBlue)) {
+		return;
 	}
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r%s:^n\dCurrent: %d %d %d^n^n",
+		szTitle, iRed, iGreen, iBlue);
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wDefault \d(from cvar)^n");
 	iKeys |= MENU_KEY_1;
@@ -484,12 +552,7 @@ public ShowCustomizeHudColorEditMenu(const id) {
 public HandleCustomizeHudColorEditMenu(const id, const key) {
 	switch (key) {
 		case 0: {
-			if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-				settings_stats_rgb_set(id, g_pCvar[C_STATS_R], g_pCvar[C_STATS_G], g_pCvar[C_STATS_B]);
-			} else if (g_iHudColorTarget[id] == HC_TARGET_FAILSTATS) {
-				settings_failstats_rgb_set(id, g_pCvar[C_FAILSTATS_R], g_pCvar[C_FAILSTATS_G], g_pCvar[C_FAILSTATS_B]);
-			}
-
+			ResetHudColor(id);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 1: {
@@ -497,39 +560,19 @@ public HandleCustomizeHudColorEditMenu(const id, const key) {
 			client_cmd(id, "messagemode %s", HUD_COLOR_INPUT_CMD);
 		}
 		case 2: {
-			if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-				settings_stats_rgb_set(id, 20, 255, 150);
-			} else if (g_iHudColorTarget[id] == HC_TARGET_FAILSTATS) {
-				settings_failstats_rgb_set(id, 20, 255, 150);
-			}
-
+			ApplyHudColor(id, 20, 255, 150);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 3: {
-			if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-				settings_stats_rgb_set(id, 255, 70, 120);
-			} else if (g_iHudColorTarget[id] == HC_TARGET_FAILSTATS) {
-				settings_failstats_rgb_set(id, 255, 70, 120);
-			}
-
+			ApplyHudColor(id, 255, 70, 120);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 4: {
-			if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-				settings_stats_rgb_set(id, 0, 170, 255);
-			} else if (g_iHudColorTarget[id] == HC_TARGET_FAILSTATS) {
-				settings_failstats_rgb_set(id, 0, 170, 255);
-			}
-
+			ApplyHudColor(id, 0, 170, 255);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 5: {
-			if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-				settings_stats_rgb_set(id, 255, 255, 255);
-			} else if (g_iHudColorTarget[id] == HC_TARGET_FAILSTATS) {
-				settings_failstats_rgb_set(id, 255, 255, 255);
-			}
-
+			ApplyHudColor(id, 255, 255, 255);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 7: {
@@ -581,14 +624,94 @@ public CmdCustomizeHudColorInput(const id) {
 		return PLUGIN_HANDLED;
 	}
 
-	if (g_iHudColorTarget[id] == HC_TARGET_STATS) {
-		settings_stats_rgb_set(id, iRed, iGreen, iBlue);
-	} else if (g_iHudColorTarget[id] == HC_TARGET_FAILSTATS) {
-		settings_failstats_rgb_set(id, iRed, iGreen, iBlue);
-	}
+	ApplyHudColor(id, iRed, iGreen, iBlue);
 
 	ShowCustomizeHudColorEditMenu(id);
 	return PLUGIN_HANDLED;
+}
+
+stock bool:GetHudColor(const id, szTitle[], const iTitleLen, &iRed, &iGreen, &iBlue) {
+	switch (g_iHudColorTarget[id]) {
+		case HC_TARGET_STATS: {
+			copy(szTitle, iTitleLen, "Good stats HUD");
+			iRed = g_eSettings[id][S_STATS_R];
+			iGreen = g_eSettings[id][S_STATS_G];
+			iBlue = g_eSettings[id][S_STATS_B];
+		}
+		case HC_TARGET_FAILSTATS: {
+			copy(szTitle, iTitleLen, "Fail stats HUD");
+			iRed = g_eSettings[id][S_FAILSTATS_R];
+			iGreen = g_eSettings[id][S_FAILSTATS_G];
+			iBlue = g_eSettings[id][S_FAILSTATS_B];
+		}
+		case HC_TARGET_PRE: {
+			copy(szTitle, iTitleLen, "Pre: Normal");
+			iRed = g_eSettings[id][S_PRE_R];
+			iGreen = g_eSettings[id][S_PRE_G];
+			iBlue = g_eSettings[id][S_PRE_B];
+		}
+		case HC_TARGET_PRE_GOOD: {
+			copy(szTitle, iTitleLen, "Pre: Good");
+			iRed = g_eSettings[id][S_PRE_GOOD_R];
+			iGreen = g_eSettings[id][S_PRE_GOOD_G];
+			iBlue = g_eSettings[id][S_PRE_GOOD_B];
+		}
+		case HC_TARGET_PRE_BAD: {
+			copy(szTitle, iTitleLen, "Pre: Bad");
+			iRed = g_eSettings[id][S_PRE_BAD_R];
+			iGreen = g_eSettings[id][S_PRE_BAD_G];
+			iBlue = g_eSettings[id][S_PRE_BAD_B];
+		}
+		case HC_TARGET_PRE_MINLOSS: {
+			copy(szTitle, iTitleLen, "Pre: Minloss");
+			iRed = g_eSettings[id][S_PRE_MINLOSS_R];
+			iGreen = g_eSettings[id][S_PRE_MINLOSS_G];
+			iBlue = g_eSettings[id][S_PRE_MINLOSS_B];
+		}
+		case HC_TARGET_SPEED_MIN: {
+			copy(szTitle, iTitleLen, "Speed: Minimum");
+			iRed = g_eSettings[id][S_SPEED_MIN_R];
+			iGreen = g_eSettings[id][S_SPEED_MIN_G];
+			iBlue = g_eSettings[id][S_SPEED_MIN_B];
+		}
+		case HC_TARGET_SPEED_MAX: {
+			copy(szTitle, iTitleLen, "Speed: Maximum");
+			iRed = g_eSettings[id][S_SPEED_MAX_R];
+			iGreen = g_eSettings[id][S_SPEED_MAX_G];
+			iBlue = g_eSettings[id][S_SPEED_MAX_B];
+		}
+		default: {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+stock ApplyHudColor(const id, const iRed, const iGreen, const iBlue) {
+	switch (g_iHudColorTarget[id]) {
+		case HC_TARGET_STATS: settings_stats_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_FAILSTATS: settings_failstats_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_PRE: settings_pre_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_PRE_GOOD: settings_pre_good_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_PRE_BAD: settings_pre_bad_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_PRE_MINLOSS: settings_pre_minloss_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_SPEED_MIN: settings_speed_min_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_SPEED_MAX: settings_speed_max_rgb_set(id, iRed, iGreen, iBlue);
+	}
+}
+
+stock ResetHudColor(const id) {
+	switch (g_iHudColorTarget[id]) {
+		case HC_TARGET_STATS: settings_stats_rgb_set(id, g_pCvar[C_STATS_R], g_pCvar[C_STATS_G], g_pCvar[C_STATS_B]);
+		case HC_TARGET_FAILSTATS: settings_failstats_rgb_set(id, g_pCvar[C_FAILSTATS_R], g_pCvar[C_FAILSTATS_G], g_pCvar[C_FAILSTATS_B]);
+		case HC_TARGET_PRE: settings_pre_rgb_set(id, g_pCvar[C_PRE_R], g_pCvar[C_PRE_G], g_pCvar[C_PRE_B]);
+		case HC_TARGET_PRE_GOOD: settings_pre_good_rgb_set(id, g_pCvar[C_PRE_GOOD_R], g_pCvar[C_PRE_GOOD_G], g_pCvar[C_PRE_GOOD_B]);
+		case HC_TARGET_PRE_BAD: settings_pre_bad_rgb_set(id, g_pCvar[C_PRE_BAD_R], g_pCvar[C_PRE_BAD_G], g_pCvar[C_PRE_BAD_B]);
+		case HC_TARGET_PRE_MINLOSS: settings_pre_minloss_rgb_set(id, g_pCvar[C_PRE_MINLOSS_R], g_pCvar[C_PRE_MINLOSS_G], g_pCvar[C_PRE_MINLOSS_B]);
+		case HC_TARGET_SPEED_MIN: settings_speed_min_rgb_set(id, g_pCvar[C_SPEED_MIN_R], g_pCvar[C_SPEED_MIN_G], g_pCvar[C_SPEED_MIN_B]);
+		case HC_TARGET_SPEED_MAX: settings_speed_max_rgb_set(id, g_pCvar[C_SPEED_MAX_R], g_pCvar[C_SPEED_MAX_G], g_pCvar[C_SPEED_MAX_B]);
+	}
 }
 
 public CmdCustomizeHudPositionInput(const id) {
@@ -597,7 +720,7 @@ public CmdCustomizeHudPositionInput(const id) {
 	new Float:flX;
 	new Float:flY;
 
-	if (g_iHudPositionTarget[id] == HP_TARGET_NONE) {
+	if (!GetHudPosition(id, flX, flY)) {
 		return PLUGIN_HANDLED;
 	}
 
@@ -613,7 +736,8 @@ public CmdCustomizeHudPositionInput(const id) {
 	parse(szArgs, szX, charsmax(szX), szY, charsmax(szY));
 
 	if (!szX[0] || !szY[0]) {
-		client_print(id, print_chat, "Invalid position format. Example: -1.0 0.7");
+		client_print(id, print_chat, "Invalid position format. Example: %.2f %.2f",
+			HudPositionForDisplay(flX), HudPositionForDisplay(flY));
 		ShowCustomizeHudPositionEditMenu(id);
 		return PLUGIN_HANDLED;
 	}
@@ -640,6 +764,34 @@ ApplyHudPosition(const id, Float:flX, Float:flY) {
 	} else if (g_iHudPositionTarget[id] == HP_TARGET_SPEED) {
 		settings_speed_xy_set(id, flX, flY);
 	}
+}
+
+stock bool:GetHudPosition(const id, &Float:flX, &Float:flY) {
+	switch (g_iHudPositionTarget[id]) {
+		case HP_TARGET_STATS: {
+			flX = g_eSettings[id][S_STATS_X];
+			flY = g_eSettings[id][S_STATS_Y];
+		}
+		case HP_TARGET_PRE: {
+			flX = g_eSettings[id][S_PRE_X];
+			flY = g_eSettings[id][S_PRE_Y];
+		}
+		case HP_TARGET_SPEED: {
+			flX = g_eSettings[id][S_SPEED_X];
+			flY = g_eSettings[id][S_SPEED_Y];
+		}
+		default: {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+stock Float:HudPositionForDisplay(Float:flPosition) {
+	return flPosition < 0.0
+		? flPosition - HUD_POSITION_DISPLAY_EPSILON
+		: flPosition + HUD_POSITION_DISPLAY_EPSILON;
 }
 
 public ShowSpeedConfigurationsMenu(const id) {
