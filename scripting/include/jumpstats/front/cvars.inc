@@ -24,7 +24,6 @@ enum JS_CVAR {
 	C_PRE_MINLOSS_R,
 	C_PRE_MINLOSS_G,
 	C_PRE_MINLOSS_B,
-	C_PRESPEED_MODE,
 	C_SPEED_MODE,
 	C_PRESPEED_FRAME,
 	Float:C_STATS_X,
@@ -39,7 +38,7 @@ enum JS_CVAR {
 	c_iPreSpeed,
 	c_iConsoleBug,
 	c_iNoslow,
-	c_iMinmode,
+	c_iUseForwards,
 	Float:c_iGravity
 }
 
@@ -63,9 +62,9 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_failstats_green", "70"),	g_pCvar[C_FAILSTATS_G]);
 	bind_pcvar_num(register_cvar("js_failstats_blue", "120"),	g_pCvar[C_FAILSTATS_B]);
 
-	bind_pcvar_num(register_cvar("js_prespeed_red", "145"),	g_pCvar[C_PRESPEED_R]);
-	bind_pcvar_num(register_cvar("js_prespeed_green", "145"),g_pCvar[C_PRESPEED_G]);
-	bind_pcvar_num(register_cvar("js_prespeed_blue", "145"),	g_pCvar[C_PRESPEED_B]);
+	bind_pcvar_num(register_cvar("js_prespeed_red", "200"),	g_pCvar[C_PRESPEED_R]);
+	bind_pcvar_num(register_cvar("js_prespeed_green", "200"),g_pCvar[C_PRESPEED_G]);
+	bind_pcvar_num(register_cvar("js_prespeed_blue", "200"),	g_pCvar[C_PRESPEED_B]);
 
 	bind_pcvar_num(register_cvar("js_goodpre_red", "20"),		g_pCvar[C_PRE_GOOD_R]);
 	bind_pcvar_num(register_cvar("js_goodpre_green", "255"),	g_pCvar[C_PRE_GOOD_G]);
@@ -79,7 +78,6 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_minlosspre_green", "135"),g_pCvar[C_PRE_MINLOSS_G]);
 	bind_pcvar_num(register_cvar("js_minlosspre_blue", "255"),	g_pCvar[C_PRE_MINLOSS_B]);
 
-	bind_pcvar_num(register_cvar("js_prespeed_mode", "1"),	g_pCvar[C_PRESPEED_MODE]);
 	bind_pcvar_num(register_cvar("js_speed_mode", "0"),		g_pCvar[C_SPEED_MODE]);
 	
 	bind_pcvar_num(register_cvar("js_prespeed_frame", "3"),	g_pCvar[C_PRESPEED_FRAME]);
@@ -103,7 +101,7 @@ init_cvars() {
 
 	bind_pcvar_num(register_cvar("js_noslowdown", "0"),		g_pCvar[c_iNoslow]);
 
-	bind_pcvar_num(register_cvar("js_minmode", "0"),		g_pCvar[c_iMinmode]);
+	bind_pcvar_num(register_cvar("js_use_forwards", "1"),	g_pCvar[c_iUseForwards]);
 
 	bind_pcvar_float(get_cvar_pointer("sv_gravity"),		g_pCvar[c_iGravity]);
 }

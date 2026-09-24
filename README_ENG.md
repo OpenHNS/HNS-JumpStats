@@ -98,9 +98,9 @@ FOG (frames on the ground) - in a nutshell, this is the number of frames (frames
 | `js_failstats_red` | 200 | Red channel of the failed-jump HUD |
 | `js_failstats_green` | 10 | Green channel of the failed-jump HUD |
 | `js_failstats_blue` | 50 | Blue channel of the failed-jump HUD |
-| `js_prespeed_red` | 145 | Base red channel of the prespeed HUD |
-| `js_prespeed_green` | 145 | Base green channel of the prespeed HUD |
-| `js_prespeed_blue` | 145 | Base blue channel of the prespeed HUD |
+| `js_prespeed_red` | 200 | Base red channel of the prespeed HUD |
+| `js_prespeed_green` | 200 | Base green channel of the prespeed HUD |
+| `js_prespeed_blue` | 200 | Base blue channel of the prespeed HUD |
 | `js_goodpre_red` | 20 | Red channel of GOOD pre in KZRush mode |
 | `js_goodpre_green` | 255 | Green channel of GOOD pre in KZRush mode |
 | `js_goodpre_blue` | 150 | Blue channel of GOOD pre in KZRush mode |
@@ -110,7 +110,6 @@ FOG (frames on the ground) - in a nutshell, this is the number of frames (frames
 | `js_minlosspre_red` | 30 | Red channel of MINLOSS pre in KZRush mode |
 | `js_minlosspre_green` | 135 | Green channel of MINLOSS pre in KZRush mode |
 | `js_minlosspre_blue` | 255 | Blue channel of MINLOSS pre in KZRush mode |
-| `js_prespeed_mode` | 1 | Color mode: `0` — Fixed, `1` — Dynamic, `2` — KZRush |
 | `js_speed_mode` | 0 | Speed style: `0` — Default (`u/s`), `1` — Quake (`units/seconds` + `velocity`), `2` — Number |
 | `js_prespeed_frame` | 3 | Number of skipped frames between prespeed HUD updates |
 | `js_stats_x` | -1.0 | X coordinate of the main statistics HUD |
@@ -125,7 +124,7 @@ FOG (frames on the ground) - in a nutshell, this is the number of frames (frames
 | `js_hud_prespeed` | 1 | HUD channel for prespeed |
 | `js_console_fix` | 0 | Adds a line break for servers with broken console formatting |
 | `js_noslowdown` | 0 | Disables the slowdown validation based on `fuser2` |
-| `js_minmode` | 0 | Enables compact HUD statistics mode |
+| `js_use_forwards` | 0 | Movement data source: `0` — ReAPI `PM_Move`, `1` — Fakemeta forwards |
 
 ## Sounds
 

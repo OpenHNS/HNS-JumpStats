@@ -9,6 +9,8 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
 	RegisterHookChain(RG_PM_Move, "rgPM_Move", true);
 	RegisterHookChain(RG_PM_AirMove, "rgPM_AirMove");
+	register_forward(FM_CmdStart, "fwCmdStart_Post", true);
+	register_forward(FM_PlayerPreThink, "fwPlayerPreThink_Post", true);
 
 	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = true);
 	RegisterHookChain(RG_CBasePlayer_Observer_FindNextPlayer,"RG_CBasePlayerObserverFindNextPlayer_Post", .post = true);
@@ -16,6 +18,7 @@ public plugin_init() {
 	g_hudStrafe = CreateHudSyncObj();
 	g_hudStats = CreateHudSyncObj();
 	g_hudPreSpeed = CreateHudSyncObj();
+	g_hudPre = CreateHudSyncObj();
 
 	g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 
@@ -34,8 +37,35 @@ public rgPlayerSpawn(id) {
 }
 
 public rgPM_Move(id) {
-	if (is_user_hltv(id)) {
+	if (g_pCvar[c_iUseForwards]) {
 		return HC_CONTINUE;
+	}
+
+	process_player_move(id, Float:get_pmove(pm_frametime));
+	return HC_CONTINUE;
+}
+
+public fwCmdStart_Post(id, ucHandle, randomSeed) {
+	if (g_pCvar[c_iUseForwards]) {
+		g_flFrameTime[id] = float(get_uc(ucHandle, UC_Msec)) * 0.001;
+	}
+
+	return FMRES_IGNORED;
+}
+
+public fwPlayerPreThink_Post(id) {
+	if (!g_pCvar[c_iUseForwards]) {
+		return FMRES_IGNORED;
+	}
+
+	process_player_move(id, g_flFrameTime[id]);
+	process_air_move(id, false);
+	return FMRES_IGNORED;
+}
+
+stock process_player_move(id, Float:flFrameTime) {
+	if (is_user_hltv(id)) {
+		return;
 	}
 
 	if (g_isUserSpec[id] && is_user_alive(id)) {
@@ -72,7 +102,7 @@ public rgPM_Move(id) {
 	}
 
 
-	if (g_eSettings[id][S_PRESPEED] && (g_eOnOff[id][of_bSpeed] || g_eOnOff[id][of_bJof] || g_eOnOff[id][of_bPre])) {
+	if (g_eSettings[id][S_PRESPEED] && (g_eOnOff[id][of_bSpeed] || g_eOnOff[id][of_bJof])) {
 		show_prespeed(id);
 	}
 
@@ -236,7 +266,6 @@ public rgPM_Move(id) {
 				flPlayerGravity = 1.0;
 			}
 
-			new Float:flFrameTime = Float:get_pmove(pm_frametime);
 			new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * flFrameTime;
 			new Float:flTarget = -flDelta * 0.5;
 			new Float:flCurrentVz = g_flVelocity[id][2];
@@ -275,7 +304,6 @@ public rgPM_Move(id) {
 	g_bPrevInDuck[id] = g_bInDuck[id];
 	g_bPrevSlide[id] = g_bSlide[id];
 
-	return HC_CONTINUE;
 }
 
 stock bool:isPlayerSliding(id) {
@@ -363,27 +391,44 @@ stock bool:find_jumpbug_landing(id, Float:flStartOrigin[3], &Float:flLandingZ) {
 }
 
 public rgPM_AirMove(id) {
-	if (!is_user_alive(id)) {
+	if (g_pCvar[c_iUseForwards]) {
 		return HC_CONTINUE;
+	}
+
+	process_air_move(id, true);
+	return HC_CONTINUE;
+}
+
+stock process_air_move(id, bool:fromPmMove) {
+	if (!is_user_alive(id)) {
+		return;
 	}
 	
 	if (g_eWhichJump[id] == jt_Not) {
-		return HC_CONTINUE;
+		return;
+	}
+
+	if (!fromPmMove && (get_entvar(id, var_flags) & FL_ONGROUND
+	|| get_entvar(id, var_movetype) != MOVETYPE_WALK
+	|| get_entvar(id, var_waterlevel) >= 2)) {
+		return;
 	}
 
 	if (isUserSurfing(id)) {
 		reset_stats(id);
-		return HC_CONTINUE;
+		return;
 	}
 
-	g_isTouched[id] = get_pmove(pm_numtouch) ? true : g_isTouched[id];	
+	if (fromPmMove) {
+		g_isTouched[id] = get_pmove(pm_numtouch) ? true : g_isTouched[id];
+	}
 
 	if (g_eWhichJump[id] == jt_LongJump) {
 		detect_hj(id, g_flOrigin[id], g_flFirstJump[id][2]);
 	}
 
 	if (g_iStrafes[id] >= NSTRAFES - 1) {
-		return HC_CONTINUE;
+		return;
 	}
 
 	new iButtons = get_entvar(id, var_button);
@@ -460,7 +505,6 @@ public rgPM_AirMove(id) {
 	else if (isTiring)
 		g_iOldStrButtons[id] = iButtons;
 
-	return HC_CONTINUE;
 }
 
 public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {

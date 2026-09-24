@@ -99,9 +99,9 @@ FOG (frames on the ground) - в двух словах, это кол-во frame 
 | `js_failstats_red` | 200 | Красный канал HUD неудачного прыжка |
 | `js_failstats_green` | 10 | Зелёный канал HUD неудачного прыжка |
 | `js_failstats_blue` | 50 | Синий канал HUD неудачного прыжка |
-| `js_prespeed_red` | 145 | Базовый красный канал prespeed HUD |
-| `js_prespeed_green` | 145 | Базовый зелёный канал prespeed HUD |
-| `js_prespeed_blue` | 145 | Базовый синий канал prespeed HUD |
+| `js_prespeed_red` | 200 | Базовый красный канал prespeed HUD |
+| `js_prespeed_green` | 200 | Базовый зелёный канал prespeed HUD |
+| `js_prespeed_blue` | 200 | Базовый синий канал prespeed HUD |
 | `js_goodpre_red` | 20 | Красный канал GOOD pre в режиме KZRush |
 | `js_goodpre_green` | 255 | Зелёный канал GOOD pre в режиме KZRush |
 | `js_goodpre_blue` | 150 | Синий канал GOOD pre в режиме KZRush |
@@ -111,7 +111,6 @@ FOG (frames on the ground) - в двух словах, это кол-во frame 
 | `js_minlosspre_red` | 30 | Красный канал MINLOSS pre в режиме KZRush |
 | `js_minlosspre_green` | 135 | Зелёный канал MINLOSS pre в режиме KZRush |
 | `js_minlosspre_blue` | 255 | Синий канал MINLOSS pre в режиме KZRush |
-| `js_prespeed_mode` | 1 | Режим цвета: `0` — Fixed, `1` — Dynamic, `2` — KZRush |
 | `js_speed_mode` | 0 | Стиль скорости: `0` — Default (`u/s`), `1` — Quake (`units/seconds` + `velocity`), `2` — Number |
 | `js_prespeed_frame` | 3 | Количество пропускаемых кадров между обновлениями prespeed HUD |
 | `js_stats_x` | -1.0 | Координата X HUD основной статистики |
@@ -126,7 +125,7 @@ FOG (frames on the ground) - в двух словах, это кол-во frame 
 | `js_hud_prespeed` | 1 | HUD-канал prespeed |
 | `js_console_fix` | 0 | Добавляет перевод строки для серверов со сломанным форматом консоли |
 | `js_noslowdown` | 0 | Отключает проверку slowdown по `fuser2` |
-| `js_minmode` | 0 | Включает компактный режим HUD-статистики |
+| `js_use_forwards` | 0 | Источник movement-данных: `0` — ReAPI `PM_Move`, `1` — Fakemeta forwards |
 
 ## Звуки
 

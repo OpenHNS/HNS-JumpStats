@@ -1,15 +1,3 @@
-enum _:PRESPEED_MODE {
-    PRESPEED_MODE_FIXED = 0,
-    PRESPEED_MODE_DYNAMIC,
-    PRESPEED_MODE_KZRUSH
-};
-
-new const g_szPrespeedMode[PRESPEED_MODE][] = {
-    "Fixed",
-    "Dynamic",
-    "KZRush"
-};
-
 enum _:SPEED_MODE {
     SPEED_MODE_DEFAULT = 0,
     SPEED_MODE_QUAKE,
@@ -46,7 +34,6 @@ enum _:SETTINGS {
     S_PRE_MINLOSS_R,
     S_PRE_MINLOSS_G,
     S_PRE_MINLOSS_B,
-    S_PRESPEED_MODE,
     S_SPEED_MODE,
     S_PRESPEED_FRAME,
     Float:S_STATS_X,
@@ -104,11 +91,6 @@ public settings_player_connect(id) {
     g_eSettings[id][S_PRE_MINLOSS_R] = g_pCvar[C_PRE_MINLOSS_R];
     g_eSettings[id][S_PRE_MINLOSS_G] = g_pCvar[C_PRE_MINLOSS_G];
     g_eSettings[id][S_PRE_MINLOSS_B] = g_pCvar[C_PRE_MINLOSS_B];
-
-    g_eSettings[id][S_PRESPEED_MODE] = g_pCvar[C_PRESPEED_MODE];
-    if (g_eSettings[id][S_PRESPEED_MODE] < PRESPEED_MODE_FIXED || g_eSettings[id][S_PRESPEED_MODE] > PRESPEED_MODE_KZRUSH) {
-        g_eSettings[id][S_PRESPEED_MODE] = PRESPEED_MODE_DYNAMIC;
-    }
 
     g_eSettings[id][S_SPEED_MODE] = g_pCvar[C_SPEED_MODE];
     if (g_eSettings[id][S_SPEED_MODE] < SPEED_MODE_DEFAULT || g_eSettings[id][S_SPEED_MODE] > SPEED_MODE_NUMBER) {
@@ -193,14 +175,6 @@ public settings_pre_minloss_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_PRE_MINLOSS_R] = iRed;
     g_eSettings[id][S_PRE_MINLOSS_G] = iGreen;
     g_eSettings[id][S_PRE_MINLOSS_B] = iBlue;
-}
-
-public settings_prespeed_mode_set(id, iMode) {
-    if (iMode < PRESPEED_MODE_FIXED || iMode > PRESPEED_MODE_KZRUSH) {
-        iMode = PRESPEED_MODE_DYNAMIC;
-    }
-
-    g_eSettings[id][S_PRESPEED_MODE] = iMode;
 }
 
 public settings_speed_mode_set(id, iMode) {

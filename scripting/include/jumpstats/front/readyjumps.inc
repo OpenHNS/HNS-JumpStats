@@ -88,16 +88,7 @@ public ready_jumps(id, Float:flEndJump[3]) {
 	calc_strafe(id);
 
 	if (g_eFailJump[id] != fj_notshow) {
-
-		if (!g_pCvar[c_iMinmode]) {
-			if (g_pCvar[C_ENABLE_STRAFE])
-				show_strafe_hud(id);
-
-			if (g_pCvar[C_ENABLE_STATS])
-				show_stats_hud(id);
-		} else {
-			show_stats_min(id);
-		}
+		show_stats_hud(id);
 
 		if (g_pCvar[C_ENABLE_CONSOLE])
 			show_console(id);
@@ -181,116 +172,7 @@ public calc_strafe(id) {
 
 }
 
-public show_strafe_hud(id) {
-	new szStrMess[512];
-	new iLen;
-
-	for (new str = 1; str <= g_iStrafes[id]; str++) {
-		
-		new iEffPrecent;
-		if ((g_eStrafeStats[id][str][st_iFrameGood] + g_eStrafeStats[id][str][st_iFrameBad]) > 0) {
-			iEffPrecent = (g_eStrafeStats[id][str][st_iFrameGood] * 100) / (g_eStrafeStats[id][str][st_iFrameGood] + g_eStrafeStats[id][str][st_iFrameBad]);
-		} else {
-			iEffPrecent = 0;
-		}
-
-		iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^t%s  %4.1f  %4.1f  %d  %d%%%%^n", g_szStrButtonsName[g_eStrafeStats[id][str][st_iButton]], g_eStrafeStats[id][str][st_flSpeed], g_eStrafeStats[id][str][st_flSpeedFail], g_eStrafeStats[id][str][st_iFrame], iEffPrecent);
-	}
-	
-	//TODO: В бхоп жапме дублируется пре
-
-	if (g_iStrafes[id] != 0) {
-		iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^t    (%4.1f)^t^t (%d%%%%)^n", g_flStrGain[id], g_iStrAllEff[id]);
-		if (g_eWhichJump[id] == jt_LadderJump && g_eStrafeStats[id][0][st_flSpeed] != 0) {
-			iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^t^tturn speed: %4.3f", g_eStrafeStats[id][0][st_flSpeed]);
-		}
-		if (!g_eFailJump[id] && g_eWhichJump[id] != jt_LadderJump && g_eJumpstats[id][js_iJumpBlock] < 290.0 && g_eJumpstats[id][js_iJumpBlock] > 200.0 && g_eJumpstats[id][js_flJof] < 100.0 && g_eJumpstats[id][js_flJof] != 0.0 && (g_eJumpstats[id][js_iJumpBlock] + g_eJumpstats[id][js_flJof]) < g_eJumpstats[id][js_flDistance]) {
-			if ((g_eJumpstats[id][js_iJumpBlock] + g_eJumpstats[id][js_flLanding] + g_eJumpstats[id][js_flJof]) > (g_eJumpstats[id][js_flDistance] + 10.0) || g_eJumpstats[id][js_flLanding] <= 0.0) {
-				iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^n^tblock: %d^n^tJof: %.f", g_eJumpstats[id][js_iJumpBlock], g_eJumpstats[id][js_flJof]);
-			} else {
-				iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^n^tblock: %d^n^tJof: %.f	land: %.f", g_eJumpstats[id][js_iJumpBlock], g_eJumpstats[id][js_flJof], g_eJumpstats[id][js_flLanding]);
-			}
-		} else if (g_eFailJump[id] && g_eWhichJump[id] != jt_LadderJump && g_eJumpstats[id][js_iJumpBlock] < 290.0 && g_eJumpstats[id][js_iJumpBlock] > 200.0 && g_eJumpstats[id][js_flJof] < 100.0 && g_eJumpstats[id][js_flJof] != 0.0) {
-			iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^n^tblock: %d^n^tJof: %.f", g_eJumpstats[id][js_iJumpBlock], g_eJumpstats[id][js_flJof]);
-		} else if (g_eWhichJump[id] != jt_LadderJump && g_eJumpstats[id][js_flJof] < 100.0 && g_eJumpstats[id][js_flJof] != 0.0) {
-			iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^n^tJof: %.f", g_eJumpstats[id][js_flJof]);
-		} 
-
-		if (g_isTouched[id]) {
-			iLen += format(szStrMess[iLen], sizeof szStrMess - iLen, "^n^ttouch");
-		}
-	}
-
-	if (!g_eFailJump[id]) {
-		set_hudmessage(
-			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
-			g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
-	} else {
-		set_hudmessage(
-			g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B],
-			g_eSettings[id][S_STRAFE_X], g_eSettings[id][S_STRAFE_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStrafe]);
-	}
-
-	for (new i = 1; i < MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[id][S_STRAFE]) {
-			ShowSyncHudMsg(i, g_hudStrafe, szStrMess);
-		}
-	}
-}
-
 public show_stats_hud(id) {
-	new szPreMess[64];
-	new iLen;
-
-	if (g_ePreStats[id][ptLadderBhop]) {
-		iLen += format(szPreMess[iLen], sizeof szPreMess - iLen, "Ladder ");
-	}
-	
-	if (g_ePreStats[id][ptSideWays]) {
-		iLen += format(szPreMess[iLen], sizeof szPreMess - iLen, "[sw] ");
-	} else if (g_ePreStats[id][ptBackWards]) {
-		iLen += format(szPreMess[iLen], sizeof szPreMess - iLen, "[bw] ");
-	}
-
-	for (new i = 1; i < MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[id][S_STATS]) {
-
-			if (!g_eFailJump[id]) {
-				set_hudmessage(
-					g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
-					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
-			} else {
-				set_hudmessage(
-					g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B],
-					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
-			}
-
-			switch (g_eWhichJump[id]) {
-				case jt_LongJump, jt_HighJump, jt_LadderJump: {
-					ShowSyncHudMsg(i, g_hudStats, "%s%s ^ndist: %.3f^n%s pre: %.1f^nendspeed: %.0f^nstrafes: %d", szPreMess, g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpstats[id][js_flDistance], g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], g_eJumpstats[id][js_flEndSpeed], g_iStrafes[id]);
-				}
-				case jt_BhopJump, jt_StandUpBhopJump, jt_DuckBhopJump, jt_BhopInDuck, jt_WeirdJump: {
-					ShowSyncHudMsg(i, g_hudStats, "%s%s%s ^ndist: %.3f^njump (%d): %.1f^npre: %.1f^nendspeed: %.0f^nstrafes: %d", szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpstats[id][js_flDistance], g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], g_eJumpData[id][1][JUMP_PRE], g_eJumpstats[id][js_flEndSpeed], g_iStrafes[id]);
-				}
-				case jt_CountJump, jt_StandUPCountJump: {
-					ShowSyncHudMsg(i, g_hudStats, "%s%s%s ^ndist: %.3f^njump (%d): %.1f^nduck: %.1f^nendspeed: %.0f^nstrafes: %d", szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_eJumpstats[id][js_flDistance], g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], g_eDuckData[id][1][DUCK_PRE], g_eJumpstats[id][js_flEndSpeed], g_iStrafes[id]);
-				}
-				case jt_Multi_CountJump, jt_Multi_StandUPCountJump: {
-					if (g_iDucks[id] == 2) {
-						ShowSyncHudMsg(i, g_hudStats, "%s%s%s (%d% ducks)^ndist: %.3f^njump (%d): %.1f^ndd (%d): %.1f^nduck: %.1f^nendspeed: %.0f^nstrafes: %d", szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_iDucks[id], g_eJumpstats[id][js_flDistance], g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], g_eDuckData[id][2][DUCK_FOG], g_eDuckData[id][2][DUCK_PRE], g_eDuckData[id][1][DUCK_PRE], g_eJumpstats[id][js_flEndSpeed], g_iStrafes[id]);
-					} else if (g_iDucks[id] == 3) {
-						ShowSyncHudMsg(i, g_hudStats, "%s%s%s (%d% ducks)^ndist: %.3f^njump (%d): %.1f^ndd (%d): %.1f^ndd (%d): %.1f^nduck: %.1f^nendspeed: %.0f^nstrafes: %d", szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_iDucks[id], g_eJumpstats[id][js_flDistance], g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE], g_eDuckData[id][3][DUCK_FOG], g_eDuckData[id][3][DUCK_PRE], g_eDuckData[id][2][DUCK_FOG], g_eDuckData[id][2][DUCK_PRE], g_eDuckData[id][1][DUCK_PRE], g_eJumpstats[id][js_flEndSpeed], g_iStrafes[id]);
-					} else {
-						ShowSyncHudMsg(i, g_hudStats, "%s%s%s (%d% ducks)^ndist: %.3f^njump (%d): %.1f^ndd (%d): %.1f^n(+%d% dd)^nduck: %.1f^nendspeed: %.0f^nstrafes: %d", szPreMess, g_VerAir[g_iVerInfo[id]][info_hud], g_eNameJumps[g_eWhichJump[id]][info_hud], g_iDucks[id], g_eJumpstats[id][js_flDistance], g_eJumpData[id][g_iJumps[id]][JUMP_FOG], g_eJumpData[id][g_iJumps[id]][JUMP_PRE],  g_eDuckData[id][g_iDucks[id]][DUCK_FOG], g_eDuckData[id][g_iDucks[id]][DUCK_PRE], g_iDucks[id] - 2, g_eDuckData[id][1][DUCK_PRE], g_eJumpstats[id][js_flEndSpeed], g_iStrafes[id]);
-					}
-				}
-			}
-		}
-	}
-}
-
-
-public show_stats_min(id) {
 	if (!g_eFailJump[id]) {
 		set_hudmessage(
 			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],

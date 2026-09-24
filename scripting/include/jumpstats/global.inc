@@ -175,6 +175,7 @@ new bool:g_bCheckEdgeBug[MAX_PLAYERS + 1];
 new bool:g_bEdgebugDone[MAX_PLAYERS + 1];
 new g_iEdgeBugCount[MAX_PLAYERS + 1];
 new Float:g_flLastGroundZ[MAX_PLAYERS + 1];
+new Float:g_flFrameTime[MAX_PLAYERS + 1];
 
 new g_iDetectHJ[MAX_PLAYERS + 1];
 
@@ -184,5 +185,6 @@ new g_iSkip[MAX_PLAYERS + 1];
 new g_hudStrafe;
 new g_hudStats;
 new g_hudPreSpeed;
+new g_hudPre;
 
 new bool:g_bOneReset[MAX_PLAYERS + 1];
