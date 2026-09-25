@@ -30,6 +30,10 @@ enum JS_CVAR {
 	C_SPEED_MAX_R,
 	C_SPEED_MAX_G,
 	C_SPEED_MAX_B,
+	C_SPEED_DYNAMIC_COLOR,
+	C_SPEED_STATIC_R,
+	C_SPEED_STATIC_G,
+	C_SPEED_STATIC_B,
 	C_SPEED_MODE,
 	C_SPEED_FRAME,
 	Float:C_STATS_X,
@@ -91,6 +95,11 @@ init_cvars() {
 	bind_pcvar_num(register_cvar("js_speed_max_red", "0"),	g_pCvar[C_SPEED_MAX_R]);
 	bind_pcvar_num(register_cvar("js_speed_max_green", "250"),	g_pCvar[C_SPEED_MAX_G]);
 	bind_pcvar_num(register_cvar("js_speed_max_blue", "0"),	g_pCvar[C_SPEED_MAX_B]);
+
+	bind_pcvar_num(register_cvar("js_speed_dynamic_color", "1"),	g_pCvar[C_SPEED_DYNAMIC_COLOR]);
+	bind_pcvar_num(register_cvar("js_speed_static_red", "255"),	g_pCvar[C_SPEED_STATIC_R]);
+	bind_pcvar_num(register_cvar("js_speed_static_green", "255"),	g_pCvar[C_SPEED_STATIC_G]);
+	bind_pcvar_num(register_cvar("js_speed_static_blue", "255"),	g_pCvar[C_SPEED_STATIC_B]);
 
 	bind_pcvar_num(register_cvar("js_speed_mode", "0"),		g_pCvar[C_SPEED_MODE]);
 	

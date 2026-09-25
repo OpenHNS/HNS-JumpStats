@@ -52,7 +52,11 @@ enum _:SETTINGS {
     Float:S_PRE_Y,
     Float:S_SPEED_X,
     Float:S_SPEED_Y,
-    S_BHOP_FOGSTATS
+    S_BHOP_FOGSTATS,
+    bool:S_SPEED_DYNAMIC_COLOR,
+    S_SPEED_STATIC_R,
+    S_SPEED_STATIC_G,
+    S_SPEED_STATIC_B
 };
 
 new g_eSettings[MAX_PLAYERS + 1][SETTINGS];
@@ -122,6 +126,11 @@ public settings_player_connect(id) {
     g_eSettings[id][S_SPEED_Y] = g_pCvar[C_SPEED_Y];
 
     g_eSettings[id][S_BHOP_FOGSTATS] = g_pCvar[C_BHOP_FOGSTATS];
+
+    g_eSettings[id][S_SPEED_DYNAMIC_COLOR] = bool:(g_pCvar[C_SPEED_DYNAMIC_COLOR] != 0);
+    g_eSettings[id][S_SPEED_STATIC_R] = g_pCvar[C_SPEED_STATIC_R];
+    g_eSettings[id][S_SPEED_STATIC_G] = g_pCvar[C_SPEED_STATIC_G];
+    g_eSettings[id][S_SPEED_STATIC_B] = g_pCvar[C_SPEED_STATIC_B];
 }
 
 public settings_stats_set(id, bool:bStats) {
@@ -190,6 +199,16 @@ public settings_speed_max_rgb_set(id, iRed, iGreen, iBlue) {
     g_eSettings[id][S_SPEED_MAX_B] = iBlue;
 }
 
+public settings_speed_static_rgb_set(id, iRed, iGreen, iBlue) {
+    g_eSettings[id][S_SPEED_STATIC_R] = iRed;
+    g_eSettings[id][S_SPEED_STATIC_G] = iGreen;
+    g_eSettings[id][S_SPEED_STATIC_B] = iBlue;
+}
+
+public settings_speed_dynamic_color_set(id, bool:bDynamic) {
+    g_eSettings[id][S_SPEED_DYNAMIC_COLOR] = bDynamic;
+}
+
 public settings_speed_mode_set(id, iMode) {
     if (iMode < SPEED_MODE_DEFAULT || iMode > SPEED_MODE_NUMBER) {
         iMode = SPEED_MODE_DEFAULT;
@@ -223,8 +242,10 @@ public settings_bhop_fogstats_set(id, bFogStats) {
     }
 }
 
-const SETTINGS_STORAGE_VERSION = 1;
+const SETTINGS_STORAGE_VERSION = 2;
+const SETTINGS_STORAGE_VERSION_1 = 1;
 const SETTINGS_STORAGE_TOKENS = 1 + JS_ONOFF + SETTINGS;
+const SETTINGS_STORAGE_VERSION_1_TOKENS = 1 + JS_ONOFF + S_SPEED_DYNAMIC_COLOR;
 
 new g_iSettingsVault = INVALID_HANDLE;
 
@@ -281,26 +302,43 @@ stock bool:settings_load_player(const id, const szAuthId[]) {
         return false;
     }
 
-    if (CountSettingsTokens(szData) != SETTINGS_STORAGE_TOKENS) {
-        return false;
-    }
-
     new szToken[16];
     new iPosition = argparse(szData, 0, szToken, charsmax(szToken));
+    new iVersion = str_to_num(szToken);
+    new iSettingsCount;
+    new iExpectedTokens;
 
-    if (str_to_num(szToken) != SETTINGS_STORAGE_VERSION) {
+    switch (iVersion) {
+        case SETTINGS_STORAGE_VERSION: {
+            iSettingsCount = SETTINGS;
+            iExpectedTokens = SETTINGS_STORAGE_TOKENS;
+        }
+        case SETTINGS_STORAGE_VERSION_1: {
+            iSettingsCount = S_SPEED_DYNAMIC_COLOR;
+            iExpectedTokens = SETTINGS_STORAGE_VERSION_1_TOKENS;
+        }
+        default: {
+            return false;
+        }
+    }
+
+    if (CountSettingsTokens(szData) != iExpectedTokens) {
         return false;
     }
 
     new iSavedOnOff[JS_ONOFF];
     new iSavedSettings[SETTINGS];
 
+    for (new i = 0; i < SETTINGS; i++) {
+        iSavedSettings[i] = g_eSettings[id][i];
+    }
+
     for (new i = 0; i < JS_ONOFF; i++) {
         iPosition = argparse(szData, iPosition, szToken, charsmax(szToken));
         iSavedOnOff[i] = str_to_num(szToken);
     }
 
-    for (new i = 0; i < SETTINGS; i++) {
+    for (new i = 0; i < iSettingsCount; i++) {
         iPosition = argparse(szData, iPosition, szToken, charsmax(szToken));
         iSavedSettings[i] = str_to_num(szToken);
     }
@@ -380,4 +418,8 @@ stock ValidateLoadedSettings(const id) {
     g_eSettings[id][S_SPEED_Y] = floatclamp(g_eSettings[id][S_SPEED_Y], 0.0, 1.0);
 
     g_eSettings[id][S_BHOP_FOGSTATS] = bool:(g_eSettings[id][S_BHOP_FOGSTATS] != 0);
+    g_eSettings[id][S_SPEED_DYNAMIC_COLOR] = bool:(g_eSettings[id][S_SPEED_DYNAMIC_COLOR] != false);
+    g_eSettings[id][S_SPEED_STATIC_R] = clamp(g_eSettings[id][S_SPEED_STATIC_R], 0, 255);
+    g_eSettings[id][S_SPEED_STATIC_G] = clamp(g_eSettings[id][S_SPEED_STATIC_G], 0, 255);
+    g_eSettings[id][S_SPEED_STATIC_B] = clamp(g_eSettings[id][S_SPEED_STATIC_B], 0, 255);
 }

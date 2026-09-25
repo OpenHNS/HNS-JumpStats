@@ -19,7 +19,8 @@ enum _:HUD_COLOR_TARGET {
 	HC_TARGET_PRE_BAD,
 	HC_TARGET_PRE_MINLOSS,
 	HC_TARGET_SPEED_MIN,
-	HC_TARGET_SPEED_MAX
+	HC_TARGET_SPEED_MAX,
+	HC_TARGET_SPEED_STATIC
 };
 
 enum _:HUD_POSITION_TARGET {
@@ -29,8 +30,15 @@ enum _:HUD_POSITION_TARGET {
 	HP_TARGET_SPEED
 };
 
+enum _:HUD_COLOR_PAGE {
+	HUD_COLOR_PAGE_MAIN,
+	HUD_COLOR_PAGE_SPEED,
+	HUD_COLOR_PAGE_COUNT
+};
+
 new g_iHudColorTarget[MAX_PLAYERS + 1];
 new g_iHudPositionTarget[MAX_PLAYERS + 1];
+new g_iHudColorPage[MAX_PLAYERS + 1];
 
 public init_menus() {
 	register_menucmd(register_menuid(MENU_ID), 1023, "HandleJumpStatsMenu");
@@ -86,6 +94,7 @@ public HandleJumpStatsMenu(const id, const key) {
 			ShowEnableOptionsMenu(id);
 		}
 		case 1: {
+			g_iHudColorPage[id] = HUD_COLOR_PAGE_MAIN;
 			ShowCustomizeHudColorMenu(id);
 		}
 		case 2: {
@@ -214,67 +223,56 @@ public ShowCustomizeHudColorMenu(const id) {
 	new iLen = 0;
 	new iKeys = 0;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rCustomize HUD Color:^n^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\rCustomize HUD Color \d[%d/%d]:^n^n",
+		g_iHudColorPage[id] + 1, HUD_COLOR_PAGE_COUNT);
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wGood stats HUD \d(%d %d %d)^n",
-		g_eSettings[id][S_STATS_R],
-		g_eSettings[id][S_STATS_G],
-		g_eSettings[id][S_STATS_B]
-	);
-	iKeys |= MENU_KEY_1;
+	if (g_iHudColorPage[id] == HUD_COLOR_PAGE_MAIN) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wGood stats HUD \d(%d %d %d)^n",
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B]);
+		iKeys |= MENU_KEY_1;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wFail stats HUD \d(%d %d %d)^n",
-		g_eSettings[id][S_FAILSTATS_R],
-		g_eSettings[id][S_FAILSTATS_G],
-		g_eSettings[id][S_FAILSTATS_B]
-	);
-	iKeys |= MENU_KEY_2;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wFail stats HUD \d(%d %d %d)^n",
+			g_eSettings[id][S_FAILSTATS_R], g_eSettings[id][S_FAILSTATS_G], g_eSettings[id][S_FAILSTATS_B]);
+		iKeys |= MENU_KEY_2;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wPre: Normal \d(%d %d %d)^n",
-		g_eSettings[id][S_PRE_R],
-		g_eSettings[id][S_PRE_G],
-		g_eSettings[id][S_PRE_B]
-	);
-	iKeys |= MENU_KEY_3;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wPre: Normal \d(%d %d %d)^n",
+			g_eSettings[id][S_PRE_R], g_eSettings[id][S_PRE_G], g_eSettings[id][S_PRE_B]);
+		iKeys |= MENU_KEY_3;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wPre: Good \d(%d %d %d)^n",
-		g_eSettings[id][S_PRE_GOOD_R],
-		g_eSettings[id][S_PRE_GOOD_G],
-		g_eSettings[id][S_PRE_GOOD_B]
-	);
-	iKeys |= MENU_KEY_4;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wPre: Good \d(%d %d %d)^n",
+			g_eSettings[id][S_PRE_GOOD_R], g_eSettings[id][S_PRE_GOOD_G], g_eSettings[id][S_PRE_GOOD_B]);
+		iKeys |= MENU_KEY_4;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wPre: Bad \d(%d %d %d)^n",
-		g_eSettings[id][S_PRE_BAD_R],
-		g_eSettings[id][S_PRE_BAD_G],
-		g_eSettings[id][S_PRE_BAD_B]
-	);
-	iKeys |= MENU_KEY_5;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wPre: Bad \d(%d %d %d)^n",
+			g_eSettings[id][S_PRE_BAD_R], g_eSettings[id][S_PRE_BAD_G], g_eSettings[id][S_PRE_BAD_B]);
+		iKeys |= MENU_KEY_5;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wPre: Minloss \d(%d %d %d)^n",
-		g_eSettings[id][S_PRE_MINLOSS_R],
-		g_eSettings[id][S_PRE_MINLOSS_G],
-		g_eSettings[id][S_PRE_MINLOSS_B]
-	);
-	iKeys |= MENU_KEY_6;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wPre: Minloss \d(%d %d %d)^n",
+			g_eSettings[id][S_PRE_MINLOSS_R], g_eSettings[id][S_PRE_MINLOSS_G], g_eSettings[id][S_PRE_MINLOSS_B]);
+		iKeys |= MENU_KEY_6;
+	} else {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r1. \wSpeed: Minimum \d(%d %d %d)^n",
+			g_eSettings[id][S_SPEED_MIN_R], g_eSettings[id][S_SPEED_MIN_G], g_eSettings[id][S_SPEED_MIN_B]);
+		iKeys |= MENU_KEY_1;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r7. \wSpeed: Minimum \d(%d %d %d)^n",
-		g_eSettings[id][S_SPEED_MIN_R],
-		g_eSettings[id][S_SPEED_MIN_G],
-		g_eSettings[id][S_SPEED_MIN_B]
-	);
-	iKeys |= MENU_KEY_7;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r2. \wSpeed: Maximum \d(%d %d %d)^n",
+			g_eSettings[id][S_SPEED_MAX_R], g_eSettings[id][S_SPEED_MAX_G], g_eSettings[id][S_SPEED_MAX_B]);
+		iKeys |= MENU_KEY_2;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wSpeed: Maximum \d(%d %d %d)^n",
-		g_eSettings[id][S_SPEED_MAX_R],
-		g_eSettings[id][S_SPEED_MAX_G],
-		g_eSettings[id][S_SPEED_MAX_B]
-	);
-	iKeys |= MENU_KEY_8;
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wStatic speed color \d(%d %d %d)^n",
+			g_eSettings[id][S_SPEED_STATIC_R], g_eSettings[id][S_SPEED_STATIC_G], g_eSettings[id][S_SPEED_STATIC_B]);
+		iKeys |= MENU_KEY_3;
+	}
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wBack^n");
-	iKeys |= MENU_KEY_9;
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
+	iKeys |= MENU_KEY_8;
+
+	if (g_iHudColorPage[id] == HUD_COLOR_PAGE_MAIN) {
+		iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r9. \wNext^n");
+		iKeys |= MENU_KEY_9;
+	}
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r0. \wExit");
 	iKeys |= MENU_KEY_0;
@@ -283,47 +281,46 @@ public ShowCustomizeHudColorMenu(const id) {
 }
 
 public HandleCustomizeHudColorMenu(const id, const key) {
-	switch (key) {
-		case 0: {
-			g_iHudColorTarget[id] = HC_TARGET_STATS;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 1: {
-			g_iHudColorTarget[id] = HC_TARGET_FAILSTATS;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 2: {
-			g_iHudColorTarget[id] = HC_TARGET_PRE;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 3: {
-			g_iHudColorTarget[id] = HC_TARGET_PRE_GOOD;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 4: {
-			g_iHudColorTarget[id] = HC_TARGET_PRE_BAD;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 5: {
-			g_iHudColorTarget[id] = HC_TARGET_PRE_MINLOSS;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 6: {
-			g_iHudColorTarget[id] = HC_TARGET_SPEED_MIN;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 7: {
-			g_iHudColorTarget[id] = HC_TARGET_SPEED_MAX;
-			ShowCustomizeHudColorEditMenu(id);
-		}
-		case 8: {
+	if (key == 7) {
+		if (g_iHudColorPage[id] == HUD_COLOR_PAGE_SPEED) {
+			g_iHudColorPage[id] = HUD_COLOR_PAGE_MAIN;
+			ShowCustomizeHudColorMenu(id);
+		} else {
 			ShowJumpStatsMenu(id);
 		}
-		case 9: {
-			return PLUGIN_HANDLED;
+		return PLUGIN_HANDLED;
+	}
+
+	if (key == 8 && g_iHudColorPage[id] == HUD_COLOR_PAGE_MAIN) {
+		g_iHudColorPage[id] = HUD_COLOR_PAGE_SPEED;
+		ShowCustomizeHudColorMenu(id);
+		return PLUGIN_HANDLED;
+	}
+
+	if (key == 9) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iHudColorPage[id] == HUD_COLOR_PAGE_MAIN) {
+		switch (key) {
+			case 0: g_iHudColorTarget[id] = HC_TARGET_STATS;
+			case 1: g_iHudColorTarget[id] = HC_TARGET_FAILSTATS;
+			case 2: g_iHudColorTarget[id] = HC_TARGET_PRE;
+			case 3: g_iHudColorTarget[id] = HC_TARGET_PRE_GOOD;
+			case 4: g_iHudColorTarget[id] = HC_TARGET_PRE_BAD;
+			case 5: g_iHudColorTarget[id] = HC_TARGET_PRE_MINLOSS;
+			default: return PLUGIN_HANDLED;
+		}
+	} else {
+		switch (key) {
+			case 0: g_iHudColorTarget[id] = HC_TARGET_SPEED_MIN;
+			case 1: g_iHudColorTarget[id] = HC_TARGET_SPEED_MAX;
+			case 2: g_iHudColorTarget[id] = HC_TARGET_SPEED_STATIC;
+			default: return PLUGIN_HANDLED;
 		}
 	}
 
+	ShowCustomizeHudColorEditMenu(id);
 	return PLUGIN_HANDLED;
 }
 
@@ -619,6 +616,9 @@ public HandleCustomizeHudColorEditMenu(const id, const key) {
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 7: {
+			g_iHudColorPage[id] = g_iHudColorTarget[id] >= HC_TARGET_SPEED_MIN
+				? HUD_COLOR_PAGE_SPEED
+				: HUD_COLOR_PAGE_MAIN;
 			ShowCustomizeHudColorMenu(id);
 		}
 		case 8: {
@@ -728,6 +728,12 @@ stock bool:GetHudColor(const id, szTitle[], const iTitleLen, &iRed, &iGreen, &iB
 			iGreen = g_eSettings[id][S_SPEED_MAX_G];
 			iBlue = g_eSettings[id][S_SPEED_MAX_B];
 		}
+		case HC_TARGET_SPEED_STATIC: {
+			copy(szTitle, iTitleLen, "Speed: Static");
+			iRed = g_eSettings[id][S_SPEED_STATIC_R];
+			iGreen = g_eSettings[id][S_SPEED_STATIC_G];
+			iBlue = g_eSettings[id][S_SPEED_STATIC_B];
+		}
 		default: {
 			return false;
 		}
@@ -746,6 +752,7 @@ stock ApplyHudColor(const id, const iRed, const iGreen, const iBlue) {
 		case HC_TARGET_PRE_MINLOSS: settings_pre_minloss_rgb_set(id, iRed, iGreen, iBlue);
 		case HC_TARGET_SPEED_MIN: settings_speed_min_rgb_set(id, iRed, iGreen, iBlue);
 		case HC_TARGET_SPEED_MAX: settings_speed_max_rgb_set(id, iRed, iGreen, iBlue);
+		case HC_TARGET_SPEED_STATIC: settings_speed_static_rgb_set(id, iRed, iGreen, iBlue);
 	}
 }
 
@@ -759,6 +766,7 @@ stock ResetHudColor(const id) {
 		case HC_TARGET_PRE_MINLOSS: settings_pre_minloss_rgb_set(id, g_pCvar[C_PRE_MINLOSS_R], g_pCvar[C_PRE_MINLOSS_G], g_pCvar[C_PRE_MINLOSS_B]);
 		case HC_TARGET_SPEED_MIN: settings_speed_min_rgb_set(id, g_pCvar[C_SPEED_MIN_R], g_pCvar[C_SPEED_MIN_G], g_pCvar[C_SPEED_MIN_B]);
 		case HC_TARGET_SPEED_MAX: settings_speed_max_rgb_set(id, g_pCvar[C_SPEED_MAX_R], g_pCvar[C_SPEED_MAX_G], g_pCvar[C_SPEED_MAX_B]);
+		case HC_TARGET_SPEED_STATIC: settings_speed_static_rgb_set(id, g_pCvar[C_SPEED_STATIC_R], g_pCvar[C_SPEED_STATIC_G], g_pCvar[C_SPEED_STATIC_B]);
 	}
 }
 
@@ -870,6 +878,11 @@ public ShowSpeedConfigurationsMenu(const id) {
 	);
 	iKeys |= MENU_KEY_2;
 
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wSpeed color mode: \y%s^n",
+		g_eSettings[id][S_SPEED_DYNAMIC_COLOR] ? "Dynamic" : "Static"
+	);
+	iKeys |= MENU_KEY_3;
+
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
 	iKeys |= MENU_KEY_8;
@@ -910,6 +923,10 @@ public HandleSpeedConfigurationsMenu(const id, const key) {
 			}
 
 			settings_speed_mode_set(id, iMode);
+			ShowSpeedConfigurationsMenu(id);
+		}
+		case 2: {
+			settings_speed_dynamic_color_set(id, !g_eSettings[id][S_SPEED_DYNAMIC_COLOR]);
 			ShowSpeedConfigurationsMenu(id);
 		}
 		case 7: {

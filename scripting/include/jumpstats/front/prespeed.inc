@@ -290,6 +290,13 @@ stock show_jof(id, Float:flJof) {
 }
 
 FormatSpeedRGBHud(id, colors[3]) {
+	if (!g_eSettings[id][S_SPEED_DYNAMIC_COLOR]) {
+		colors[0] = g_eSettings[id][S_SPEED_STATIC_R];
+		colors[1] = g_eSettings[id][S_SPEED_STATIC_G];
+		colors[2] = g_eSettings[id][S_SPEED_STATIC_B];
+		return;
+	}
+
 	new Float:val = convertToRange(floatmin(g_flHorSpeed[id], 285.0), 40.0, 285.0);
 	FormatSpeedGradient(id, val, colors);
 }
