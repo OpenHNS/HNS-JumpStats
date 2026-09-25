@@ -37,7 +37,7 @@ public in_bhop_js(id, iFog) {
 			set_hudmessage(
 				g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
 				g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
-			ShowSyncHudMsg(id, g_hudStats, "Reset jumps!");
+			show_hudmessage(id, "Reset jumps!");
 		}
 
 		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flPrevHorSpeed[id];

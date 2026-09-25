@@ -182,8 +182,4 @@ new g_iDetectHJ[MAX_PLAYERS + 1];
 new g_isUserSpec[MAX_PLAYERS + 1];
 new g_iSkip[MAX_PLAYERS + 1];
 
-new g_hudStats;
-new g_hudPre;
-new g_hudSpeed;
-
 new bool:g_bOneReset[MAX_PLAYERS + 1];

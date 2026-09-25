@@ -275,7 +275,7 @@ public show_stats_hud(id) {
 					g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 			}
 
-			ShowSyncHudMsg(i, g_hudStats, szStatsMess);
+			show_hudmessage(i, szStatsMess);
 		}
 	}
 }
@@ -500,7 +500,7 @@ public show_moves_bhop(id) {
 				g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
 				g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 
-			ShowSyncHudMsg(i, g_hudStats, szMultiBhop);
+			show_hudmessage(i, szMultiBhop);
 		}
 	}
 

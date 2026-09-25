@@ -118,7 +118,7 @@ public show_speed(id) {
 				iColors[0], iColors[1], iColors[2],
 				g_eSettings[id][S_SPEED_X], g_eSettings[id][S_SPEED_Y], 0, 1.0, 0.12, 0.0, 0.0, g_pCvar[c_iSpeed]);
 
-			ShowSyncHudMsg(i, g_hudSpeed, "%s^n%s",
+			show_hudmessage(i, "%s^n%s",
 				g_eOnOff[i][of_bJof] && g_flJof[id] ? szJof : "",
 				g_eOnOff[i][of_bSpeed] ? szSpeed : "");
 		}
@@ -211,7 +211,7 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 			iColors[0], iColors[1], iColors[2],
 			g_eSettings[id][S_PRE_X], g_eSettings[id][S_PRE_Y], 0, 6.0, PRE_HUD_TIME, 0.1, 0.3, g_pCvar[c_iPre]);
 
-		ShowSyncHudMsg(i, g_hudPre, "%s", szPre);
+		show_hudmessage(i, "%s", szPre);
 	}
 
 }
@@ -232,7 +232,7 @@ stock show_special_stats(id, iType, Float:flValue) {
 
 		switch (iType) {
 			case PRE_JUMPBUG, PRE_EDGEBUG: {
-				ShowSyncHudMsg(i, g_hudStats, "%s^ndistance: %.2f units", g_szPreType[iType], flValue);
+				show_hudmessage(i, "%s^ndistance: %.2f units", g_szPreType[iType], flValue);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
 			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
 			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
 
-		ShowSyncHudMsg(i, g_hudStats, "BOOST^n%.0f => %.0f^ngain %.0f%%", flBefore, flAfter, flGainPercent);
+		show_hudmessage(i, "BOOST^n%.0f => %.0f^ngain %.0f%%", flBefore, flAfter, flGainPercent);
 	}
 }
 

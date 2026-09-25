@@ -24,7 +24,7 @@ public in_ducks(id, iFog) {
 			set_hudmessage(
 				g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
 				g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
-			ShowSyncHudMsg(id, g_hudStats, "Reset ducks!");
+			show_hudmessage(id, "Reset ducks!");
 		}
 
 		g_eDuckData[id][g_iDucks[id]][DUCK_PRE] = g_flPrevHorSpeed[id];

@@ -16,10 +16,6 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = true);
 	RegisterHookChain(RG_CBasePlayer_Observer_FindNextPlayer,"RG_CBasePlayerObserverFindNextPlayer_Post", .post = true);
 
-	g_hudStats = CreateHudSyncObj();
-	g_hudPre = CreateHudSyncObj();
-	g_hudSpeed = CreateHudSyncObj();
-
 	g_bDebugMode = bool:(plugin_flags() & AMX_FLAG_DEBUG);
 
 	init_menus();
