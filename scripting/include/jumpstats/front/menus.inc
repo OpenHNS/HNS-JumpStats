@@ -554,17 +554,20 @@ public ShowCustomizeHudColorEditMenu(const id) {
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wGreen \d(20 255 150)^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r3. \wGreen \d(0 255 0)^n");
 	iKeys |= MENU_KEY_3;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wRed \d(255 70 120)^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r4. \wRed \d(255 0 0)^n");
 	iKeys |= MENU_KEY_4;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wBlue \d(0 170 255)^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r5. \wBlue \d(0 255 255)^n");
 	iKeys |= MENU_KEY_5;
 
-	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wWhite \d(255 255 255)^n");
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r6. \wYellow \d(255 255 0)^n");
 	iKeys |= MENU_KEY_6;
+
+	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r7. \wWhite \d(255 255 255)^n");
+	iKeys |= MENU_KEY_7;
 
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "^n");
 	iLen += formatex(szBuffer[iLen], charsmax(szBuffer) - iLen, "\r8. \wBack^n");
@@ -596,18 +599,22 @@ public HandleCustomizeHudColorEditMenu(const id, const key) {
 			client_cmd(id, "messagemode %s", HUD_COLOR_INPUT_CMD);
 		}
 		case 2: {
-			ApplyHudColor(id, 20, 255, 150);
+			ApplyHudColor(id, 0, 255, 0);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 3: {
-			ApplyHudColor(id, 255, 70, 120);
+			ApplyHudColor(id, 255, 0, 0);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 4: {
-			ApplyHudColor(id, 0, 170, 255);
+			ApplyHudColor(id, 0, 255, 255);
 			ShowCustomizeHudColorEditMenu(id);
 		}
 		case 5: {
+			ApplyHudColor(id, 255, 255, 0);
+			ShowCustomizeHudColorEditMenu(id);
+		}
+		case 6: {
 			ApplyHudColor(id, 255, 255, 255);
 			ShowCustomizeHudColorEditMenu(id);
 		}
