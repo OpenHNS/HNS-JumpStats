@@ -460,16 +460,16 @@ stock process_air_move(id, bool:fromPmMove) {
 	} else if (g_eWhichJump[id] == jt_LadderJump && g_eJumpstats[id][js_iFrames] == 1 && iMoveButtons == IN_FORWARD) {
 		g_iStrafes[id]++;
 		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_W;
-	} else if (iButtons & IN_MOVELEFT && !(g_iOldStrButtons[id] & IN_MOVELEFT) && !(iButtons & (IN_MOVERIGHT|IN_BACK|IN_FORWARD)) && (isTiring)) {
+	} else if (iButtons & IN_MOVELEFT && (g_iStrafes[id] == 0 || !(g_iOldStrButtons[id] & IN_MOVELEFT)) && !(iButtons & (IN_MOVERIGHT|IN_BACK|IN_FORWARD)) && (g_iStrafes[id] == 0 || isTiring)) {
 		g_iStrafes[id]++;
 		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_A;
-	} else if (iButtons & IN_MOVERIGHT && !(g_iOldStrButtons[id] & IN_MOVERIGHT) && !(iButtons & (IN_MOVELEFT|IN_BACK|IN_FORWARD)) && (isTiring)) {
+	} else if (iButtons & IN_MOVERIGHT && (g_iStrafes[id] == 0 || !(g_iOldStrButtons[id] & IN_MOVERIGHT)) && !(iButtons & (IN_MOVELEFT|IN_BACK|IN_FORWARD)) && (g_iStrafes[id] == 0 || isTiring)) {
 		g_iStrafes[id]++;
 		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_D;
-	} else if (iButtons & IN_BACK && !(g_iOldStrButtons[id] & IN_BACK) && !(iButtons & (IN_MOVELEFT|IN_MOVERIGHT|IN_FORWARD)) && (isTiring)) {
+	} else if (iButtons & IN_BACK && (g_iStrafes[id] == 0 || !(g_iOldStrButtons[id] & IN_BACK)) && !(iButtons & (IN_MOVELEFT|IN_MOVERIGHT|IN_FORWARD)) && (g_iStrafes[id] == 0 || isTiring)) {
 		g_iStrafes[id]++;
 		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_S;
-	} else if (iButtons & IN_FORWARD && !(g_iOldStrButtons[id] & IN_FORWARD) && !(iButtons & (IN_MOVELEFT|IN_MOVERIGHT|IN_BACK)) && (isTiring)) {
+	} else if (iButtons & IN_FORWARD && (g_iStrafes[id] == 0 || !(g_iOldStrButtons[id] & IN_FORWARD)) && !(iButtons & (IN_MOVELEFT|IN_MOVERIGHT|IN_BACK)) && (g_iStrafes[id] == 0 || isTiring)) {
 		g_iStrafes[id]++;
 		g_eStrafeStats[id][g_iStrafes[id]][st_iButton] = bi_W;
 	}

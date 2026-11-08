@@ -97,6 +97,7 @@ stock reset_strafes(id) {
 	g_iStrafes[id] = 0;
 	g_iStrAllEff[id] = 0;
 	g_flStrGain[id] = 0.0;
+	g_iOldStrButtons[id] = 0;
 }
 
 
