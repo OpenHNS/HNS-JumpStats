@@ -52,12 +52,7 @@ public in_ducks(id, iFog) {
 				default: iFogType = FOG_VERYBAD;
 			}
 		} else {
-			switch(iFog) {
-				case 2: iFogType = FOG_PERFECT;
-				case 3: iFogType = FOG_GOOD;
-				case 4: iFogType = FOG_BAD;
-				default: iFogType = FOG_VERYBAD;
-			}
+			iFogType = get_dd_fog_type(iFog);
 		}
 
 		show_pre(id, PRE_DD, g_flPreHorSpeed[id], iFog, g_flPrevHorSpeed[id], iFogType);

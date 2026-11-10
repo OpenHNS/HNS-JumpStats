@@ -12,7 +12,8 @@ enum _:PRE_TYPE {
 	PRE_BID,
 	PRE_DUCKBHOP,
 	PRE_DD,
-	PRE_JUMPBUG
+	PRE_JUMPBUG,
+	PRE_FALLRUN
 };
 
 new g_szPreType[PRE_TYPE][] = {
@@ -23,13 +24,14 @@ new g_szPreType[PRE_TYPE][] = {
 	"slide",
 	"boost",
 	"fall",
-	"EdgeBug",
+	"edgebug",
 	"bhop",
 	"sbj",
 	"bid",
 	"duckbhop",
 	"dd",
-	"JumpBug"
+	"jumpbug",
+	"fallrun"
 };
 
 enum FOG_TYPE {
@@ -45,6 +47,15 @@ new g_szFogType[FOG_TYPE][] = {
 	"[G]",
 	"[B]"
 };
+
+stock FOG_TYPE:get_dd_fog_type(iFog) {
+	switch (iFog) {
+		case 2: return FOG_PERFECT;
+		case 3: return FOG_GOOD;
+		case 4: return FOG_BAD;
+	}
+	return FOG_VERYBAD;
+}
 
 new Float:g_flJof[MAX_PLAYERS + 1];
 
@@ -136,7 +147,7 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 	iColors[1] = g_eSettings[id][S_PRE_G];
 	iColors[2] = g_eSettings[id][S_PRE_B];
 
-	if (iType == PRE_BOOST || iType == PRE_JUMPBUG || iType == PRE_EDGEBUG) {
+	if (iType == PRE_BOOST || iType == PRE_JUMPBUG || iType == PRE_EDGEBUG || iType == PRE_FALLRUN) {
 		iColors[0] = g_eSettings[id][S_PRE_GOOD_R];
 		iColors[1] = g_eSettings[id][S_PRE_GOOD_G];
 		iColors[2] = g_eSettings[id][S_PRE_GOOD_B];
@@ -191,6 +202,12 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 		case PRE_BOOST: {
 			formatex(szPre, charsmax(szPre), "%s^n%.2f^n%.2f",
 				g_szPreType[iType],
+				flPreSpeed,
+				flPostSpeed);
+		}
+		case PRE_FALLRUN: {
+			formatex(szPre, charsmax(szPre), "%s %d %s^n%.2f^n%.2f",
+				g_szPreType[iType], iFog, g_szFogType[fogType],
 				flPreSpeed,
 				flPostSpeed);
 		}

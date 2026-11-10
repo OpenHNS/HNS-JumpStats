@@ -176,6 +176,7 @@ new bool:g_bEdgebugDone[MAX_PLAYERS + 1];
 new g_iEdgeBugCount[MAX_PLAYERS + 1];
 new Float:g_flLastGroundZ[MAX_PLAYERS + 1];
 new Float:g_flFrameTime[MAX_PLAYERS + 1];
+new Float:g_flPrevFrameTime[MAX_PLAYERS + 1];
 
 new g_iDetectHJ[MAX_PLAYERS + 1];
 

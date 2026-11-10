@@ -32,6 +32,7 @@ public plugin_end() {
 
 public rgPlayerSpawn(id) {
 	reset_stats(id);
+	g_flPrevFrameTime[id] = 0.0;
 	g_eFailJump[id] = fj_notshow;
 	g_isUserSpec[id] = 0;
 }
@@ -226,7 +227,7 @@ stock process_player_move(id, Float:flFrameTime) {
 		}
 
 		if (g_isOldGround[id]) {
-			new bool:isDuck = !g_bInDuck[id] && !(g_iPrevButtons[id] & IN_JUMP) && g_iOldButtons[id] & IN_DUCK;
+			new bool:isDuck = !g_bPrevInDuck[id] && !(g_iPrevButtons[id] & IN_DUCK) && (g_iOldButtons[id] & IN_DUCK);
 			new bool:isJump = !isDuck && g_iPrevButtons[id] & IN_JUMP && !(g_iOldButtons[id] & IN_JUMP);
 
 			if (g_bPrevLadder[id]) {
@@ -241,20 +242,26 @@ stock process_player_move(id, Float:flFrameTime) {
 					calc_jof_block(id, g_flFirstJump[id]);
 				}
 			}
-			if (!isDuck && !isJump) {
-				if (g_flVelocity[id][2] <= -4.0 && g_iFog[id] > 10) {
-					g_isFalling[id] = true;
-					g_eJumpType[id] = IS_JUMP;
-					g_iJumps[id] = 0;
-					g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
-					show_pre(id, PRE_FALL, g_flHorSpeed[id]);
+			new bool:bBoost = bool:(g_iFog[id] == 1 && g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0);
+			if (!g_bPrevLadder[id] && is_falling_pre_frame(id, flFrameTime)) {
+				if (bBoost) {
+					show_boost_stats(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
+					show_boost_chat(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
 				}
-			}
 
-			if (is_boost_frame(id)) {
-				show_pre(id, PRE_BOOST, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
-				show_boost_stats(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
-				show_boost_chat(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
+				if (!isDuck && !isJump) {
+					if (g_iFog[id] > 10) {
+						g_isFalling[id] = true;
+						g_eJumpType[id] = IS_JUMP;
+						g_iJumps[id] = 0;
+						g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
+						show_pre(id, PRE_FALL, g_flHorSpeed[id]);
+					} else if (bBoost) {
+						show_pre(id, PRE_BOOST, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
+					} else {
+						show_pre(id, PRE_FALLRUN, g_flPreHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id], get_dd_fog_type(g_iFog[id]));
+					}
+				}
 			}
 		}
 
@@ -303,6 +310,7 @@ stock process_player_move(id, Float:flFrameTime) {
 	g_bOldInDuck[0][id] = g_bPrevInDuck[id];
 	g_bPrevInDuck[id] = g_bInDuck[id];
 	g_bPrevSlide[id] = g_bSlide[id];
+	g_flPrevFrameTime[id] = flFrameTime;
 
 }
 
@@ -326,13 +334,20 @@ stock bool:isPlayerSliding(id) {
 	return flPlaneNormal[2] > 0.0 && flPlaneNormal[2] <= 0.7;
 }
 
-stock bool:is_boost_frame(id) {
-	return bool:(
-		!g_bSlide[id]
-		&& g_iFog[id] == 1
-		&& g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0
-		&& g_flVelocity[id][2] <= -4.0
-	);
+stock bool:is_falling_pre_frame(id, Float:flFrameTime) {
+	new Float:flThresholdFrameTime = g_flPrevFrameTime[id] > 0.0 ? g_flPrevFrameTime[id] : flFrameTime;
+	if (g_bSlide[id] || flThresholdFrameTime <= 0.0 || g_flVelocity[id][2] >= 0.0) {
+		return false;
+	}
+
+	new Float:flPlayerGravity;
+	get_entvar(id, var_gravity, flPlayerGravity);
+	if (flPlayerGravity <= 0.0) {
+		flPlayerGravity = 1.0;
+	}
+
+	new Float:flFallThreshold = g_pCvar[c_iGravity] * flPlayerGravity * flThresholdFrameTime * 0.5;
+	return bool:(g_flVelocity[id][2] <= -flFallThreshold);
 }
 
 stock bool:isGoingToTouchGround(id, Float:flFrameTime, Float:flPlayerGravity) {
