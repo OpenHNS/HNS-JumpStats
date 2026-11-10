@@ -27,7 +27,7 @@ stock reset_stats(id) {
 	g_eFailJump[id] = fj_good;
 
 	arrayset(g_flFirstJump[id], 0.0, 3);
-	
+
 	g_isLadderBhop[id] = false;
 	g_bLdjAboveStart[id] = false;
 	g_flLdjStartCos[id] = 0.0;
@@ -36,17 +36,26 @@ stock reset_stats(id) {
 	g_isTouched[id] = false;
 	g_bSlide[id] = false;
 	g_bPrevSlide[id] = false;
-	g_iJumpBug[id] = 0;
-	g_bCheckJumpBug[id] = false;
-	g_bJumpbugDone[id] = false;
-	arrayset(g_flJumpbugStart[id], 0.0, 3);
-	g_bCheckEdgeBug[id] = false;
-	g_bEdgebugDone[id] = false;
-	g_iEdgeBugCount[id] = 0;
-	g_flLastGroundZ[id] = 0.0;
+	reset_bug_stats(id);
 
 	g_iDetectHJ[id] = 0;
 	g_flStartSpeed[id] = 0.0;
+}
+
+stock reset_bug_stats(id) {
+	arrayset(g_eJumpBugData[id], 0, JUMPBUG_DATA);
+	arrayset(g_eEdgeBugData[id], 0, EDGEBUG_DATA);
+}
+
+stock reset_strafes(id) {
+	for (new i = 0; i < NSTRAFES; i++) {
+		arrayset(g_eStrafeStats[id][i], 0, StrafeStats);
+	}
+
+	g_iStrafes[id] = 0;
+	g_iStrAllEff[id] = 0;
+	g_flStrGain[id] = 0.0;
+	g_iOldStrButtons[id] = 0;
 }
 
 stock Float:velocity_view_cos(Float:flVelocity[3], Float:flYaw) {
@@ -56,6 +65,22 @@ stock Float:velocity_view_cos(Float:flVelocity[3], Float:flYaw) {
 	}
 
 	return (floatcos(flYaw, degrees) * flVelocity[0] + floatsin(flYaw, degrees) * flVelocity[1]) / flSpeed;
+}
+
+stock Float:vector_hor_length(Float:flVel[3]) {
+	new Float:flNorma = floatpower(flVel[0], 2.0) + floatpower(flVel[1], 2.0);
+	if (flNorma > 0.0)
+		return floatsqroot(flNorma);
+
+	return 0.0;
+}
+
+stock Float:vector_hor_distance(Float:origin1[3], Float:origin2[3]) {
+	new Float:delta[3];
+	delta[0] = origin1[0] - origin2[0];
+	delta[1] = origin1[1] - origin2[1];
+	delta[2] = 0.0;
+	return vector_hor_length(delta);
 }
 
 stock bool:normalize_ladder_start_height(id, Float:flStartOrigin[3], &Float:flNormalizedZ) {
@@ -89,33 +114,27 @@ stock bool:normalize_ladder_start_height(id, Float:flStartOrigin[3], &Float:flNo
 	free_tr2(iTrace);
 	return false;
 }
-stock reset_strafes(id) {
-	for (new i = 0; i < NSTRAFES; i++) {
-		arrayset(g_eStrafeStats[id][i], 0, StrafeStats);
+
+stock bool:isPlayerSliding(id) {
+	new Float:origin[3], Float:dest[3];
+	get_entvar(id, var_origin, origin);
+	dest = origin;
+	dest[2] -= 2.0;
+
+	engfunc(EngFunc_TraceHull, origin, dest, IGNORE_MONSTERS, g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, 0);
+
+	new Float:flFraction;
+	get_tr2(0, TR_flFraction, flFraction);
+	if (flFraction >= 1.0) {
+		return false;
 	}
-	
-	g_iStrafes[id] = 0;
-	g_iStrAllEff[id] = 0;
-	g_flStrGain[id] = 0.0;
-	g_iOldStrButtons[id] = 0;
+
+	new Float:flPlaneNormal[3];
+	get_tr2(0, TR_vecPlaneNormal, flPlaneNormal);
+
+	return flPlaneNormal[2] > 0.0 && flPlaneNormal[2] <= 0.7;
 }
 
-
-stock Float:vector_hor_length(Float:flVel[3]) {
-	new Float:flNorma = floatpower(flVel[0], 2.0) + floatpower(flVel[1], 2.0);
-	if (flNorma > 0.0)
-		return floatsqroot(flNorma);
-		
-	return 0.0;
-}
-
-stock Float:vector_hor_distance(Float:origin1[3], Float:origin2[3]) {
-	new Float:delta[3];
-	delta[0] = origin1[0] - origin2[0];
-	delta[1] = origin1[1] - origin2[1];
-	delta[2] = 0.0;
-	return vector_hor_length(delta);
-}
 
 stock detect_hj(id, Float:flOrigin[3], Float:VerOrigin) {
 	new Float:flStarthj[3];
@@ -310,26 +329,4 @@ public calc_jof_block(id, Float:flJumpOff[3]) {
 		if (!block_checking[2])
 			g_eJumpstats[id][js_iJumpBlock] = tmpjblock[2];
 	} else g_eJumpstats[id][js_iJumpBlock] = 0;
-}
-
-stock bool:isUserSurfing(id) {
-	new Float:origin[3], Float:dest[3];
-	get_entvar(id, var_origin, origin);
-	
-	dest[0] = origin[0];
-	dest[1] = origin[1];
-	dest[2] = origin[2] - 1.0;
-
-	new Float:flFraction;
-
-	engfunc(EngFunc_TraceHull, origin, dest, 0, 
-		g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, 0);
-
-	get_tr2(0, TR_flFraction, flFraction);
-
-	if (flFraction >= 1.0) return false;
-	
-	get_tr2(0, TR_vecPlaneNormal, dest);
-
-	return dest[2] <= 0.7;
 }

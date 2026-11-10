@@ -15,5 +15,7 @@
 #include <jumpstats/front/readyjumps>
 
 #include <jumpstats/in_bhop_jumps>
+#include <jumpstats/in_bugs>
 #include <jumpstats/in_ducks>
+#include <jumpstats/in_fall>
 #include <jumpstats/in_ladder>

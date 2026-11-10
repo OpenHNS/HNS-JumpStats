@@ -33,6 +33,12 @@ enum JumpType {
 	jt_Not = 13
 };
 
+enum BugType {
+	bt_JumpBug,
+	bt_EdgeBug,
+	bt_Not
+};
+
 
 new JumpType:g_eWhichJump[MAX_PLAYERS + 1];
 
@@ -128,6 +134,22 @@ enum FAIL_JUMP {
 
 new FAIL_JUMP:g_eFailJump[MAX_PLAYERS + 1];
 
+enum _:JUMPBUG_DATA {
+	bool:JB_CHECK,
+	JB_FRAMES,
+	Float:JB_LAST_GROUND_Z,
+	Float:JB_START_ORIGIN[3]
+};
+
+new g_eJumpBugData[MAX_PLAYERS + 1][JUMPBUG_DATA];
+
+enum _:EDGEBUG_DATA {
+	bool:EB_CHECK,
+	Float:EB_LAST_GROUND_Z
+};
+
+new g_eEdgeBugData[MAX_PLAYERS + 1][EDGEBUG_DATA];
+
 new bool:g_isOldGround[MAX_PLAYERS + 1];
 
 new g_iPrevButtons[MAX_PLAYERS + 1];
@@ -167,14 +189,6 @@ new bool:g_isFalling[MAX_PLAYERS + 1];
 new bool:g_isTouched[MAX_PLAYERS + 1];
 new bool:g_bSlide[MAX_PLAYERS + 1];
 new bool:g_bPrevSlide[MAX_PLAYERS + 1];
-new g_iJumpBug[MAX_PLAYERS + 1];
-new bool:g_bCheckJumpBug[MAX_PLAYERS + 1];
-new bool:g_bJumpbugDone[MAX_PLAYERS + 1];
-new Float:g_flJumpbugStart[MAX_PLAYERS + 1][3];
-new bool:g_bCheckEdgeBug[MAX_PLAYERS + 1];
-new bool:g_bEdgebugDone[MAX_PLAYERS + 1];
-new g_iEdgeBugCount[MAX_PLAYERS + 1];
-new Float:g_flLastGroundZ[MAX_PLAYERS + 1];
 new Float:g_flFrameTime[MAX_PLAYERS + 1];
 new Float:g_flPrevFrameTime[MAX_PLAYERS + 1];
 

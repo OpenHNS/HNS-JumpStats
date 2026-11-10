@@ -233,69 +233,6 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 
 }
 
-stock show_special_stats(id, iType, Float:flValue) {
-	if (!g_pCvar[C_ENABLE_STATS]) {
-		return;
-	}
-
-	for (new i = 1; i <= MaxClients; i++) {
-		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
-			continue;
-		}
-
-		set_hudmessage(
-			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
-			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
-
-		switch (iType) {
-			case PRE_JUMPBUG, PRE_EDGEBUG: {
-				show_hudmessage(i, "%s^ndistance: %.2f units", g_szPreType[iType], flValue);
-			}
-		}
-	}
-}
-
-stock show_boost_chat(id, Float:flBefore, Float:flAfter) {
-	if (!g_pCvar[C_ENABLE_CHATINFO] || !g_eSettings[id][S_CHATINFO]) {
-		return;
-	}
-
-	new Float:flGainPercent;
-	if (flBefore > 0.0) {
-		flGainPercent = (flAfter - flBefore) * 100.0 / flBefore;
-	}
-
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
-
-	for (new i = 0; i < iNum; i++) {
-		client_print_color(iPlayers[i], print_team_blue, "^3%n^1 performed ^3BOOST^1 (^3%.0f^1 => ^3%.0f^1 gain ^3%.0f%%^1)", id, flBefore, flAfter, flGainPercent);
-	}
-}
-
-stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
-	if (!g_pCvar[C_ENABLE_STATS]) {
-		return;
-	}
-
-	new Float:flGainPercent;
-	if (flBefore > 0.0) {
-		flGainPercent = (flAfter - flBefore) * 100.0 / flBefore;
-	}
-
-	for (new i = 1; i <= MaxClients; i++) {
-		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
-			continue;
-		}
-
-		set_hudmessage(
-			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
-			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
-
-		show_hudmessage(i, "BOOST^n%.0f => %.0f^ngain %.0f%%", flBefore, flAfter, flGainPercent);
-	}
-}
-
 stock show_jof(id, Float:flJof) {
 	if (!g_pCvar[C_ENABLE_SPEED]) {
 		return;

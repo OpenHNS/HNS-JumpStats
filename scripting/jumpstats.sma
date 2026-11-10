@@ -128,14 +128,12 @@ stock process_player_move(id, Float:flFrameTime) {
 			}
 		}
 
-		g_iJumpBug[id] = 0;
-		g_bCheckJumpBug[id] = !bBlockBugChecks;
-		g_bJumpbugDone[id] = false;
+		g_eJumpBugData[id][JB_FRAMES] = 0;
+		g_eJumpBugData[id][JB_CHECK] = !bBlockBugChecks;
+		g_eJumpBugData[id][JB_LAST_GROUND_Z] = g_flOrigin[id][2];
 
-		g_bCheckEdgeBug[id] = !bBlockBugChecks;
-		g_bEdgebugDone[id] = false;
-		g_iEdgeBugCount[id] = 0;
-		g_flLastGroundZ[id] = g_flOrigin[id][2];
+		g_eEdgeBugData[id][EB_CHECK] = !bBlockBugChecks;
+		g_eEdgeBugData[id][EB_LAST_GROUND_Z] = g_flOrigin[id][2];
 
 		if (!g_eJumpType[id]) {
 			if (g_ePreStats[id][ptBackWards])
@@ -153,78 +151,14 @@ stock process_player_move(id, Float:flFrameTime) {
 		}
 	} else {
 		if (bBlockBugChecks) {
-			g_bCheckJumpBug[id] = false;
-			g_bCheckEdgeBug[id] = false;
-			g_iJumpBug[id] = 0;
+			g_eJumpBugData[id][JB_CHECK] = false;
+			g_eJumpBugData[id][JB_FRAMES] = 0;
+			g_eEdgeBugData[id][EB_CHECK] = false;
 		}
 
-		if (g_eWhichJump[id] != jt_Not && !g_eFailJump[id]) {
-			new Float:flCurrentZ = g_bInDuck[id] ? g_flOrigin[id][2] + 18.0 : g_flOrigin[id][2];
+		check_failed_jump(id);
 
-			if (g_eWhichJump[id] == jt_LadderJump) {
-				new Float:flPreviousZ = g_bPrevInDuck[id] ? g_flPrevOrigin[id][2] + 18.0 : g_flPrevOrigin[id][2];
-
-				if (!g_bLdjAboveStart[id] && flCurrentZ >= g_flFirstJump[id][2]) {
-					g_bLdjAboveStart[id] = true;
-				}
-
-				if (g_bLdjAboveStart[id] && flPreviousZ >= g_flFirstJump[id][2] && flCurrentZ < g_flFirstJump[id][2]) {
-					new Float:flDeltaZ = flPreviousZ - flCurrentZ;
-					new Float:flRatio;
-					if (flDeltaZ > 0.0) {
-						flRatio = (flPreviousZ - g_flFirstJump[id][2]) / flDeltaZ;
-					}
-
-					if (flRatio < 0.0) {
-						flRatio = 0.0;
-					} else if (flRatio > 1.0) {
-						flRatio = 1.0;
-					}
-
-					new Float:flCrossOrigin[3];
-					flCrossOrigin[0] = g_flPrevOrigin[id][0] + (g_flOrigin[id][0] - g_flPrevOrigin[id][0]) * flRatio;
-					flCrossOrigin[1] = g_flPrevOrigin[id][1] + (g_flOrigin[id][1] - g_flPrevOrigin[id][1]) * flRatio;
-					flCrossOrigin[2] = g_flFirstJump[id][2] - (g_bInDuck[id] ? 18.0 : 0.0);
-
-					g_eFailJump[id] = fj_fail;
-					ready_jumps(id, flCrossOrigin);
-				}
-			} else if (flCurrentZ < g_flFirstJump[id][2]) {
-				g_eFailJump[id] = fj_fail;
-				ready_jumps(id, g_flPrevOrigin[id]);
-			}
-		}
-
-		if (g_bCheckJumpBug[id] && !g_bJumpbugDone[id]) {
-			new bool:isDuckRelease = !(iButtons & IN_DUCK) && (g_iPrevButtons[id] & IN_DUCK);
-			new bool:isJumpPress = (iButtons & IN_JUMP) && !(g_iPrevButtons[id] & IN_JUMP);
-
-			if (!g_iJumpBug[id]) {
-				if (isDuckRelease && isJumpPress && g_flVelocity[id][2] < 0.0) {
-					g_flJumpbugStart[id] = g_flOrigin[id];
-					g_iJumpBug[id] = 2;
-				}
-			} else {
-				g_iJumpBug[id]--;
-				if (!g_iJumpBug[id] && g_flVelocity[id][2] > 0.0) {
-					new Float:flJumpbugLandingZ;
-					if (find_jumpbug_landing(id, g_flJumpbugStart[id], flJumpbugLandingZ)) {
-						new Float:flJumpbugDistance = float(floatround(g_flLastGroundZ[id])) - flJumpbugLandingZ;
-
-						if (flJumpbugDistance > 0.0) {
-							g_bJumpbugDone[id] = true;
-							g_bCheckJumpBug[id] = false;
-							show_pre(id, PRE_JUMPBUG, flJumpbugDistance);
-							show_special_stats(id, PRE_JUMPBUG, flJumpbugDistance);
-							if (g_eWhichJump[id] != jt_Not) {
-								reset_stats(id);
-								g_eFailJump[id] = fj_notshow;
-							}
-						}
-					}
-				}
-			}
-		}
+		in_jumpbug_js(id, iButtons);
 
 		if (g_isOldGround[id]) {
 			new bool:isDuck = !g_bPrevInDuck[id] && !(g_iPrevButtons[id] & IN_DUCK) && (g_iOldButtons[id] & IN_DUCK);
@@ -242,57 +176,10 @@ stock process_player_move(id, Float:flFrameTime) {
 					calc_jof_block(id, g_flFirstJump[id]);
 				}
 			}
-			new bool:bBoost = bool:(g_iFog[id] == 1 && g_flPrevHorSpeed[id] > g_flOldHorSpeed[id] + 5.0);
-			if (!g_bPrevLadder[id] && is_falling_pre_frame(id, flFrameTime)) {
-				if (bBoost) {
-					show_boost_stats(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
-					show_boost_chat(id, g_flOldHorSpeed[id], g_flPrevHorSpeed[id]);
-				}
-
-				if (!isDuck && !isJump) {
-					if (g_iFog[id] > 10) {
-						g_isFalling[id] = true;
-						g_eJumpType[id] = IS_JUMP;
-						g_iJumps[id] = 0;
-						g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flHorSpeed[id];
-						show_pre(id, PRE_FALL, g_flHorSpeed[id]);
-					} else if (bBoost) {
-						show_pre(id, PRE_BOOST, g_flOldHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id]);
-					} else {
-						show_pre(id, PRE_FALLRUN, g_flPreHorSpeed[id], g_iFog[id], g_flPrevHorSpeed[id], get_dd_fog_type(g_iFog[id]));
-					}
-				}
-			}
+			in_fall_js(id, g_iFog[id], isDuck, isJump, flFrameTime);
 		}
 
-		if (g_bCheckEdgeBug[id] && !g_bEdgebugDone[id] && g_flVelocity[id][2] < 0.0) {
-			new Float:flPlayerGravity;
-			get_entvar(id, var_gravity, flPlayerGravity);
-			
-			if (flPlayerGravity <= 0.0) {
-				flPlayerGravity = 1.0;
-			}
-
-			new Float:flDelta = g_pCvar[c_iGravity] * flPlayerGravity * flFrameTime;
-			new Float:flTarget = -flDelta * 0.5;
-			new Float:flCurrentVz = g_flVelocity[id][2];
-			new Float:flPrevVz = g_flPrevVelocity[id][2];
-			if (floatabs(flCurrentVz - flTarget) <= 1.0 && flPrevVz < flTarget && isGoingToTouchGround(id, flFrameTime, flPlayerGravity)) {
-				new Float:flDistance = g_flLastGroundZ[id] - g_flOrigin[id][2];
-				if (flDistance > 0.0) {
-					g_bEdgebugDone[id] = true;
-					g_bCheckEdgeBug[id] = false;
-					g_iEdgeBugCount[id]++;
-
-					show_pre(id, PRE_EDGEBUG, flDistance);
-					show_special_stats(id, PRE_EDGEBUG, flDistance);
-					if (g_eWhichJump[id] != jt_Not) {
-						reset_stats(id);
-						g_eFailJump[id] = fj_notshow;
-					}
-				}
-			}
-		}
+		in_edgebug_js(id, flFrameTime);
 
 		g_iFog[id] = 0;
 	}
@@ -314,95 +201,50 @@ stock process_player_move(id, Float:flFrameTime) {
 
 }
 
-stock bool:isPlayerSliding(id) {
-	new Float:origin[3], Float:dest[3];
-	origin = g_flOrigin[id];
-	dest = origin;
-	dest[2] -= 2.0;
-
-	engfunc(EngFunc_TraceHull, origin, dest, IGNORE_MONSTERS, g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, 0);
-
-	new Float:flFraction;
-	get_tr2(0, TR_flFraction, flFraction);
-	if (flFraction >= 1.0) {
-		return false;
+stock check_failed_jump(id) {
+	if (g_eWhichJump[id] == jt_Not || g_eFailJump[id] != fj_good) {
+		return;
 	}
 
-	new Float:flPlaneNormal[3];
-	get_tr2(0, TR_vecPlaneNormal, flPlaneNormal);
+	new Float:flCurrentZ = g_bInDuck[id] ? g_flOrigin[id][2] + 18.0 : g_flOrigin[id][2];
 
-	return flPlaneNormal[2] > 0.0 && flPlaneNormal[2] <= 0.7;
-}
-
-stock bool:is_falling_pre_frame(id, Float:flFrameTime) {
-	new Float:flThresholdFrameTime = g_flPrevFrameTime[id] > 0.0 ? g_flPrevFrameTime[id] : flFrameTime;
-	if (g_bSlide[id] || flThresholdFrameTime <= 0.0 || g_flVelocity[id][2] >= 0.0) {
-		return false;
-	}
-
-	new Float:flPlayerGravity;
-	get_entvar(id, var_gravity, flPlayerGravity);
-	if (flPlayerGravity <= 0.0) {
-		flPlayerGravity = 1.0;
-	}
-
-	new Float:flFallThreshold = g_pCvar[c_iGravity] * flPlayerGravity * flThresholdFrameTime * 0.5;
-	return bool:(g_flVelocity[id][2] <= -flFallThreshold);
-}
-
-stock bool:isGoingToTouchGround(id, Float:flFrameTime, Float:flPlayerGravity) {
-	if (flFrameTime <= 0.0) {
-		return false;
-	}
-
-	new Float:flVelocity[3], Float:flDestination[3];
-	flVelocity = g_flPrevVelocity[id];
-	flVelocity[2] -= g_pCvar[c_iGravity] * flPlayerGravity * flFrameTime;
-
-	for (new i = 0; i < 3; i++) {
-		flDestination[i] = g_flPrevOrigin[id][i] + flVelocity[i] * flFrameTime;
-	}
-
-	new iTrace = create_tr2();
-	engfunc(EngFunc_TraceHull, g_flPrevOrigin[id], flDestination, DONT_IGNORE_MONSTERS, g_bInDuck[id] ? HULL_HEAD : HULL_HUMAN, id, iTrace);
-
-	new Float:flFraction;
-	get_tr2(iTrace, TR_flFraction, flFraction);
-	if (flFraction >= 1.0) {
-		free_tr2(iTrace);
-		return false;
-	}
-
-	new Float:flPlaneNormal[3];
-	get_tr2(iTrace, TR_vecPlaneNormal, flPlaneNormal);
-	free_tr2(iTrace);
-
-	return flPlaneNormal[2] > 0.7;
-}
-
-stock bool:find_jumpbug_landing(id, Float:flStartOrigin[3], &Float:flLandingZ) {
-	new Float:flProbe[3];
-	flProbe = flStartOrigin;
-	flProbe[2] = float(floatround(flProbe[2], floatround_floor));
-
-	new iTrace = create_tr2();
-	new iCounter = 18;
-
-	while (iCounter > 0) {
-		engfunc(EngFunc_TraceHull, flProbe, flProbe, DONT_IGNORE_MONSTERS, HULL_HUMAN, id, iTrace);
-
-		if (get_tr2(iTrace, TR_StartSolid) || get_tr2(iTrace, TR_AllSolid) || !get_tr2(iTrace, TR_InOpen)) {
-			flLandingZ = flProbe[2] + 1.0;
-			free_tr2(iTrace);
-			return true;
+	if (g_eWhichJump[id] != jt_LadderJump) {
+		if (flCurrentZ < g_flFirstJump[id][2]) {
+			g_eFailJump[id] = fj_fail;
+			ready_jumps(id, g_flPrevOrigin[id]);
 		}
-
-		flProbe[2] -= 1.0;
-		iCounter--;
+		return;
 	}
 
-	free_tr2(iTrace);
-	return false;
+	new Float:flPreviousZ = g_bPrevInDuck[id] ? g_flPrevOrigin[id][2] + 18.0 : g_flPrevOrigin[id][2];
+
+	if (!g_bLdjAboveStart[id] && flCurrentZ >= g_flFirstJump[id][2]) {
+		g_bLdjAboveStart[id] = true;
+	}
+
+	if (!g_bLdjAboveStart[id] || flPreviousZ < g_flFirstJump[id][2] || flCurrentZ >= g_flFirstJump[id][2]) {
+		return;
+	}
+
+	new Float:flDeltaZ = flPreviousZ - flCurrentZ;
+	new Float:flRatio;
+	if (flDeltaZ > 0.0) {
+		flRatio = (flPreviousZ - g_flFirstJump[id][2]) / flDeltaZ;
+	}
+
+	if (flRatio < 0.0) {
+		flRatio = 0.0;
+	} else if (flRatio > 1.0) {
+		flRatio = 1.0;
+	}
+
+	new Float:flCrossOrigin[3];
+	flCrossOrigin[0] = g_flPrevOrigin[id][0] + (g_flOrigin[id][0] - g_flPrevOrigin[id][0]) * flRatio;
+	flCrossOrigin[1] = g_flPrevOrigin[id][1] + (g_flOrigin[id][1] - g_flPrevOrigin[id][1]) * flRatio;
+	flCrossOrigin[2] = g_flFirstJump[id][2] - (g_bInDuck[id] ? 18.0 : 0.0);
+
+	g_eFailJump[id] = fj_fail;
+	ready_jumps(id, flCrossOrigin);
 }
 
 public rgPM_AirMove(id) {
@@ -429,7 +271,7 @@ stock process_air_move(id, bool:fromPmMove) {
 		return;
 	}
 
-	if (isUserSurfing(id)) {
+	if (isPlayerSliding(id)) {
 		reset_stats(id);
 		return;
 	}

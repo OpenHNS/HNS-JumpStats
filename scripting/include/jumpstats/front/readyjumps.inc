@@ -21,6 +21,12 @@ new const g_eNameJumps[JumpType][InfoNames][] =  {
 	{ 0, 0, 0 },
 };
 
+new const g_eNameBugs[BugType][InfoNames][] = {
+	{ "jumpbug", "JB", "JumpBug" },
+	{ "edgebug", "EB", "EdgeBug" },
+	{ 0, 0, 0 }
+};
+
 new const g_VerAir[PLAYER_VER][InfoNames][] =  {
 	{ "", "", ""},
 	{ "up ", "Up ", "Up "},
@@ -468,6 +474,79 @@ public show_chat(id) {
 // 		}
 // 	}
 // }
+
+stock ready_boost_stats(id, Float:flBefore, Float:flAfter) {
+	if (g_pCvar[C_ENABLE_STATS]) {
+		show_boost_stats(id, flBefore, flAfter);
+	}
+
+	if (g_pCvar[C_ENABLE_CHATINFO]) {
+		show_boost_chat(id, flBefore, flAfter);
+	}
+
+	// show_boost_console(id, flBefore, flAfter);
+}
+
+stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
+	new Float:flGainPercent;
+	if (flBefore > 0.0) {
+		flGainPercent = (flAfter - flBefore) * 100.0 / flBefore;
+	}
+
+	for (new i = 1; i <= MaxClients; i++) {
+		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+			continue;
+		}
+
+		set_hudmessage(
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+
+		show_hudmessage(i, "BOOST^n%.0f => %.0f^ngain %.0f%%", flBefore, flAfter, flGainPercent);
+	}
+}
+
+stock show_boost_chat(id, Float:flBefore, Float:flAfter) {
+	new Float:flGainPercent;
+	if (flBefore > 0.0) {
+		flGainPercent = (flAfter - flBefore) * 100.0 / flBefore;
+	}
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i = 0; i < iNum; i++) {
+		client_print_color(iPlayers[i], print_team_blue, "^3%n^1 performed ^3BOOST^1 (^3%.0f^1 => ^3%.0f^1 gain ^3%.0f%%^1)", id, flBefore, flAfter, flGainPercent);
+	}
+}
+
+stock ready_bug_stats(id, BugType:iType, Float:flValue) {
+	if (iType == bt_Not) {
+		return;
+	}
+
+	if (g_pCvar[C_ENABLE_STATS]) {
+		show_bug_stats(id, iType, flValue);
+	}
+
+	// show_bug_chat(id, iType, flValue);
+	// show_bug_console(id, iType, flValue);
+}
+
+stock show_bug_stats(id, BugType:iType, Float:flValue) {
+
+	for (new i = 1; i <= MaxClients; i++) {
+		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+			continue;
+		}
+
+		set_hudmessage(
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+
+		show_hudmessage(i, "%s^ndistance: %.2f units", g_eNameBugs[iType][info_hud], flValue);
+	}
+}
 
 
 public ready_moves(id) {
