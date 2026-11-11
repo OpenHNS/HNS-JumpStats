@@ -145,7 +145,7 @@ stock process_player_move(id, Float:flFrameTime) {
 		if (g_iFog[id] <= 10) {
 			g_bOneReset[id] = true;
 		} else if (g_bOneReset[id]) {
-			ready_moves(id);
+			ready_series(id, series_Bhop);
 			reset_stats(id);
 			g_bOneReset[id] = false;
 		}

@@ -7,7 +7,7 @@ public in_bhop_js(id, iFog) {
 	g_flStartSpeed[id] = g_flPrevHorSpeed[id];
 	
 	if (iFog > 10) {
-		//ready_moves(id);
+		reset_series(id, series_Bhop);
 
 		g_iJumps[id] = 0;
 		g_eJumpData[id][g_iJumps[id]][JUMP_PRE] = g_flPrevHorSpeed[id];
@@ -100,6 +100,8 @@ public in_bhop_js(id, iFog) {
 			g_eJumpType[id] = IS_BHJ;
 		} else {
 			if (g_eJumpType[id] != IS_JUMP_NOT) {
+				add_bhop_series_move(id, iFog, g_flPreHorSpeed[id], flPostHorSpeed);
+
 				if (g_iJumps[id] <= 1) {
 					if (g_eJumpType[id] == IS_DUCKBHOP) {
 						g_eWhichJump[id] = jt_DuckBhopJump;
@@ -129,11 +131,6 @@ public in_bhop_js(id, iFog) {
 						g_iVerInfo[id] = IS_MIDDLE;
 					}
 				} else {
-					if (g_eSettings[id][S_BHOP_FOGSTATS]) {
-						g_eWhichJump[id] = jt_MultiBhopJump;
-						if (g_bDebugMode) client_print(id, print_chat, "jump %d", g_iJumps[id])
-					}
-
 					if (g_eJumpType[id] == IS_DUCKBHOP) {
 						show_pre(id, PRE_DUCKBHOP, g_flPreHorSpeed[id], iFog, flPostHorSpeed, iFogType);
 					} else if (g_bInDuck[id]) {
@@ -148,5 +145,29 @@ public in_bhop_js(id, iFog) {
 			}
 		}
 		// БХОП
+	}
+}
+
+stock add_bhop_series_move(id, iFog, Float:flPre, Float:flPost) {
+	if (!g_eSettings[id][S_BHOP_FOGSTATS]) {
+		return;
+	}
+
+	if (!is_series_active(id, series_Bhop)) {
+		start_series(id, series_Bhop);
+	}
+
+	new iMove = g_eSeriesData[id][series_Bhop][SERIES_MOVES];
+	if (iMove >= MAX_SERIES_MOVES) {
+		return;
+	}
+
+	g_eBhopSeriesMoves[id][iMove][BHOP_SERIES_PRE] = flPre;
+	g_eBhopSeriesMoves[id][iMove][BHOP_SERIES_POST] = flPost;
+	g_eBhopSeriesMoves[id][iMove][BHOP_SERIES_FOG] = iFog;
+	g_eSeriesData[id][series_Bhop][SERIES_MOVES]++;
+
+	if (g_bDebugMode) {
+		client_print(id, print_chat, "bhop series move %d", g_eSeriesData[id][series_Bhop][SERIES_MOVES]);
 	}
 }

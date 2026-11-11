@@ -1,6 +1,7 @@
 #define NSTRAFES 14
 #define NDUCKS 100
 #define NJUMPS 100
+#define MAX_SERIES_MOVES 100
 
 new bool:g_bDebugMode;
 
@@ -38,7 +39,6 @@ enum BugType {
 	bt_EdgeBug,
 	bt_Not
 };
-
 
 new JumpType:g_eWhichJump[MAX_PLAYERS + 1];
 
@@ -149,6 +149,26 @@ enum _:EDGEBUG_DATA {
 };
 
 new g_eEdgeBugData[MAX_PLAYERS + 1][EDGEBUG_DATA];
+
+enum SeriesType {
+	series_Bhop,
+	series_Count
+};
+
+enum _:SERIES_DATA {
+	bool:SERIES_ACTIVE,
+	SERIES_MOVES
+};
+
+new g_eSeriesData[MAX_PLAYERS + 1][series_Count][SERIES_DATA];
+
+enum _:BHOP_SERIES_MOVE {
+	Float:BHOP_SERIES_PRE,
+	Float:BHOP_SERIES_POST,
+	BHOP_SERIES_FOG
+};
+
+new g_eBhopSeriesMoves[MAX_PLAYERS + 1][MAX_SERIES_MOVES][BHOP_SERIES_MOVE];
 
 new bool:g_isOldGround[MAX_PLAYERS + 1];
 

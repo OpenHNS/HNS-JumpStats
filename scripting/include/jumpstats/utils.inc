@@ -37,6 +37,7 @@ stock reset_stats(id) {
 	g_bSlide[id] = false;
 	g_bPrevSlide[id] = false;
 	reset_bug_stats(id);
+	reset_all_series(id);
 
 	g_iDetectHJ[id] = 0;
 	g_flStartSpeed[id] = 0.0;
@@ -45,6 +46,33 @@ stock reset_stats(id) {
 stock reset_bug_stats(id) {
 	arrayset(g_eJumpBugData[id], 0, JUMPBUG_DATA);
 	arrayset(g_eEdgeBugData[id], 0, EDGEBUG_DATA);
+}
+
+stock reset_series(id, SeriesType:iType) {
+	arrayset(g_eSeriesData[id][iType], 0, SERIES_DATA);
+
+	switch (iType) {
+		case series_Bhop: {
+			for (new i = 0; i < MAX_SERIES_MOVES; i++) {
+				arrayset(g_eBhopSeriesMoves[id][i], 0, BHOP_SERIES_MOVE);
+			}
+		}
+	}
+}
+
+stock reset_all_series(id) {
+	for (new iType = 0; iType < _:series_Count; iType++) {
+		reset_series(id, SeriesType:iType);
+	}
+}
+
+stock start_series(id, SeriesType:iType) {
+	reset_series(id, iType);
+	g_eSeriesData[id][iType][SERIES_ACTIVE] = true;
+}
+
+stock bool:is_series_active(id, SeriesType:iType) {
+	return g_eSeriesData[id][iType][SERIES_ACTIVE];
 }
 
 stock reset_strafes(id) {
