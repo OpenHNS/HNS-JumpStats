@@ -192,6 +192,11 @@ new bool:g_bPrevSlide[MAX_PLAYERS + 1];
 new Float:g_flFrameTime[MAX_PLAYERS + 1];
 new Float:g_flPrevFrameTime[MAX_PLAYERS + 1];
 
+new bool:g_bUpBoostActive[MAX_PLAYERS + 1];
+new Float:g_flUpBoostBeforeVz[MAX_PLAYERS + 1];
+new Float:g_flUpBoostAfterVz[MAX_PLAYERS + 1];
+new Float:g_flUpBoostImpulse[MAX_PLAYERS + 1];
+
 new g_iDetectHJ[MAX_PLAYERS + 1];
 
 new g_isUserSpec[MAX_PLAYERS + 1];

@@ -33,6 +33,7 @@ public plugin_end() {
 public rgPlayerSpawn(id) {
 	reset_stats(id);
 	g_flPrevFrameTime[id] = 0.0;
+	reset_up_boost(id);
 	g_eFailJump[id] = fj_notshow;
 	g_isUserSpec[id] = 0;
 }
@@ -97,6 +98,8 @@ stock process_player_move(id, Float:flFrameTime) {
 
 	g_bSlide[id] = !isLadder && isPlayerSliding(id);
 	new bool:bBlockBugChecks = bool:(g_bSlide[id] || get_entvar(id, var_waterlevel) >= 2);
+
+	// detect_up_boost(id, isGround, flFrameTime);
 
 	if (!g_bSlide[id] && g_bPrevSlide[id]) {
 		show_pre(id, PRE_SLIDE, g_flPrevHorSpeed[id]);
@@ -176,7 +179,7 @@ stock process_player_move(id, Float:flFrameTime) {
 					calc_jof_block(id, g_flFirstJump[id]);
 				}
 			}
-			in_fall_js(id, g_iFog[id], isDuck, isJump, flFrameTime);
+			in_fall_js(id, g_iFog[id], isDuck, isJump);
 		}
 
 		in_edgebug_js(id, flFrameTime);

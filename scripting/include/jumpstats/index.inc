@@ -18,4 +18,5 @@
 #include <jumpstats/in_bugs>
 #include <jumpstats/in_ducks>
 #include <jumpstats/in_fall>
+#include <jumpstats/in_up_boost>
 #include <jumpstats/in_ladder>

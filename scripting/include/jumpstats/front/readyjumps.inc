@@ -520,6 +520,41 @@ stock show_boost_chat(id, Float:flBefore, Float:flAfter) {
 	}
 }
 
+stock ready_up_boost_stats(id, Float:flBeforeVz, Float:flAfterVz, Float:flImpulse) {
+	if (g_pCvar[C_ENABLE_STATS]) {
+		show_up_boost_stats(id, flBeforeVz, flAfterVz, flImpulse);
+	}
+
+	if (g_pCvar[C_ENABLE_CHATINFO]) {
+		show_up_boost_chat(id, flBeforeVz, flAfterVz, flImpulse);
+	}
+}
+
+stock show_up_boost_stats(id, Float:flBeforeVz, Float:flAfterVz, Float:flImpulse) {
+	for (new i = 1; i <= MaxClients; i++) {
+		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+			continue;
+		}
+
+		set_hudmessage(
+			g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
+			g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);
+
+		show_hudmessage(i, "UP BOOST^nVz %.0f => %.0f^nimpulse +%.0f", flBeforeVz, flAfterVz, flImpulse);
+	}
+}
+
+stock show_up_boost_chat(id, Float:flBeforeVz, Float:flAfterVz, Float:flImpulse) {
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i = 0; i < iNum; i++) {
+		client_print_color(iPlayers[i], print_team_blue,
+			"^3%n^1 performed ^3UP BOOST^1 (Vz ^3%.0f^1 => ^3%.0f^1 impulse ^3+%.0f^1)",
+			id, flBeforeVz, flAfterVz, flImpulse);
+	}
+}
+
 stock ready_bug_stats(id, BugType:iType, Float:flValue) {
 	if (iType == bt_Not) {
 		return;
