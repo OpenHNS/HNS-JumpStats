@@ -33,6 +33,7 @@ public plugin_end() {
 public rgPlayerSpawn(id) {
 	reset_stats(id);
 	g_flPrevFrameTime[id] = 0.0;
+	reset_up_boost(id);
 	g_eFailJump[id] = fj_notshow;
 	g_isUserSpec[id] = 0;
 }
@@ -75,8 +76,13 @@ stock process_player_move(id, Float:flFrameTime) {
 	
 	g_iPrevButtons[id] = get_entvar(id, var_oldbuttons);
 
-	get_entvar(id, var_origin, g_flOrigin[id]);
-	get_entvar(id, var_velocity, g_flVelocity[id]);
+	if (g_pCvar[c_iUseForwards]) {
+		get_entvar(id, var_origin, g_flOrigin[id]);
+		get_entvar(id, var_velocity, g_flVelocity[id]);
+	} else {
+		get_pmove(pm_origin, g_flOrigin[id]);
+		get_pmove(pm_velocity, g_flVelocity[id]);
+	}
 
 	g_flHorSpeed[id] = vector_hor_length(g_flVelocity[id]);
 	g_flHorSpeed3D[id] = vector_length(g_flVelocity[id]);
@@ -97,6 +103,8 @@ stock process_player_move(id, Float:flFrameTime) {
 
 	g_bSlide[id] = !isLadder && isPlayerSliding(id);
 	new bool:bBlockBugChecks = bool:(g_bSlide[id] || get_entvar(id, var_waterlevel) >= 2);
+
+	// detect_up_boost(id, isGround, flFrameTime);
 
 	if (!g_bSlide[id] && g_bPrevSlide[id]) {
 		show_pre(id, PRE_SLIDE, g_flPrevHorSpeed[id]);
@@ -176,7 +184,7 @@ stock process_player_move(id, Float:flFrameTime) {
 					calc_jof_block(id, g_flFirstJump[id]);
 				}
 			}
-			in_fall_js(id, g_iFog[id], isDuck, isJump, flFrameTime);
+			in_fall_js(id, g_iFog[id], isDuck, isJump);
 		}
 
 		in_edgebug_js(id, flFrameTime);
@@ -290,7 +298,12 @@ stock process_air_move(id, bool:fromPmMove) {
 
 	new iButtons = get_entvar(id, var_button);
 
-	new Float:flVelocity[3]; get_entvar(id, var_velocity, flVelocity);
+	new Float:flVelocity[3];
+	if (fromPmMove) {
+		get_pmove(pm_velocity, flVelocity);
+	} else {
+		get_entvar(id, var_velocity, flVelocity);
+	}
 
 	new Float:flStrSpeed = vector_hor_length(flVelocity);
 
