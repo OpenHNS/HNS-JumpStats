@@ -5,6 +5,12 @@ stock in_jumpbug_js(id, iButtons) {
 
 	new bool:isDuckRelease = !(iButtons & IN_DUCK) && (g_iPrevButtons[id] & IN_DUCK);
 	new bool:isJumpPress = (iButtons & IN_JUMP) && !(g_iPrevButtons[id] & IN_JUMP);
+	new bool:isVerticalBounce = g_flPrevVelocity[id][2] < 0.0 && g_flVelocity[id][2] > 0.0;
+
+	if (!g_pCvar[c_iUseForwards] && isDuckRelease && isJumpPress && isVerticalBounce) {
+		finish_jumpbug(id, g_flPrevOrigin[id]);
+		return;
+	}
 
 	if (!g_eJumpBugData[id][JB_FRAMES]) {
 		if (isDuckRelease && isJumpPress && g_flVelocity[id][2] < 0.0) {
@@ -19,24 +25,29 @@ stock in_jumpbug_js(id, iButtons) {
 		return;
 	}
 
-	new Float:flJumpbugLandingZ;
 	new Float:flJumpbugStart[3];
 	flJumpbugStart[0] = g_eJumpBugData[id][JB_START_ORIGIN][0];
 	flJumpbugStart[1] = g_eJumpBugData[id][JB_START_ORIGIN][1];
 	flJumpbugStart[2] = g_eJumpBugData[id][JB_START_ORIGIN][2];
 
-	if (!find_jumpbug_landing(id, flJumpbugStart, flJumpbugLandingZ)) {
-		return;
-	}
+	finish_jumpbug(id, flJumpbugStart);
+}
 
-	new Float:flJumpbugDistance = float(floatround(g_eJumpBugData[id][JB_LAST_GROUND_Z])) - flJumpbugLandingZ;
-	if (flJumpbugDistance <= 0.0) {
-		return;
+stock finish_jumpbug(id, Float:flJumpbugStart[3]) {
+	new Float:flJumpbugLandingZ;
+	new bool:bHasLanding = find_jumpbug_landing(id, flJumpbugStart, flJumpbugLandingZ);
+	new Float:flJumpbugDistance;
+
+	if (bHasLanding) {
+		flJumpbugDistance = floatabs(float(floatround(g_eJumpBugData[id][JB_LAST_GROUND_Z])) - flJumpbugLandingZ);
 	}
 
 	g_eJumpBugData[id][JB_CHECK] = false;
-	show_pre(id, PRE_JUMPBUG, flJumpbugDistance);
-	ready_bug_stats(id, bt_JumpBug, flJumpbugDistance);
+
+	if (bHasLanding) {
+		show_pre(id, PRE_JUMPBUG, flJumpbugDistance);
+		ready_bug_stats(id, bt_JumpBug, flJumpbugDistance);
+	}
 
 	if (g_eWhichJump[id] != jt_Not) {
 		reset_stats(id);

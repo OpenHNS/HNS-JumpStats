@@ -76,8 +76,13 @@ stock process_player_move(id, Float:flFrameTime) {
 	
 	g_iPrevButtons[id] = get_entvar(id, var_oldbuttons);
 
-	get_entvar(id, var_origin, g_flOrigin[id]);
-	get_entvar(id, var_velocity, g_flVelocity[id]);
+	if (g_pCvar[c_iUseForwards]) {
+		get_entvar(id, var_origin, g_flOrigin[id]);
+		get_entvar(id, var_velocity, g_flVelocity[id]);
+	} else {
+		get_pmove(pm_origin, g_flOrigin[id]);
+		get_pmove(pm_velocity, g_flVelocity[id]);
+	}
 
 	g_flHorSpeed[id] = vector_hor_length(g_flVelocity[id]);
 	g_flHorSpeed3D[id] = vector_length(g_flVelocity[id]);
@@ -293,7 +298,12 @@ stock process_air_move(id, bool:fromPmMove) {
 
 	new iButtons = get_entvar(id, var_button);
 
-	new Float:flVelocity[3]; get_entvar(id, var_velocity, flVelocity);
+	new Float:flVelocity[3];
+	if (fromPmMove) {
+		get_pmove(pm_velocity, flVelocity);
+	} else {
+		get_entvar(id, var_velocity, flVelocity);
+	}
 
 	new Float:flStrSpeed = vector_hor_length(flVelocity);
 
