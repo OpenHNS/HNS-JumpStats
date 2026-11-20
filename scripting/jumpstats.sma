@@ -33,7 +33,7 @@ public plugin_end() {
 public rgPlayerSpawn(id) {
 	reset_stats(id);
 	g_flPrevFrameTime[id] = 0.0;
-	reset_up_boost(id);
+	//reset_up_boost(id);
 	g_eFailJump[id] = fj_notshow;
 	g_isUserSpec[id] = 0;
 }
