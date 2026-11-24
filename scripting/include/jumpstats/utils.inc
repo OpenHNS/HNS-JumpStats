@@ -1,3 +1,7 @@
+stock bool:is_jumpstats_hud_recipient(const viewer, const player) {
+	return !is_user_hltv(viewer) && (viewer == player || g_isUserSpec[viewer] == player);
+}
+
 stock reset_stats(id) {
 	g_eWhichJump[id] = jt_Not;
 

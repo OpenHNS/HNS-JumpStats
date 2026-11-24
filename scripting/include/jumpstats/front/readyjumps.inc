@@ -262,7 +262,7 @@ public show_stats_hud(id) {
 	}
 
 	for (new i = 1; i <= MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[i][S_STATS]) {
+		if (is_jumpstats_hud_recipient(i, id) && g_eSettings[i][S_STATS]) {
 			if (!g_eFailJump[id]) {
 				set_hudmessage(
 					g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
@@ -486,7 +486,7 @@ stock show_boost_stats(id, Float:flBefore, Float:flAfter) {
 	}
 
 	for (new i = 1; i <= MaxClients; i++) {
-		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+		if (!is_jumpstats_hud_recipient(i, id) || !g_eSettings[i][S_STATS]) {
 			continue;
 		}
 
@@ -524,7 +524,7 @@ stock ready_up_boost_stats(id, Float:flBeforeVz, Float:flAfterVz, Float:flImpuls
 
 stock show_up_boost_stats(id, Float:flBeforeVz, Float:flAfterVz, Float:flImpulse) {
 	for (new i = 1; i <= MaxClients; i++) {
-		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+		if (!is_jumpstats_hud_recipient(i, id) || !g_eSettings[i][S_STATS]) {
 			continue;
 		}
 
@@ -563,7 +563,7 @@ stock ready_bug_stats(id, BugType:iType, Float:flValue) {
 stock show_bug_stats(id, BugType:iType, Float:flValue) {
 
 	for (new i = 1; i <= MaxClients; i++) {
-		if ((i != id && g_isUserSpec[i] != id) || !g_eSettings[i][S_STATS]) {
+		if (!is_jumpstats_hud_recipient(i, id) || !g_eSettings[i][S_STATS]) {
 			continue;
 		}
 
@@ -609,7 +609,7 @@ stock show_bhop_series(id) {
 	format_bhop_series_stats(id, szBhopSeries, charsmax(szBhopSeries));
 
 	for (new i = 1; i <= MaxClients; i++) {
-		if ((i == id || g_isUserSpec[i] == id) && g_eSettings[i][S_STATS]) {
+		if (is_jumpstats_hud_recipient(i, id) && g_eSettings[i][S_STATS]) {
 			set_hudmessage(
 				g_eSettings[id][S_STATS_R], g_eSettings[id][S_STATS_G], g_eSettings[id][S_STATS_B],
 				g_eSettings[id][S_STATS_X], g_eSettings[id][S_STATS_Y], 0, 6.0, 2.5, 0.1, 0.3, g_pCvar[c_iStats]);

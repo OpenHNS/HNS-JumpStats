@@ -85,7 +85,7 @@ public show_speed(id) {
 	}
 
 	for (new i = 1; i <= MaxClients; i++) {
-		if (i == id || g_isUserSpec[i] == id) {
+		if (is_jumpstats_hud_recipient(i, id)) {
 			if (g_isUserSpec[i] && i == id) {
 				continue;
 			}
@@ -220,7 +220,7 @@ stock show_pre(id, iType, Float:flPreSpeed, iFog = 0, Float:flPostSpeed = 0.0, F
 	}
 
 	for (new i = 1; i <= MaxClients; i++) {
-		if ((i != id && g_isUserSpec[i] != id) || !g_eOnOff[i][of_bPre]) {
+		if (!is_jumpstats_hud_recipient(i, id) || !g_eOnOff[i][of_bPre]) {
 			continue;
 		}
 

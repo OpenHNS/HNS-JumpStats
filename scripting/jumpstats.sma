@@ -378,6 +378,11 @@ stock process_air_move(id, bool:fromPmMove) {
 }
 
 public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {
+	if (is_user_hltv(id)) {
+		g_isUserSpec[id] = 0;
+		return HC_CONTINUE;
+	}
+
 	new iLastMode = get_member(id, m_iObserverLastMode);
 	if (iLastMode != OBS_CHASE_FREE && iLastMode != OBS_IN_EYE) {
 		g_isUserSpec[id] = 0;
@@ -392,6 +397,11 @@ public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {
 }
 
 public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
+	if (is_user_hltv(id)) {
+		g_isUserSpec[id] = 0;
+		return;
+	}
+
 	new iTarget = get_member(id, m_hObserverTarget);
 
 	g_isUserSpec[id] = iTarget;
@@ -399,6 +409,7 @@ public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
 
 
 public client_connect(id) {
+	g_isUserSpec[id] = 0;
 	settings_apply_defaults(id);
 	g_bOldInDuck[0][id] = false;
 	g_bOldInDuck[1][id] = false;
